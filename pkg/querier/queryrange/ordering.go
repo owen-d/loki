@@ -12,11 +12,11 @@ Utils for manipulating ordering
 
 type marker []logproto.Entry
 
-func (m marker) bounds() (int64, int64) {
+func (m marker) start() int64 {
 	if len(m) == 0 {
-		return 0, 0
+		return 0
 	}
-	return m[0].Timestamp.UnixNano(), m[len(m)-1].Timestamp.UnixNano()
+	return m[0].Timestamp.UnixNano()
 }
 
 type byDir struct {
@@ -28,8 +28,7 @@ type byDir struct {
 func (a byDir) Len() int      { return len(a.markers) }
 func (a byDir) Swap(i, j int) { a.markers[i], a.markers[j] = a.markers[j], a.markers[i] }
 func (a byDir) Less(i, j int) bool {
-	x, _ := a.markers[i].bounds()
-	y, _ := a.markers[j].bounds()
+	x, y := a.markers[i].start(), a.markers[j].start()
 
 	if a.direction == logproto.BACKWARD {
 		return x > y
