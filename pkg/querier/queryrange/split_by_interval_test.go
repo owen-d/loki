@@ -98,10 +98,9 @@ func Test_splitByInterval_Do(t *testing.T) {
 				},
 			}, nil
 		}),
-		limits:    fakeLimits{},
-		merger:    lokiCodec,
-		interval:  time.Hour,
-		batchSize: 1,
+		limits:   fakeLimits{},
+		merger:   lokiCodec,
+		interval: time.Hour,
 	}
 
 	tests := []struct {

@@ -323,17 +323,11 @@ func toProto(m loghttp.Matrix) []queryrange.SampleStream {
 	return res
 }
 
-func (res LokiResponse) isFull() bool {
-	return countEntries(res.Data.Result) >= int64(res.Limit)
-}
+func (res LokiResponse) Count() int64 {
+	var result int64
+	for _, s := range res.Data.Result {
+		result += int64(len(s.Entries))
+	}
+	return result
 
-func countEntries(streams []logproto.Stream) int64 {
-	if len(streams) == 0 {
-		return 0
-	}
-	res := int64(0)
-	for _, s := range streams {
-		res += int64(len(s.Entries))
-	}
-	return res
 }
