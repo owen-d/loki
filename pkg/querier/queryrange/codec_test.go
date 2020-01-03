@@ -345,15 +345,16 @@ func Test_codec_MergeResponse(t *testing.T) {
 							{
 								Labels: `{foo="bar", level="error"}`,
 								Entries: []logproto.Entry{
-									{Timestamp: time.Unix(0, 2), Line: "2"},
-									{Timestamp: time.Unix(0, 1), Line: "1"},
+									{Timestamp: time.Unix(0, 10), Line: "10"},
+									{Timestamp: time.Unix(0, 9), Line: "9"},
+									{Timestamp: time.Unix(0, 9), Line: "9"},
 								},
 							},
 							{
 								Labels: `{foo="bar", level="debug"}`,
 								Entries: []logproto.Entry{
-									{Timestamp: time.Unix(0, 6), Line: "6"},
-									{Timestamp: time.Unix(0, 5), Line: "5"},
+									{Timestamp: time.Unix(0, 16), Line: "16"},
+									{Timestamp: time.Unix(0, 15), Line: "15"},
 								},
 							},
 						},
@@ -370,16 +371,15 @@ func Test_codec_MergeResponse(t *testing.T) {
 							{
 								Labels: `{foo="bar", level="error"}`,
 								Entries: []logproto.Entry{
-									{Timestamp: time.Unix(0, 10), Line: "10"},
-									{Timestamp: time.Unix(0, 9), Line: "9"},
-									{Timestamp: time.Unix(0, 9), Line: "9"},
+									{Timestamp: time.Unix(0, 2), Line: "2"},
+									{Timestamp: time.Unix(0, 1), Line: "1"},
 								},
 							},
 							{
 								Labels: `{foo="bar", level="debug"}`,
 								Entries: []logproto.Entry{
-									{Timestamp: time.Unix(0, 16), Line: "16"},
-									{Timestamp: time.Unix(0, 15), Line: "15"},
+									{Timestamp: time.Unix(0, 6), Line: "6"},
+									{Timestamp: time.Unix(0, 5), Line: "5"},
 								},
 							},
 						},
