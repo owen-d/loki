@@ -183,10 +183,6 @@ func TestLogFilterTripperware(t *testing.T) {
 	_, err = tpw(rt).RoundTrip(req)
 	require.GreaterOrEqual(t, *retries, 3)
 	require.Error(t, err)
-
-	// testing early exit when limit is reached
-	t.Fatal("unimplemented")
-
 }
 
 func TestLogNoRegex(t *testing.T) {

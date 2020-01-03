@@ -62,7 +62,7 @@ func (h *splitByInterval) Process(
 ) (responses []queryrange.Response, err error) {
 	ch := h.Feed(ctx, input)
 
-	// queries with 0 limits (generally metric queries) should not be exited early
+	// queries with 0 limits should not be exited early
 	var unlimited bool
 	if threshold == 0 {
 		unlimited = true
@@ -113,6 +113,9 @@ func (h *splitByInterval) loop(ctx context.Context, ch <-chan *lokiResult) {
 
 func (h *splitByInterval) Do(ctx context.Context, r queryrange.Request) (queryrange.Response, error) {
 	lokiRequest := r.(*LokiRequest)
+	sp, ctx := opentracing.StartSpanFromContext(ctx, "splitByInterval")
+	logRequest(sp, lokiRequest)
+	defer sp.Finish()
 
 	userid, err := user.ExtractOrgID(ctx)
 	if err != nil {
