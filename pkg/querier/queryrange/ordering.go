@@ -35,7 +35,16 @@ func (a byDir) Less(i, j int) bool {
 	}
 	return y > x
 }
-func (a byDir) merge() (result []logproto.Entry) {
+func (a byDir) EntriesCount() (n int) {
+	for _, m := range a.markers {
+		n += len(m)
+	}
+	return n
+}
+
+func (a byDir) merge() []logproto.Entry {
+	result := make([]logproto.Entry, 0, a.EntriesCount())
+
 	sort.Sort(a)
 	for _, m := range a.markers {
 		result = append(result, m...)
