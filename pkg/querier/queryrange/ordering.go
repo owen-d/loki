@@ -77,6 +77,8 @@ func (pq *priorityqueue) Push(x interface{}) {
 	pq.streams = append(pq.streams, stream)
 }
 
+// Pop returns a stream with one entry. It pops the first entry of the first stream
+// then re-pushes the remainder of that stream if non-empty back into the queue
 func (pq *priorityqueue) Pop() interface{} {
 	n := pq.Len()
 	stream := pq.streams[n-1]
