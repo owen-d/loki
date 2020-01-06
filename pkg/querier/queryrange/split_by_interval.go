@@ -91,23 +91,17 @@ func (h *splitByInterval) Process(
 func (h *splitByInterval) loop(ctx context.Context, ch <-chan *lokiResult) {
 
 	for data := range ch {
-		sp, ctx := opentracing.StartSpanFromContext(ctx, "splitByInterval.interval")
-		logRequest(sp, data.req.(*LokiRequest))
 		resp, err := h.next.Do(ctx, data.req)
 		if err != nil {
 			data.err <- err
 		} else {
 			data.resp <- resp
 		}
-		sp.Finish()
 	}
 }
 
 func (h *splitByInterval) Do(ctx context.Context, r queryrange.Request) (queryrange.Response, error) {
 	lokiRequest := r.(*LokiRequest)
-	sp, ctx := opentracing.StartSpanFromContext(ctx, "splitByInterval")
-	logRequest(sp, lokiRequest)
-	defer sp.Finish()
 
 	userid, err := user.ExtractOrgID(ctx)
 	if err != nil {
