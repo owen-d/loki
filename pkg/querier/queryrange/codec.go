@@ -234,7 +234,7 @@ func mergeOrderedNonOverlappingStreams(resps []*LokiResponse, limit uint32, dire
 				groups[stream.Labels] = s
 			}
 
-			s.markers = append(s.markers, marker(stream.Entries))
+			s.markers = append(s.markers, stream.Entries)
 			total += len(stream.Entries)
 		}
 

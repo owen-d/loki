@@ -10,9 +10,9 @@ import (
 Utils for manipulating ordering
 */
 
-type marker []logproto.Entry
+type entries []logproto.Entry
 
-func (m marker) start() int64 {
+func (m entries) start() int64 {
 	if len(m) == 0 {
 		return 0
 	}
@@ -20,7 +20,7 @@ func (m marker) start() int64 {
 }
 
 type byDir struct {
-	markers   []marker
+	markers   []entries
 	direction logproto.Direction
 	labels    string
 }
