@@ -239,7 +239,7 @@ func mergeOrderedNonOverlappingStreams(resps []*LokiResponse, limit uint32, dire
 		}
 
 		// optimization: since limit has been reached, no need to append entries from subsequent responses
-		if limit != 0 && total >= int(limit) {
+		if total >= int(limit) {
 			break
 		}
 	}
