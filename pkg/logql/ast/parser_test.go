@@ -1,16 +1,22 @@
 package ast
 
 import (
+	"errors"
 	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func TestSatisfy(t *testing.T) {
+func TestNums(t *testing.T) {
 	nums := OneOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
 
-	out, rem, err := nums.Parse("5")
+	out, rem, err := nums.Parse("abc")
+	require.Nil(t, out)
+	require.Equal(t, "abc", rem)
+	require.NotNil(t, err)
+
+	out, rem, err = nums.Parse("5")
 	require.Nil(t, err)
 	require.Equal(t, "", rem)
 	require.Equal(t, out, "5")
@@ -53,5 +59,21 @@ func TestJoin(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, "", rem)
 	require.Equal(t, 567, out)
+
+	p := Satisfy(
+		func(in interface{}) bool {
+			v := in.(int)
+			return v%2 == 1
+		},
+		errors.New("expected odd number"),
+		joined,
+	)
+
+	out, err = RunParser(p, "3")
+	require.Nil(t, err)
+	require.Equal(t, 3, out)
+
+	_, err = RunParser(p, "34")
+	require.Equal(t, err.Error(), "Parse error at 2: expected odd number")
 
 }

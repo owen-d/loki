@@ -1,12 +1,45 @@
 package ast
 
 import (
+	"errors"
 	"fmt"
 )
 
 type Parser interface {
 	Type() string
 	Parse(string) (interface{}, string, error)
+}
+
+type ParseError struct {
+	pos int
+	err error
+}
+
+func (e ParseError) String() string {
+	return e.Error()
+}
+
+func (e ParseError) Error() string {
+	return fmt.Sprintf("Parse error at %d: %s", e.pos, e.err.Error())
+}
+
+func RunParser(parser Parser, input string) (interface{}, error) {
+	value, rem, err := parser.Parse(input)
+	if err != nil {
+		return nil, ParseError{
+			pos: len(input) - len(rem),
+			err: err,
+		}
+	}
+
+	if rem != "" {
+		return nil, ParseError{
+			pos: len(input) - len(rem),
+			err: errors.New("Unterminated input"),
+		}
+	}
+
+	return value, nil
 }
 
 type FunctorParser struct {
@@ -140,9 +173,13 @@ func (p StringParser) Parse(s string) (interface{}, string, error) {
 	return nil, s, fmt.Errorf("Expecting (%s)", p.match)
 }
 
-func OneOf(first string, rest ...string) Parser {
-	var res Parser = StringParser{first}
-	for _, x := range rest {
+func OneOf(xs ...string) Parser {
+	if len(xs) == 0 {
+		return ErrParser{errors.New("No available options")}
+	}
+
+	var res Parser = StringParser{xs[0]}
+	for _, x := range xs[1:] {
 		res = Option(res, StringParser{x})
 	}
 	return res
