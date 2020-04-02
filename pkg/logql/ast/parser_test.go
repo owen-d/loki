@@ -9,7 +9,7 @@ import (
 )
 
 func TestNums(t *testing.T) {
-	nums := OneOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+	nums := OneOfStrings("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
 
 	out, rem, err := nums.Parse("abc")
 	require.Nil(t, out)
@@ -23,7 +23,7 @@ func TestNums(t *testing.T) {
 }
 
 func TestMany(t *testing.T) {
-	nums := OneOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+	nums := OneOfStrings("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
 	p := ManyParser{nums}
 
 	out, rem, err := p.Parse("567")
@@ -33,7 +33,7 @@ func TestMany(t *testing.T) {
 }
 
 func TestJoin(t *testing.T) {
-	nums := OneOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+	nums := OneOfStrings("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
 	require.Equal(t, "string", nums.Type())
 	many := ManyParser{nums}
 	require.Equal(t, "[string]", many.Type())

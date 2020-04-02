@@ -18,7 +18,9 @@ var (
 	Div    = StringParser{"/"}
 	Mul    = StringParser{"*"}
 
-	CharSet = OneOf(
+	Bang = StringParser{"!"}
+
+	CharSet = OneOfStrings(
 		strings.Split(
 			`/.*+?0123456789abcdedfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ`,
 			"",

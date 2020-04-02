@@ -3,6 +3,7 @@ package ast
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type Parser interface {
@@ -35,7 +36,7 @@ func RunParser(parser Parser, input string) (interface{}, error) {
 	if rem != "" {
 		return nil, ParseError{
 			pos: len(input) - len(rem),
-			err: errors.New("Unterminated input"),
+			err: fmt.Errorf("Unterminated input: %s", rem),
 		}
 	}
 
@@ -64,6 +65,13 @@ func FMap(fn func(interface{}) interface{}, p Parser, mappedType string) Parser 
 		mappedType: mappedType,
 		embedded:   p,
 		fn:         fn,
+	}
+}
+
+// const :: a -> b -> a
+func Const(x interface{}) func(interface{}) interface{} {
+	return func(_ interface{}) interface{} {
+		return x
 	}
 }
 
@@ -116,8 +124,30 @@ type AlternativeParser struct {
 	p2 Parser
 }
 
+// subtypes can recursively check legs of alternative parsers, mainly
+// for nicer error messages
+func (p AlternativeParser) subTypes() []string {
+	var lhs, rhs []string
+
+	switch left := p.p1.(type) {
+	case AlternativeParser:
+		lhs = append(lhs, left.subTypes()...)
+	default:
+		lhs = append(lhs, left.Type())
+	}
+
+	switch right := p.p2.(type) {
+	case AlternativeParser:
+		rhs = append(rhs, right.subTypes()...)
+	default:
+		rhs = append(rhs, right.Type())
+	}
+
+	return append(lhs, rhs...)
+}
+
 func (p AlternativeParser) Type() string {
-	return p.p1.Type()
+	return fmt.Sprintf("Alternative<%s>", strings.Join(p.subTypes(), ", "))
 }
 
 func (p AlternativeParser) Parse(s string) (interface{}, string, error) {
@@ -129,7 +159,7 @@ func (p AlternativeParser) Parse(s string) (interface{}, string, error) {
 		return v, rem, err
 	}
 
-	return nil, s, fmt.Errorf("Expecting either (%s) or (%s)", p.p1.Type(), p.p2.Type())
+	return nil, s, fmt.Errorf("Expecting %s", p.Type())
 }
 
 // (<|>) :: f a -> f a -> f a
@@ -166,23 +196,33 @@ func (StringParser) Type() string { return "string" }
 
 func (p StringParser) Parse(s string) (interface{}, string, error) {
 	ln := len(p.match)
-	if s[:ln] == p.match {
+	if len(s) >= ln && s[:ln] == p.match {
 		return p.match, s[ln:], nil
 	}
 
 	return nil, s, fmt.Errorf("Expecting (%s)", p.match)
 }
 
-func OneOf(xs ...string) Parser {
+func OneOf(xs ...Parser) Parser {
 	if len(xs) == 0 {
 		return ErrParser{errors.New("No available options")}
 	}
 
-	var res Parser = StringParser{xs[0]}
+	res := xs[0]
 	for _, x := range xs[1:] {
-		res = Option(res, StringParser{x})
+		res = Option(res, x)
 	}
 	return res
+
+}
+
+func OneOfStrings(xs ...string) Parser {
+	parsers := make([]Parser, 0, len(xs))
+	for _, x := range xs {
+		parsers = append(parsers, StringParser{x})
+	}
+	return OneOf(parsers...)
+
 }
 
 // Zero or more
