@@ -14,7 +14,7 @@ func TestLibParser(t *testing.T) {
 		out    interface{}
 	}{
 		{
-			parser: CharSet,
+			parser: CharSetParser,
 			in:     "8",
 			out:    "8",
 		},
@@ -28,12 +28,6 @@ func TestLibParser(t *testing.T) {
 			in:     "abc",
 			out:    "abc",
 		},
-		// {
-		// 	parser: nil,
-		// 	in:     "",
-		// 	err:    "",
-		// 	out:    nil,
-		// },
 	} {
 		t.Run(tc.in, func(t *testing.T) {
 			out, err := RunParser(tc.parser, tc.in)

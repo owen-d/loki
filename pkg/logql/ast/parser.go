@@ -192,7 +192,7 @@ func Satisfy(predicate func(interface{}) bool, failureErr error, p Parser) Monad
 
 type StringParser struct{ match string }
 
-func (StringParser) Type() string { return "string" }
+func (p StringParser) Type() string { return p.match }
 
 func (p StringParser) Parse(s string) (interface{}, string, error) {
 	ln := len(p.match)
@@ -240,7 +240,37 @@ func (p ManyParser) Parse(s string) (res interface{}, rem string, err error) {
 	for len(rem) > 0 {
 		res, rem, err = p.p.Parse(rem)
 		if err != nil {
-			return nil, rem, err
+			return all, rem, nil
+		}
+
+		all = append(all, res)
+
+	}
+
+	return all, rem, nil
+
+}
+
+// 1 or more
+type SomeParser struct {
+	p Parser
+}
+
+func (p SomeParser) Type() string {
+	return fmt.Sprintf("[%T]", p.p.Type())
+}
+
+func (p SomeParser) Parse(s string) (res interface{}, rem string, err error) {
+	rem = s
+	var all []interface{}
+	for len(rem) > 0 {
+		res, rem, err = p.p.Parse(rem)
+		if err != nil {
+			// require at least one successful parse
+			if len(all) == 0 {
+				return nil, rem, err
+			}
+			return all, rem, nil
 		}
 
 		all = append(all, res)

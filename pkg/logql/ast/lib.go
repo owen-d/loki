@@ -5,12 +5,20 @@ import (
 )
 
 var (
-	LBracket = StringParser{"["}
-	RBracket = StringParser{"]"}
-	LBrace   = StringParser{"{"}
-	RBrace   = StringParser{"}"}
-	LParen   = StringParser{"("}
-	RParen   = StringParser{")"}
+	// character lists
+	Alpha          = "abcdedfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	Numeric        = "0123456789"
+	ExtraRESymbols = "/.*+?!" // non-exhaustive
+	AlphaNumeric   = Alpha + Numeric
+	CharSet        = AlphaNumeric + ExtraRESymbols
+
+	LBracket  = StringParser{"["}
+	RBracket  = StringParser{"]"}
+	LBrace    = StringParser{"{"}
+	RBrace    = StringParser{"}"}
+	LParen    = StringParser{"("}
+	RParen    = StringParser{")"}
+	Quotation = StringParser{`"`}
 
 	Equals = StringParser{"="}
 	Add    = StringParser{"+"}
@@ -20,25 +28,20 @@ var (
 
 	Bang = StringParser{"!"}
 
-	CharSet = OneOfStrings(
-		strings.Split(
-			`/.*+?0123456789abcdedfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ`,
-			"",
-		)...,
+	CharSetParser = OneOfStrings(
+		strings.Split(CharSet, "")...,
 	)
 
 	Characters = FMap(
-		func(in interface{}) interface{} {
-			return assertStr(in.([]interface{}))
-		},
-		ManyParser{CharSet},
+		assertStr,
+		SomeParser{CharSetParser},
 		"Characters",
 	)
 )
 
-func assertStr(in []interface{}) string {
+func assertStr(in interface{}) interface{} {
 	var out string
-	for _, x := range in {
+	for _, x := range in.([]interface{}) {
 		out += x.(string)
 	}
 	return out
@@ -46,25 +49,9 @@ func assertStr(in []interface{}) string {
 
 // Surround returns a parser that parses A, B, then C, but only returns the result from B
 func Surround(a, b, c Parser) Parser {
-	return Bind(
-		a,
-		a.Type(),
-		func(_ interface{}) Parser {
-			return Bind(
-				b,
-				b.Type(),
-				func(result interface{}) Parser {
-					return Bind(
-						c,
-						c.Type(),
-						func(_ interface{}) Parser {
-							return Unit(result)
-						},
-					)
-				},
-			)
-		},
-	)
+	return BindWith3(a, b, c, func(_ interface{}, result interface{}, _ interface{}) interface{} {
+		return result
+	})
 }
 
 // Parens is a parser combinator for wrapping a parser in parens
@@ -80,4 +67,36 @@ func Brackets(p Parser) Parser {
 // Braces is a parser combinator for wrapping a parser in braces
 func Braces(p Parser) Parser {
 	return Surround(LBrace, p, RBrace)
+}
+
+// Braces is a parser combinator for wrapping a parser in braces
+func Quotes(p Parser) Parser {
+	return Surround(Quotation, p, Quotation)
+}
+
+// BindWith3 is sugar for a 3 Parser Bind chain, allowing the implementor
+// to specify a result with the results of the 3 previous parsers as arguments
+func BindWith3(
+	a, b, c Parser,
+	fn func(interface{}, interface{}, interface{}) interface{},
+) Parser {
+	return Bind(
+		a,
+		a.Type(),
+		func(res1 interface{}) Parser {
+			return Bind(
+				b,
+				b.Type(),
+				func(res2 interface{}) Parser {
+					return Bind(
+						c,
+						c.Type(),
+						func(res3 interface{}) Parser {
+							return Unit(fn(res1, res2, res3))
+						},
+					)
+				},
+			)
+		},
+	)
 }

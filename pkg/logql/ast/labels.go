@@ -1,6 +1,8 @@
 package ast
 
-import "github.com/prometheus/prometheus/pkg/labels"
+import (
+	"github.com/prometheus/prometheus/pkg/labels"
+)
 
 var (
 	MatchEqual = FMap(
@@ -28,4 +30,20 @@ var (
 	)
 
 	MatchType = OneOf(MatchRegexp, MatchNotRegexp, MatchNotEqual, MatchEqual)
+
+	// Labels is a parser for syntax such as {foo="bar"}
+	Labels = Braces(
+		BindWith3(
+			Characters,
+			MatchType,
+			Quotes(Characters),
+			func(label interface{}, matchType interface{}, value interface{}) interface{} {
+				return labels.MustNewMatcher(
+					matchType.(labels.MatchType),
+					label.(string),
+					value.(string),
+				)
+			},
+		),
+	)
 )
