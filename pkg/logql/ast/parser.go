@@ -234,16 +234,16 @@ func (p ManyParser) Type() string {
 	return fmt.Sprintf("[%T]", p.p.Type())
 }
 
-func (p ManyParser) Parse(s string) (res interface{}, rem string, err error) {
-	rem = s
+func (p ManyParser) Parse(s string) (interface{}, string, error) {
+	rem := s
 	var all []interface{}
 	for len(rem) > 0 {
-		res, rem, err = p.p.Parse(rem)
+		res, nextRem, err := p.p.Parse(rem)
 		if err != nil {
 			return all, rem, nil
 		}
-
 		all = append(all, res)
+		rem = nextRem
 
 	}
 
@@ -260,11 +260,11 @@ func (p SomeParser) Type() string {
 	return fmt.Sprintf("[%T]", p.p.Type())
 }
 
-func (p SomeParser) Parse(s string) (res interface{}, rem string, err error) {
-	rem = s
+func (p SomeParser) Parse(s string) (interface{}, string, error) {
+	rem := s
 	var all []interface{}
 	for len(rem) > 0 {
-		res, rem, err = p.p.Parse(rem)
+		res, nextRem, err := p.p.Parse(rem)
 		if err != nil {
 			// require at least one successful parse
 			if len(all) == 0 {
@@ -272,11 +272,34 @@ func (p SomeParser) Parse(s string) (res interface{}, rem string, err error) {
 			}
 			return all, rem, nil
 		}
-
 		all = append(all, res)
+		rem = nextRem
 
 	}
 
 	return all, rem, nil
 
+}
+
+// Sequence simply returns a parser which
+// composes a list of string parsers in order
+// contract: The parsers must return strings.
+func SequenceStrings(xs ...Parser) Parser {
+	if len(xs) == 0 {
+		return ErrParser{errors.New("No available parsers to sequence")}
+	}
+
+	result := xs[0]
+	for _, p := range xs[1:] {
+		result = ConcatStrings(result, p)
+	}
+
+	return result
+}
+
+// ConcatStrings returns a parser that concats two successive string parsers
+func ConcatStrings(a, b Parser) MonadParser {
+	return BindWith2(a, b, func(aRes, bRes interface{}) interface{} {
+		return aRes.(string) + bRes.(string)
+	})
 }

@@ -32,11 +32,25 @@ var (
 		strings.Split(CharSet, "")...,
 	)
 
+	AlphaNumericParser = OneOfStrings(
+		strings.Split(AlphaNumeric, "")...,
+	)
+
+	SomeAlphaNumerics = FMap(
+		assertStr,
+		SomeParser{AlphaNumericParser},
+		"AlphaNumerics",
+	)
+
 	Characters = FMap(
 		assertStr,
 		SomeParser{CharSetParser},
 		"Characters",
 	)
+
+	// utilities
+	ManySpaces = ManyParser{StringParser{" "}}
+	SomeSpaces = SomeParser{StringParser{" "}}
 )
 
 func assertStr(in interface{}) interface{} {
@@ -74,12 +88,33 @@ func Quotes(p Parser) Parser {
 	return Surround(Quotation, p, Quotation)
 }
 
+// BindWith2 is sugar for a 2 Parser Bind chain, allowing the implementor
+// to specify a result with the results of the 2 previous parsers as arguments
+func BindWith2(
+	a, b Parser,
+	fn func(interface{}, interface{}) interface{},
+) MonadParser {
+	return Bind(
+		a,
+		a.Type(),
+		func(res1 interface{}) Parser {
+			return Bind(
+				b,
+				b.Type(),
+				func(res2 interface{}) Parser {
+					return Unit(fn(res1, res2))
+				},
+			)
+		},
+	)
+}
+
 // BindWith3 is sugar for a 3 Parser Bind chain, allowing the implementor
 // to specify a result with the results of the 3 previous parsers as arguments
 func BindWith3(
 	a, b, c Parser,
 	fn func(interface{}, interface{}, interface{}) interface{},
-) Parser {
+) MonadParser {
 	return Bind(
 		a,
 		a.Type(),
