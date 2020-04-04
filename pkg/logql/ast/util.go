@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"errors"
 	"strings"
 )
 
@@ -61,10 +62,35 @@ func assertStr(in interface{}) interface{} {
 	return out
 }
 
-// Surround returns a parser that parses A, B, then C, but only returns the result from B
-func Surround(a, b, c Parser) Parser {
-	return BindWith3(a, b, c, func(_ interface{}, result interface{}, _ interface{}) interface{} {
-		return result
+func OneOfStrings(xs ...string) Parser {
+	parsers := make([]Parser, 0, len(xs))
+	for _, x := range xs {
+		parsers = append(parsers, StringParser{x})
+	}
+	return OneOf(parsers...)
+
+}
+
+// Sequence simply returns a parser which
+// composes a list of string parsers in order
+// contract: The parsers must return strings.
+func SequenceStrings(xs ...Parser) Parser {
+	if len(xs) == 0 {
+		return ErrParser{errors.New("No available parsers to sequence")}
+	}
+
+	result := xs[0]
+	for _, p := range xs[1:] {
+		result = ConcatStrings(result, p)
+	}
+
+	return result
+}
+
+// ConcatStrings returns a parser that concats two successive string parsers
+func ConcatStrings(a, b Parser) MonadParser {
+	return BindWith2(a, b, func(aRes, bRes interface{}) interface{} {
+		return aRes.(string) + bRes.(string)
 	})
 }
 
@@ -88,50 +114,7 @@ func Quotes(p Parser) Parser {
 	return Surround(Quotation, p, Quotation)
 }
 
-// BindWith2 is sugar for a 2 Parser Bind chain, allowing the implementor
-// to specify a result with the results of the 2 previous parsers as arguments
-func BindWith2(
-	a, b Parser,
-	fn func(interface{}, interface{}) interface{},
-) MonadParser {
-	return Bind(
-		a,
-		a.Type(),
-		func(res1 interface{}) Parser {
-			return Bind(
-				b,
-				b.Type(),
-				func(res2 interface{}) Parser {
-					return Unit(fn(res1, res2))
-				},
-			)
-		},
-	)
-}
-
-// BindWith3 is sugar for a 3 Parser Bind chain, allowing the implementor
-// to specify a result with the results of the 3 previous parsers as arguments
-func BindWith3(
-	a, b, c Parser,
-	fn func(interface{}, interface{}, interface{}) interface{},
-) MonadParser {
-	return Bind(
-		a,
-		a.Type(),
-		func(res1 interface{}) Parser {
-			return Bind(
-				b,
-				b.Type(),
-				func(res2 interface{}) Parser {
-					return Bind(
-						c,
-						c.Type(),
-						func(res3 interface{}) Parser {
-							return Unit(fn(res1, res2, res3))
-						},
-					)
-				},
-			)
-		},
-	)
+// WhiteSpaced returns a parser which trims whitespace around a given parser
+func WhiteSpaced(p Parser) Parser {
+	return Surround(ManySpaces, p, ManySpaces)
 }

@@ -50,7 +50,7 @@ var (
 var (
 	singleLabelParser = BindWith3(
 		SomeAlphaNumerics,
-		Surround(ManySpaces, MatchType, ManySpaces),
+		WhiteSpaced(MatchType),
 		Quotes(Characters),
 		func(
 			label interface{},
@@ -65,16 +65,7 @@ var (
 		},
 	)
 
-	multiLabelParser = Braces(
-		Surround(
-			ManySpaces,
-			Separated(
-				commaOptionalSpaces,
-				singleLabelParser,
-			),
-			ManySpaces,
-		),
-	)
+	multiLabelParser = Braces(WhiteSpaced(Separated(commaOptionalSpaces, singleLabelParser)))
 
 	// ,<  >
 	commaOptionalSpaces = SequenceStrings(

@@ -162,10 +162,6 @@ func TestLabelsParser(t *testing.T) {
 	} {
 		t.Run(tc.in, func(t *testing.T) {
 			out, err := RunParser(tc.parser, tc.in)
-			if tc.in == `{foo="bar", bazz=~"buzz", a!="b"}` {
-				fmt.Println(out.([]*labels.Matcher)[2].Name)
-			}
-
 			if tc.err != "" {
 				require.NotNil(t, err)
 				require.Equal(t, tc.err, err.Error())

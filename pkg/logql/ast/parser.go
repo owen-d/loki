@@ -1,29 +1,38 @@
 package ast
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
 
+// Parser is the interface any parser must impl.
 type Parser interface {
+	// Type is used as an annotation to facilitate human readable errors.
 	Type() string
+	// Parsing an input string yields the parsed value,
+	// the remaining input, and any error. Thus they can be sequenced,
+	// so that for the input `"ab"`, a parser of "a" will return ("a", "b", nil)
+	// and the successive parser "b" will return ("b", "", nil).
 	Parse(string) (interface{}, string, error)
 }
 
+// ParseError keeps track of where an error occurred in an input string
 type ParseError struct {
 	pos int
 	err error
 }
 
+// String implements Stringer for convenience
 func (e ParseError) String() string {
 	return e.Error()
 }
 
+// Error implementation
 func (e ParseError) Error() string {
 	return fmt.Sprintf("Parse error at %d: %s", e.pos, e.err.Error())
 }
 
+// RunParser executes a parser against a string, returning the result or an error
 func RunParser(parser Parser, input string) (interface{}, error) {
 	value, rem, err := parser.Parse(input)
 	if err != nil {
@@ -43,6 +52,9 @@ func RunParser(parser Parser, input string) (interface{}, error) {
 	return value, nil
 }
 
+/*
+FunctorParser is a type useful for applying mapping functions against the result of a parser (the FMap constructor). It allows taking the successful result of a parser and applying a mapping function to it, resulting in a parser that yields a different type or value. This is commonly useful for transforming string results into their internal go structs.
+*/
 type FunctorParser struct {
 	mappedType string
 	embedded   Parser
@@ -59,8 +71,16 @@ func (p FunctorParser) Parse(s string) (interface{}, string, error) {
 	return p.fn(out), rem, err
 }
 
-// (a -> b) -> f a -> f b
-func FMap(fn func(interface{}) interface{}, p Parser, mappedType string) Parser {
+/* FMap is a constructor for a FunctorParser. It will apply a mapping function to the successful
+result of another parser, returning a new parser of the mapped result's type. For instance,
+given some arbitrary `IntMapper` which maps an input into an integer, we can construct an
+`IncrementMapper` which will parse an integer and increment it's parsed value:
+var IncrementMapper = FMap(func(x interface{})interface{}{
+	return x.(int)+1
+}, "IncrementedInt", IntParser)
+It takes the form `fmap :: (a -> b) -> f a -> f b`
+*/
+func FMap(fn func(interface{}) interface{}, p Parser, mappedType string) FunctorParser {
 	return FunctorParser{
 		mappedType: mappedType,
 		embedded:   p,
@@ -68,13 +88,17 @@ func FMap(fn func(interface{}) interface{}, p Parser, mappedType string) Parser 
 	}
 }
 
-// const :: a -> b -> a
+// Const returns a parser which will always return a specified value without
+// consuming additional input.
+// It takes the form `const :: a -> b -> a`
 func Const(x interface{}) func(interface{}) interface{} {
 	return func(_ interface{}) interface{} {
 		return x
 	}
 }
 
+// ConstParser is a parser which will always return a specified value
+// without consuming additional input.
 type ConstParser struct {
 	t   string
 	val interface{}
@@ -85,14 +109,7 @@ func (p ConstParser) Parse(s string) (interface{}, string, error) {
 	return p.val, s, nil
 }
 
-// a -> m a
-func Unit(x interface{}) ConstParser {
-	return ConstParser{
-		t:   fmt.Sprintf("%T", x),
-		val: x,
-	}
-}
-
+// MonadParser is a type useful for creating parsers from the successful results of other parsers.
 type MonadParser struct {
 	embedded   Parser
 	mappedType string
@@ -110,7 +127,16 @@ func (p MonadParser) Parse(s string) (interface{}, string, error) {
 	return next.Parse(rem)
 }
 
-// m a -> (a -> m b) -> m b
+/*
+Bind constructs a MonadParser with a function which maps the successful result
+ of one parser into another parser. For instance, given a Parser which returns an alphanumeric
+character, `AlphaNumParser`, you may want to return another parser which only parses
+that same character:
+var TwiceParser(IntParser, `Twice`, func(x interface{}) Parser {
+	return StringParser{x.(string)}
+})
+it takes the form: `bind :: m a -> (a -> m b) -> m b`
+*/
 func Bind(p Parser, mappedType string, fn func(interface{}) Parser) MonadParser {
 	return MonadParser{
 		embedded:   p,
@@ -119,6 +145,8 @@ func Bind(p Parser, mappedType string, fn func(interface{}) Parser) MonadParser 
 	}
 }
 
+// AlternativeParser is a type which attempts one parser, then attempts an alternative
+// parser if the first fails.
 type AlternativeParser struct {
 	p1 Parser
 	p2 Parser
@@ -162,6 +190,7 @@ func (p AlternativeParser) Parse(s string) (interface{}, string, error) {
 	return nil, s, fmt.Errorf("Expecting %s", p.Type())
 }
 
+// Option constructs an alternative parser from two parsers.
 // (<|>) :: f a -> f a -> f a
 func Option(p1, p2 Parser) AlternativeParser {
 	return AlternativeParser{
@@ -170,6 +199,7 @@ func Option(p1, p2 Parser) AlternativeParser {
 	}
 }
 
+// ErrParser is a parser which always returns an error
 type ErrParser struct{ error }
 
 func (p ErrParser) Type() string { return "error" }
@@ -177,19 +207,7 @@ func (p ErrParser) Parse(s string) (interface{}, string, error) {
 	return nil, s, p.error
 }
 
-func Satisfy(predicate func(interface{}) bool, failureErr error, p Parser) MonadParser {
-	return Bind(
-		p,
-		p.Type(),
-		func(v interface{}) Parser {
-			if predicate(v) {
-				return Unit(v)
-			}
-			return ErrParser{failureErr}
-		},
-	)
-}
-
+// StringParser is a parser which matches a specific string
 type StringParser struct{ match string }
 
 func (p StringParser) Type() string { return p.match }
@@ -203,29 +221,7 @@ func (p StringParser) Parse(s string) (interface{}, string, error) {
 	return nil, s, fmt.Errorf("Expecting (%s)", p.match)
 }
 
-func OneOf(xs ...Parser) Parser {
-	if len(xs) == 0 {
-		return ErrParser{errors.New("No available options")}
-	}
-
-	res := xs[0]
-	for _, x := range xs[1:] {
-		res = Option(res, x)
-	}
-	return res
-
-}
-
-func OneOfStrings(xs ...string) Parser {
-	parsers := make([]Parser, 0, len(xs))
-	for _, x := range xs {
-		parsers = append(parsers, StringParser{x})
-	}
-	return OneOf(parsers...)
-
-}
-
-// Zero or more
+// ManyParser is a parser which matches zero or more occurences of a parser.
 type ManyParser struct {
 	p Parser
 }
@@ -251,7 +247,7 @@ func (p ManyParser) Parse(s string) (interface{}, string, error) {
 
 }
 
-// 1 or more
+// SomeParser is a parser which matches one or more occurences of a parser.
 type SomeParser struct {
 	p Parser
 }
@@ -279,27 +275,4 @@ func (p SomeParser) Parse(s string) (interface{}, string, error) {
 
 	return all, rem, nil
 
-}
-
-// Sequence simply returns a parser which
-// composes a list of string parsers in order
-// contract: The parsers must return strings.
-func SequenceStrings(xs ...Parser) Parser {
-	if len(xs) == 0 {
-		return ErrParser{errors.New("No available parsers to sequence")}
-	}
-
-	result := xs[0]
-	for _, p := range xs[1:] {
-		result = ConcatStrings(result, p)
-	}
-
-	return result
-}
-
-// ConcatStrings returns a parser that concats two successive string parsers
-func ConcatStrings(a, b Parser) MonadParser {
-	return BindWith2(a, b, func(aRes, bRes interface{}) interface{} {
-		return aRes.(string) + bRes.(string)
-	})
 }
