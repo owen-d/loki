@@ -1,4 +1,4 @@
-package ast
+package parser
 
 import (
 	"errors"
@@ -97,4 +97,38 @@ func Satisfy(predicate func(interface{}) bool, failureErr error, p Parser) Monad
 			return ErrParser{failureErr}
 		},
 	)
+}
+
+// Separated extracts a separated list. Requires at least 1 entry
+// like: `a, a,a` -> `[]{a,a,a}`
+func Separated(sepBy, p Parser) Parser {
+	return BindWith2(
+		ManyParser{First(p, sepBy)},
+		p,
+		func(aRes, bRes interface{}) interface{} {
+			xs := aRes.([]interface{})
+			return append(xs, bRes)
+		},
+	)
+}
+
+// matches a parser 0 or 1 times
+func Maybe(p Parser) Parser {
+	return Option(p, Unit(""))
+}
+
+// First sequences a two parser chain, discarding the second result
+// (<<)
+func First(a, b Parser) Parser {
+	return BindWith2(a, b, func(aRes, bRes interface{}) interface{} {
+		return aRes
+	})
+}
+
+// Second sequences a two parser chain, discarding the first result
+// (>>)
+func Second(a, b Parser) Parser {
+	return BindWith2(a, b, func(aRes, bRes interface{}) interface{} {
+		return bRes
+	})
 }

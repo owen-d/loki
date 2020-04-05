@@ -1,4 +1,4 @@
-package ast
+package parser
 
 import (
 	"fmt"
@@ -199,6 +199,9 @@ func Option(p1, p2 Parser) AlternativeParser {
 	}
 }
 
+// ErrP constructs an ErrParser
+func ErrP(err error) ErrParser { return ErrParser{err} }
+
 // ErrParser is a parser which always returns an error
 type ErrParser struct{ error }
 
@@ -206,6 +209,9 @@ func (p ErrParser) Type() string { return "error" }
 func (p ErrParser) Parse(s string) (interface{}, string, error) {
 	return nil, s, p.error
 }
+
+// StringP constructs a string parser
+func StringP(s string) StringParser { return StringParser{s} }
 
 // StringParser is a parser which matches a specific string
 type StringParser struct{ match string }
@@ -220,6 +226,9 @@ func (p StringParser) Parse(s string) (interface{}, string, error) {
 
 	return nil, s, fmt.Errorf("Expecting (%s)", p.match)
 }
+
+// ManyP constructs a ManyParser from a parser
+func ManyP(p Parser) ManyParser { return ManyParser{p} }
 
 // ManyParser is a parser which matches zero or more occurences of a parser.
 type ManyParser struct {

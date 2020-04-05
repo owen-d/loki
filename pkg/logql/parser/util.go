@@ -1,4 +1,4 @@
-package ast
+package parser
 
 import (
 	"errors"
@@ -38,13 +38,13 @@ var (
 	)
 
 	SomeAlphaNumerics = FMap(
-		assertStr,
+		AssertStr,
 		SomeParser{AlphaNumericParser},
 		"AlphaNumerics",
 	)
 
 	Characters = FMap(
-		assertStr,
+		AssertStr,
 		SomeParser{CharSetParser},
 		"Characters",
 	)
@@ -54,7 +54,8 @@ var (
 	SomeSpaces = SomeParser{StringParser{" "}}
 )
 
-func assertStr(in interface{}) interface{} {
+// AssertStr transforms an underlying slice of strings into a single string
+func AssertStr(in interface{}) interface{} {
 	var out string
 	for _, x := range in.([]interface{}) {
 		out += x.(string)
