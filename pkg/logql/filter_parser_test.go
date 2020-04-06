@@ -1,4 +1,4 @@
-package ast
+package logql
 
 import (
 	"fmt"

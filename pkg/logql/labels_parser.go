@@ -1,4 +1,4 @@
-package ast
+package logql
 
 import (
 	"github.com/grafana/loki/pkg/logql/parser"

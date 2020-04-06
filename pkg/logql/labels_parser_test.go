@@ -1,7 +1,6 @@
-package ast
+package logql
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/grafana/loki/pkg/logql/parser"
@@ -9,33 +8,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCommaSepParser(t *testing.T) {
+func TestCommaOptionalSpacesParser(t *testing.T) {
 	for _, tc := range []struct {
 		parser parser.Parser
 		in     string
 		err    string
 		out    interface{}
 	}{
-		{
-			parser: parser.First(parser.StringP("a"), parser.StringP("b")),
-			in:     "a",
-			err:    "Parse error at 1: Expecting (b)",
-		},
-		{
-			parser: parser.ManyP(parser.First(parser.StringP("a"), parser.StringP("b"))),
-			in:     "aba",
-			err:    "Parse error at 2: Unterminated input: a",
-		},
-		{
-			parser: parser.ManyP(parser.First(parser.StringP("a"), parser.StringP("b"))),
-			in:     "a",
-			err:    "Parse error at 0: Unterminated input: a",
-		},
-		{
-			parser: parser.ManyP(parser.First(parser.StringP("a"), parser.StringP("b"))),
-			in:     "abab",
-			out:    []interface{}{"a", "a"},
-		},
 		{
 			parser: commaOptionalSpaces,
 			in:     ",",
@@ -72,7 +51,7 @@ func TestCommaSepParser(t *testing.T) {
 			err:    "Parse error at 1: Unterminated input: a",
 		},
 	} {
-		t.Run(fmt.Sprintf("%s-%s", tc.in, tc.parser.Type()), func(t *testing.T) {
+		t.Run(tc.in, func(t *testing.T) {
 			out, err := parser.RunParser(tc.parser, tc.in)
 			if tc.err != "" {
 				require.NotNil(t, err)
@@ -83,7 +62,6 @@ func TestCommaSepParser(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestLabelsParser(t *testing.T) {
