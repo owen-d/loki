@@ -32,8 +32,30 @@ func (e ParseError) Error() string {
 	return fmt.Sprintf("Parse error at %d: %s", e.pos, e.err.Error())
 }
 
+// IsParseError returns true if the err is a ast parsing error.
+func IsParseError(err error) bool {
+	_, ok := err.(ParseError)
+	return ok
+}
+
 // RunParser executes a parser against a string, returning the result or an error
-func RunParser(parser Parser, input string) (interface{}, error) {
+func RunParser(parser Parser, input string) (value interface{}, err error) {
+	defer func() {
+		r := recover()
+		if r != nil {
+			var ok bool
+			if err, ok = r.(error); ok {
+				if IsParseError(err) {
+					return
+				}
+				err = ParseError{
+					pos: 0,
+					err: err,
+				}
+			}
+		}
+	}()
+
 	value, rem, err := parser.Parse(input)
 	if err != nil {
 		return nil, ParseError{

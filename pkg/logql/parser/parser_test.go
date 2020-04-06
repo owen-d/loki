@@ -168,3 +168,17 @@ func TestParser(t *testing.T) {
 		})
 	}
 }
+
+func TestPanic(t *testing.T) {
+	panicParser := FMap(
+		func(x interface{}) interface{} {
+			return x.(int)
+		},
+		StringParser{"a"},
+		"panicParser",
+	)
+
+	out, err := RunParser(panicParser, "a")
+	require.Nil(t, out)
+	require.Equal(t, `Parse error at 0: interface conversion: interface {} is string, not int`, err.Error())
+}
