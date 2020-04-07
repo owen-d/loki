@@ -36,6 +36,7 @@ func TestJoin(t *testing.T) {
 	nums := OneOfStrings("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
 	many := ManyParser{nums}
 
+	// "567" -> []interface{"5", "6", "7"} -> 567
 	joined := FMap(func(in interface{}) interface{} {
 		var str string
 		xs := in.([]interface{})
@@ -167,6 +168,33 @@ func TestParser(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestAlternative(t *testing.T) {
+	nums := OneOfStrings("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+	parens := StringP("()")
+
+	firstOrLast := Option(
+		BindWith2(
+			nums, parens,
+			func(nums, parens interface{}) interface{} {
+				return nums
+			},
+		),
+		BindWith2(parens, nums,
+			func(parens, nums interface{}) interface{} {
+				return nums
+			},
+		),
+	)
+
+	out, err := RunParser(firstOrLast, "5()")
+	require.Nil(t, err)
+	require.Equal(t, "5", out)
+	out2, err := RunParser(firstOrLast, "()5")
+	require.Nil(t, err)
+	require.Equal(t, "5", out2)
+
 }
 
 func TestPanic(t *testing.T) {

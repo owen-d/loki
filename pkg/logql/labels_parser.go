@@ -6,10 +6,11 @@ import (
 )
 
 var (
+	// "=" -> labels.MatchEqual
 	MatchEqual = parser.FMap(
 		parser.Const(labels.MatchEqual),
 		parser.Equals,
-		"labels.MatchEquals",
+		"labels.MatchEqual",
 	)
 
 	MatchNotEqual = parser.FMap(

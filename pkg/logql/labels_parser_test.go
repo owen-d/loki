@@ -100,7 +100,7 @@ func TestLabelsParser(t *testing.T) {
 			parser: MatchType,
 			in:     "~~",
 			out:    labels.MatchNotRegexp,
-			err:    "Parse error at 0: Expecting Alternative<labels.MatchRegexp, labels.MatchNotRegexp, labels.MatchNotEqual, labels.MatchEquals>",
+			err:    "Parse error at 0: Expecting Alternative<labels.MatchRegexp, labels.MatchNotRegexp, labels.MatchNotEqual, labels.MatchEqual>",
 		},
 		{
 			parser: Labels,

@@ -110,8 +110,7 @@ func FMap(fn func(interface{}) interface{}, p Parser, mappedType string) Functor
 	}
 }
 
-// Const returns a parser which will always return a specified value without
-// consuming additional input.
+// Const returns a function which will always return a specified value, disregarding its input.
 // It takes the form `const :: a -> b -> a`
 func Const(x interface{}) func(interface{}) interface{} {
 	return func(_ interface{}) interface{} {

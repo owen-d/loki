@@ -2,6 +2,7 @@ package parser
 
 import (
 	"errors"
+	"strconv"
 	"strings"
 )
 
@@ -52,6 +53,16 @@ var (
 	// utilities
 	ManySpaces = ManyParser{StringParser{" "}}
 	SomeSpaces = SomeParser{StringParser{" "}}
+
+	IntParser = FMap(
+		func(in interface{}) interface{} {
+			s := AssertStr(in)
+			n, _ := strconv.Atoi(s.(string))
+			return n
+		},
+		SomeParser{OneOfStrings(strings.Split(Numeric, "")...)},
+		"Integer",
+	)
 )
 
 // AssertStr transforms an underlying slice of strings into a single string
