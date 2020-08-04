@@ -204,7 +204,7 @@ func (s *store) GetSeries(ctx context.Context, req logql.SelectLogParams) ([]log
 	}
 
 	// group chunks by series
-	chunksBySeries := partitionBySeriesChunks(lazyChunks)
+	chunksBySeries := partitionBySeriesNonOverlappingChunks(lazyChunks)
 
 	firstChunksPerSeries := make([]*LazyChunk, 0, len(chunksBySeries))
 

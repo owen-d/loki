@@ -310,7 +310,7 @@ func (it *logBatchIterator) Entry() logproto.Entry {
 
 // newChunksIterator creates an iterator over a set of lazychunks.
 func (it *logBatchIterator) newChunksIterator(chunks []*LazyChunk, from, through time.Time, nextChunk *LazyChunk) (genericIterator, error) {
-	chksBySeries, err := fetchChunkBySeries(it.ctx, chunks, it.matchers)
+	chksBySeries, err := fetchChunksBySeries(it.ctx, chunks, it.matchers)
 	if err != nil {
 		return nil, err
 	}
@@ -408,7 +408,7 @@ func (it *sampleBatchIterator) Sample() logproto.Sample {
 
 // newChunksIterator creates an iterator over a set of lazychunks.
 func (it *sampleBatchIterator) newChunksIterator(chunks []*LazyChunk, from, through time.Time, nextChunk *LazyChunk) (genericIterator, error) {
-	chksBySeries, err := fetchChunkBySeries(it.ctx, chunks, it.matchers)
+	chksBySeries, err := fetchChunksBySeries(it.ctx, chunks, it.matchers)
 	if err != nil {
 		return nil, err
 	}
@@ -469,8 +469,8 @@ func removeMatchersByName(matchers []*labels.Matcher, names ...string) []*labels
 	return matchers
 }
 
-func fetchChunkBySeries(ctx context.Context, chunks []*LazyChunk, matchers []*labels.Matcher) (map[model.Fingerprint][][]*LazyChunk, error) {
-	chksBySeries := partitionBySeriesChunks(chunks)
+func fetchChunksBySeries(ctx context.Context, chunks []*LazyChunk, matchers []*labels.Matcher) (map[model.Fingerprint][][]*LazyChunk, error) {
+	chksBySeries := partitionBySeriesNonOverlappingChunks(chunks)
 
 	// Make sure the initial chunks are loaded. This is not one chunk
 	// per series, but rather a chunk per non-overlapping iterator.
@@ -594,6 +594,8 @@ func isInvalidChunkError(err error) bool {
 	return false
 }
 
+// loadFirstChunks fetches the first chunk in each nonoverlapping chunk set for each series.
+// This is used to prepopulate the labels.
 func loadFirstChunks(ctx context.Context, chks map[model.Fingerprint][][]*LazyChunk) error {
 	var toLoad []*LazyChunk
 	for _, lchks := range chks {
@@ -607,12 +609,11 @@ func loadFirstChunks(ctx context.Context, chks map[model.Fingerprint][][]*LazyCh
 	return fetchLazyChunks(ctx, toLoad)
 }
 
-func partitionBySeriesChunks(chunks []*LazyChunk) map[model.Fingerprint][][]*LazyChunk {
-	chunksByFp := map[model.Fingerprint][]*LazyChunk{}
-	for _, c := range chunks {
-		fp := c.Chunk.Fingerprint
-		chunksByFp[fp] = append(chunksByFp[fp], c)
-	}
+// partitionBySeriesNonOverlappingChunks groups lazychunks into a map of nonoverlapping chunk sets,
+// keyed by their fingerprint (series hash)
+func partitionBySeriesNonOverlappingChunks(chunks []*LazyChunk) map[model.Fingerprint][][]*LazyChunk {
+	chunksByFp := partitionBySeriesChunks(chunks)
+
 	result := make(map[model.Fingerprint][][]*LazyChunk, len(chunksByFp))
 
 	for fp, chks := range chunksByFp {
@@ -620,6 +621,16 @@ func partitionBySeriesChunks(chunks []*LazyChunk) map[model.Fingerprint][][]*Laz
 	}
 
 	return result
+}
+
+// partitionBySeriesChunks groups lazychunks into a map, keyed by their fingerprint (series hash)
+func partitionBySeriesChunks(chunks []*LazyChunk) map[model.Fingerprint][]*LazyChunk {
+	chunksByFp := map[model.Fingerprint][]*LazyChunk{}
+	for _, c := range chunks {
+		fp := c.Chunk.Fingerprint
+		chunksByFp[fp] = append(chunksByFp[fp], c)
+	}
+	return chunksByFp
 }
 
 // partitionOverlappingChunks splits the list of chunks into different non-overlapping lists.
