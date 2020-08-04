@@ -469,6 +469,53 @@ func removeMatchersByName(matchers []*labels.Matcher, names ...string) []*labels
 	return matchers
 }
 
+// filterSeriesChunks will return the subset of a LazyChunk list that pass the provided label matchers.
+// It does this by fetching the first chunk for each series to grab the metric, then filtering from there.
+// It has concurrency bounded by batchSize
+func filterSeriesChunks(ctx context.Context, batchSize int, chunks []*LazyChunk, matchers []*labels.Matcher) ([]*LazyChunk, error) {
+	chunksByFp := partitionBySeriesChunks(chunks)
+
+	firstChunks := make([]*LazyChunk, 0, len(chunksByFp))
+
+	for _, chks := range chunksByFp {
+		if len(chks) > 0 {
+			firstChunks = append(firstChunks, chks[0])
+		}
+	}
+
+	left, right := 0, batchSize
+	for {
+		if right > len(firstChunks) {
+			right = len(firstChunks)
+		}
+
+		if err := fetchLazyChunks(ctx, firstChunks[left:right]); err != nil {
+			return nil, err
+		}
+
+		// All chunks have been loaded
+		if right == len(firstChunks) {
+			break
+		}
+
+		left, right = left+batchSize, right+batchSize
+	}
+
+	filtered := make([]*LazyChunk, 0, len(chunks))
+
+outer:
+	for _, chk := range firstChunks {
+		for _, matcher := range matchers {
+			if !matcher.Matches(chk.Chunk.Metric.Get(matcher.Name)) {
+				continue outer
+			}
+		}
+		filtered = append(filtered, chunksByFp[chk.Chunk.Fingerprint]...)
+	}
+	return filtered, nil
+
+}
+
 func fetchChunksBySeries(ctx context.Context, chunks []*LazyChunk, matchers []*labels.Matcher) (map[model.Fingerprint][][]*LazyChunk, error) {
 	chksBySeries := partitionBySeriesNonOverlappingChunks(chunks)
 
