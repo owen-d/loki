@@ -105,7 +105,7 @@ func (e *matchersExpr) Filter() (LineFilter, error) {
 // impl Expr
 func (e *matchersExpr) logQLExpr() {}
 
-type filterExpr struct {
+type FilterExpr struct {
 	left  LogSelectorExpr
 	ty    labels.MatchType
 	match string
@@ -113,18 +113,18 @@ type filterExpr struct {
 
 // NewFilterExpr wraps an existing Expr with a next filter expression.
 func NewFilterExpr(left LogSelectorExpr, ty labels.MatchType, match string) LogSelectorExpr {
-	return &filterExpr{
+	return &FilterExpr{
 		left:  left,
 		ty:    ty,
 		match: match,
 	}
 }
 
-func (e *filterExpr) Matchers() []*labels.Matcher {
+func (e *FilterExpr) Matchers() []*labels.Matcher {
 	return e.left.Matchers()
 }
 
-func (e *filterExpr) String() string {
+func (e *FilterExpr) String() string {
 	var sb strings.Builder
 	sb.WriteString(e.left.String())
 	switch e.ty {
@@ -141,12 +141,12 @@ func (e *filterExpr) String() string {
 	return sb.String()
 }
 
-func (e *filterExpr) Filter() (LineFilter, error) {
+func (e *FilterExpr) Filter() (LineFilter, error) {
 	f, err := newFilter(e.match, e.ty)
 	if err != nil {
 		return nil, err
 	}
-	if nextExpr, ok := e.left.(*filterExpr); ok {
+	if nextExpr, ok := e.left.(*FilterExpr); ok {
 		nextFilter, err := nextExpr.Filter()
 		if err != nil {
 			return nil, err
@@ -164,7 +164,7 @@ func (e *filterExpr) Filter() (LineFilter, error) {
 }
 
 // impl Expr
-func (e *filterExpr) logQLExpr() {}
+func (e *FilterExpr) logQLExpr() {}
 
 func mustNewMatcher(t labels.MatchType, n, v string) *labels.Matcher {
 	m, err := labels.NewMatcher(t, n, v)
@@ -195,7 +195,7 @@ func newLogRange(left LogSelectorExpr, interval time.Duration) *logRange {
 }
 
 func addFilterToLogRangeExpr(left *logRange, ty labels.MatchType, match string) *logRange {
-	left.left = &filterExpr{
+	left.left = &FilterExpr{
 		left:  left.left,
 		ty:    ty,
 		match: match,

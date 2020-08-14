@@ -215,7 +215,7 @@ func TestMapping(t *testing.T) {
 						Shard: 0,
 						Of:    2,
 					},
-					LogSelectorExpr: &filterExpr{
+					LogSelectorExpr: &FilterExpr{
 						match: "error",
 						ty:    labels.MatchEqual,
 						left: &matchersExpr{
@@ -231,7 +231,7 @@ func TestMapping(t *testing.T) {
 							Shard: 1,
 							Of:    2,
 						},
-						LogSelectorExpr: &filterExpr{
+						LogSelectorExpr: &FilterExpr{
 							match: "error",
 							ty:    labels.MatchEqual,
 							left: &matchersExpr{

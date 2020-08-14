@@ -129,7 +129,7 @@ func (m ShardMapper) Map(expr Expr, r *shardRecorder) (Expr, error) {
 	switch e := expr.(type) {
 	case *literalExpr:
 		return e, nil
-	case *matchersExpr, *filterExpr:
+	case *matchersExpr, *FilterExpr:
 		return m.mapLogSelectorExpr(e.(LogSelectorExpr), r), nil
 	case *vectorAggregationExpr:
 		return m.mapVectorAggregationExpr(e, r)

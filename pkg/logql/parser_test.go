@@ -26,7 +26,7 @@ func TestParse(t *testing.T) {
 			exp: &rangeAggregationExpr{
 				operation: "count_over_time",
 				left: &logRange{
-					left: &filterExpr{
+					left: &FilterExpr{
 						ty:    labels.MatchRegexp,
 						match: "error\\",
 						left: &matchersExpr{
@@ -45,7 +45,7 @@ func TestParse(t *testing.T) {
 			exp: &rangeAggregationExpr{
 				operation: "count_over_time",
 				left: &logRange{
-					left: &filterExpr{
+					left: &FilterExpr{
 						ty:    labels.MatchEqual,
 						match: "error",
 						left: &matchersExpr{
@@ -64,7 +64,7 @@ func TestParse(t *testing.T) {
 			exp: &rangeAggregationExpr{
 				operation: "count_over_time",
 				left: &logRange{
-					left: &filterExpr{
+					left: &FilterExpr{
 						ty:    labels.MatchEqual,
 						match: "error",
 						left: &matchersExpr{
@@ -327,7 +327,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			in: `{foo="bar"} |= "baz"`,
-			exp: &filterExpr{
+			exp: &FilterExpr{
 				left:  &matchersExpr{matchers: []*labels.Matcher{mustNewMatcher(labels.MatchEqual, "foo", "bar")}},
 				ty:    labels.MatchEqual,
 				match: "baz",
@@ -335,10 +335,10 @@ func TestParse(t *testing.T) {
 		},
 		{
 			in: `{foo="bar"} |= "baz" |~ "blip" != "flip" !~ "flap"`,
-			exp: &filterExpr{
-				left: &filterExpr{
-					left: &filterExpr{
-						left: &filterExpr{
+			exp: &FilterExpr{
+				left: &FilterExpr{
+					left: &FilterExpr{
+						left: &FilterExpr{
 							left:  &matchersExpr{matchers: []*labels.Matcher{mustNewMatcher(labels.MatchEqual, "foo", "bar")}},
 							ty:    labels.MatchEqual,
 							match: "baz",
@@ -357,10 +357,10 @@ func TestParse(t *testing.T) {
 			in: `count_over_time(({foo="bar"} |= "baz" |~ "blip" != "flip" !~ "flap")[5m])`,
 			exp: newRangeAggregationExpr(
 				&logRange{
-					left: &filterExpr{
-						left: &filterExpr{
-							left: &filterExpr{
-								left: &filterExpr{
+					left: &FilterExpr{
+						left: &FilterExpr{
+							left: &FilterExpr{
+								left: &FilterExpr{
 									left:  &matchersExpr{matchers: []*labels.Matcher{mustNewMatcher(labels.MatchEqual, "foo", "bar")}},
 									ty:    labels.MatchEqual,
 									match: "baz",
@@ -381,10 +381,10 @@ func TestParse(t *testing.T) {
 			in: `bytes_over_time(({foo="bar"} |= "baz" |~ "blip" != "flip" !~ "flap")[5m])`,
 			exp: newRangeAggregationExpr(
 				&logRange{
-					left: &filterExpr{
-						left: &filterExpr{
-							left: &filterExpr{
-								left: &filterExpr{
+					left: &FilterExpr{
+						left: &FilterExpr{
+							left: &FilterExpr{
+								left: &FilterExpr{
 									left:  &matchersExpr{matchers: []*labels.Matcher{mustNewMatcher(labels.MatchEqual, "foo", "bar")}},
 									ty:    labels.MatchEqual,
 									match: "baz",
@@ -405,10 +405,10 @@ func TestParse(t *testing.T) {
 			in: `sum(count_over_time(({foo="bar"} |= "baz" |~ "blip" != "flip" !~ "flap")[5m])) by (foo)`,
 			exp: mustNewVectorAggregationExpr(newRangeAggregationExpr(
 				&logRange{
-					left: &filterExpr{
-						left: &filterExpr{
-							left: &filterExpr{
-								left: &filterExpr{
+					left: &FilterExpr{
+						left: &FilterExpr{
+							left: &FilterExpr{
+								left: &FilterExpr{
 									left:  &matchersExpr{matchers: []*labels.Matcher{mustNewMatcher(labels.MatchEqual, "foo", "bar")}},
 									ty:    labels.MatchEqual,
 									match: "baz",
@@ -435,10 +435,10 @@ func TestParse(t *testing.T) {
 			in: `sum(bytes_rate(({foo="bar"} |= "baz" |~ "blip" != "flip" !~ "flap")[5m])) by (foo)`,
 			exp: mustNewVectorAggregationExpr(newRangeAggregationExpr(
 				&logRange{
-					left: &filterExpr{
-						left: &filterExpr{
-							left: &filterExpr{
-								left: &filterExpr{
+					left: &FilterExpr{
+						left: &FilterExpr{
+							left: &FilterExpr{
+								left: &FilterExpr{
 									left:  &matchersExpr{matchers: []*labels.Matcher{mustNewMatcher(labels.MatchEqual, "foo", "bar")}},
 									ty:    labels.MatchEqual,
 									match: "baz",
@@ -465,10 +465,10 @@ func TestParse(t *testing.T) {
 			in: `topk(5,count_over_time(({foo="bar"} |= "baz" |~ "blip" != "flip" !~ "flap")[5m])) without (foo)`,
 			exp: mustNewVectorAggregationExpr(newRangeAggregationExpr(
 				&logRange{
-					left: &filterExpr{
-						left: &filterExpr{
-							left: &filterExpr{
-								left: &filterExpr{
+					left: &FilterExpr{
+						left: &FilterExpr{
+							left: &FilterExpr{
+								left: &FilterExpr{
 									left:  &matchersExpr{matchers: []*labels.Matcher{mustNewMatcher(labels.MatchEqual, "foo", "bar")}},
 									ty:    labels.MatchEqual,
 									match: "baz",
@@ -497,10 +497,10 @@ func TestParse(t *testing.T) {
 				mustNewVectorAggregationExpr(
 					newRangeAggregationExpr(
 						&logRange{
-							left: &filterExpr{
-								left: &filterExpr{
-									left: &filterExpr{
-										left: &filterExpr{
+							left: &FilterExpr{
+								left: &FilterExpr{
+									left: &FilterExpr{
+										left: &FilterExpr{
 											left:  &matchersExpr{matchers: []*labels.Matcher{mustNewMatcher(labels.MatchEqual, "foo", "bar")}},
 											ty:    labels.MatchEqual,
 											match: "baz",
@@ -530,10 +530,10 @@ func TestParse(t *testing.T) {
 			in: `count_over_time({foo="bar"}[5m] |= "baz" |~ "blip" != "flip" !~ "flap")`,
 			exp: newRangeAggregationExpr(
 				&logRange{
-					left: &filterExpr{
-						left: &filterExpr{
-							left: &filterExpr{
-								left: &filterExpr{
+					left: &FilterExpr{
+						left: &FilterExpr{
+							left: &FilterExpr{
+								left: &FilterExpr{
 									left:  &matchersExpr{matchers: []*labels.Matcher{mustNewMatcher(labels.MatchEqual, "foo", "bar")}},
 									ty:    labels.MatchEqual,
 									match: "baz",
@@ -554,10 +554,10 @@ func TestParse(t *testing.T) {
 			in: `sum(count_over_time({foo="bar"}[5m] |= "baz" |~ "blip" != "flip" !~ "flap")) by (foo)`,
 			exp: mustNewVectorAggregationExpr(newRangeAggregationExpr(
 				&logRange{
-					left: &filterExpr{
-						left: &filterExpr{
-							left: &filterExpr{
-								left: &filterExpr{
+					left: &FilterExpr{
+						left: &FilterExpr{
+							left: &FilterExpr{
+								left: &FilterExpr{
 									left:  &matchersExpr{matchers: []*labels.Matcher{mustNewMatcher(labels.MatchEqual, "foo", "bar")}},
 									ty:    labels.MatchEqual,
 									match: "baz",
@@ -584,10 +584,10 @@ func TestParse(t *testing.T) {
 			in: `topk(5,count_over_time({foo="bar"}[5m] |= "baz" |~ "blip" != "flip" !~ "flap")) without (foo)`,
 			exp: mustNewVectorAggregationExpr(newRangeAggregationExpr(
 				&logRange{
-					left: &filterExpr{
-						left: &filterExpr{
-							left: &filterExpr{
-								left: &filterExpr{
+					left: &FilterExpr{
+						left: &FilterExpr{
+							left: &FilterExpr{
+								left: &FilterExpr{
 									left:  &matchersExpr{matchers: []*labels.Matcher{mustNewMatcher(labels.MatchEqual, "foo", "bar")}},
 									ty:    labels.MatchEqual,
 									match: "baz",
@@ -616,10 +616,10 @@ func TestParse(t *testing.T) {
 				mustNewVectorAggregationExpr(
 					newRangeAggregationExpr(
 						&logRange{
-							left: &filterExpr{
-								left: &filterExpr{
-									left: &filterExpr{
-										left: &filterExpr{
+							left: &FilterExpr{
+								left: &FilterExpr{
+									left: &FilterExpr{
+										left: &FilterExpr{
 											left:  &matchersExpr{matchers: []*labels.Matcher{mustNewMatcher(labels.MatchEqual, "foo", "bar")}},
 											ty:    labels.MatchEqual,
 											match: "baz",
@@ -889,7 +889,7 @@ func TestParse(t *testing.T) {
 					BinOpOptions{},
 					newRangeAggregationExpr(
 						&logRange{
-							left: &filterExpr{
+							left: &FilterExpr{
 								left: &matchersExpr{
 									matchers: []*labels.Matcher{
 										mustNewMatcher(labels.MatchEqual, "namespace", "tns"),
@@ -921,7 +921,7 @@ func TestParse(t *testing.T) {
 					BinOpOptions{},
 					newRangeAggregationExpr(
 						&logRange{
-							left: &filterExpr{
+							left: &FilterExpr{
 								left: &matchersExpr{
 									matchers: []*labels.Matcher{
 										mustNewMatcher(labels.MatchEqual, "namespace", "tns"),
