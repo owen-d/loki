@@ -8,6 +8,8 @@ require (
 	github.com/bmatcuk/doublestar v1.2.2
 	github.com/c2h5oh/datasize v0.0.0-20200112174442-28bbd4740fee
 	github.com/cespare/xxhash/v2 v2.1.1
+	github.com/charmbracelet/bubbles v0.6.1
+	github.com/charmbracelet/bubbletea v0.10.5
 	github.com/containerd/fifo v0.0.0-20190226154929-a9fb20d87448 // indirect
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf
 	github.com/cortexproject/cortex v1.3.1-0.20200923132904-22f2efdc1339
@@ -36,6 +38,7 @@ require (
 	github.com/joncrlsn/dque v2.2.1-0.20200515025108-956d14155fa2+incompatible
 	github.com/json-iterator/go v1.1.10
 	github.com/klauspost/compress v1.9.5
+	github.com/mattn/go-runewidth v0.0.9
 	github.com/mitchellh/mapstructure v1.2.2
 	github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f
 	github.com/opentracing/opentracing-go v1.2.0
