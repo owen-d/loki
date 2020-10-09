@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -79,17 +78,7 @@ func update(msg tea.Msg, mdl tea.Model) (tea.Model, tea.Cmd) {
 
 func view(mdl tea.Model) string {
 	m, _ := mdl.(Model)
-
-	if !m.views.ready {
-		return "\n  Initalizing..."
-	}
-
-	return fmt.Sprintf(
-		"%s\n%s\n%s",
-		viewport.View(m.views.params),
-		viewport.View(m.views.labels),
-		viewport.View(m.views.logs),
-	)
+	return m.views.View()
 }
 
 // type model struct {
