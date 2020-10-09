@@ -56,17 +56,17 @@ type viewports struct {
 	totals               tea.WindowSizeMsg
 	ready                bool
 	focusPane            Pane
-	params, labels, logs viewport.Model
+	params, labels, logs Viewport
 }
 
 func (v *viewports) focused() *viewport.Model {
 	switch v.focusPane {
 	case Labels:
-		return &v.labels
+		return &v.labels.Model
 	case Logs:
-		return &v.logs
+		return &v.logs.Model
 	default:
-		return &v.params
+		return &v.params.Model
 	}
 }
 
@@ -96,15 +96,15 @@ func (v *viewports) Update(msg tea.Msg) tea.Cmd {
 	return tea.Batch(cmds...)
 }
 
-func (v *viewports) selected() (main *viewport.Model, secondaries []*viewport.Model) {
+func (v *viewports) selected() (main *Viewport, secondaries []*Viewport) {
 	switch v.focusPane {
 	case Labels:
-		return &v.labels, []*viewport.Model{&v.params, &v.logs}
+		return &v.labels, []*Viewport{&v.params, &v.logs}
 	case Logs:
-		return &v.logs, []*viewport.Model{&v.params, &v.labels}
+		return &v.logs, []*Viewport{&v.params, &v.labels}
 	// Params is the default
 	default:
-		return &v.params, []*viewport.Model{&v.labels, &v.logs}
+		return &v.params, []*Viewport{&v.labels, &v.logs}
 	}
 }
 
@@ -113,9 +113,9 @@ func (v *viewports) Size() {
 	msg := v.totals
 	height := msg.Height - v.separatorsHeight() // reserver separator space
 	if !v.ready {
-		v.params.Width = msg.Width
-		v.labels.Width = msg.Width
-		v.logs.Width = msg.Width
+		v.params.Model.Width = msg.Width
+		v.labels.Model.Width = msg.Width
+		v.logs.Model.Width = msg.Width
 		v.ready = true
 	}
 
@@ -139,7 +139,7 @@ func paneHeader(pane Pane, focus bool, width int) string {
 		headerBot += "─"
 	}
 
-	headerMid := "│" + padTo(pane.String(), runewidth.StringWidth(headerTop)-2) + "│"
+	headerMid := "│" + CenterTo(pane.String(), runewidth.StringWidth(headerTop)-2) + "│"
 	headerTop = headerTop + strings.Repeat("─", width-runewidth.StringWidth(headerTop)-1) + "╮"
 	headerBot = headerBot + strings.Repeat("─", width-runewidth.StringWidth(headerBot)-1) + "╯"
 	headerMid = headerMid + strings.Repeat(" ", width-runewidth.StringWidth(headerMid)-1) + "│"
@@ -154,18 +154,10 @@ func paneHeader(pane Pane, focus bool, width int) string {
 
 func (v *viewports) headers() []string {
 	return []string{
-		paneHeader(Params, v.focusPane == Params, v.params.Width),
-		paneHeader(Labels, v.focusPane == Labels, v.labels.Width),
-		paneHeader(Logs, v.focusPane == Logs, v.logs.Width),
+		paneHeader(Params, v.focusPane == Params, v.params.Width()),
+		paneHeader(Labels, v.focusPane == Labels, v.labels.Width()),
+		paneHeader(Logs, v.focusPane == Logs, v.logs.Width()),
 	}
-}
-
-func intersperse(xs, ys []string) (res []string) {
-	for i := 0; i < len(xs) && i < len(ys); i++ {
-		res = append(res, xs[i])
-		res = append(res, ys[i])
-	}
-	return res
 }
 
 func (v *viewports) View() string {
@@ -174,30 +166,14 @@ func (v *viewports) View() string {
 	}
 
 	strs := intersperse(v.headers(), []string{
-		viewport.View(v.params),
-		viewport.View(v.labels),
-		viewport.View(v.logs),
+		viewport.View(v.params.Model),
+		viewport.View(v.labels.Model),
+		viewport.View(v.logs.Model),
 	})
 
 	return strings.Join(strs, "\n")
 }
 
-func (*viewports) separatorsHeight() int { return 3 + 2 + 2 } // height of combined primary header & the two others
-
-func padTo(msg string, ln int) string {
-	rem := ln - len(msg)
-	if rem < 1 {
-		return msg
-	}
-
-	div, mod := rem/2, rem%2
-	lpad := strings.Repeat(" ", div)
-	rpad := lpad
-
-	// on odd, prefer rpad
-	if mod != 0 {
-		rpad += " "
-	}
-
-	return lpad + msg + rpad
-}
+// height of combined primary header & the two others
+// TODO: derive this
+func (*viewports) separatorsHeight() int { return 3 + 2 + 2 }
