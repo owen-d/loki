@@ -1,6 +1,8 @@
 package main
 
-import "strings"
+import (
+	"strings"
+)
 
 /*
 Idea here is to merge views which combine horizontally (on the same line)
@@ -35,10 +37,11 @@ func (c CrossMerge) Width() (res int) {
 
 func (c CrossMerge) Lines() (lines []string) {
 	var maxLines int
-	var subGrps []struct {
+	subGrps := make([]struct {
 		lines []string
 		width int
-	}
+	}, len(c))
+
 	for i, x := range c {
 		subGrps[i].lines = x.Lines()
 		subGrps[i].width = x.Width()
@@ -55,8 +58,8 @@ func (c CrossMerge) Lines() (lines []string) {
 			if i < len(x.lines) {
 				msg = x.lines[i]
 			}
+			line += ExactWidth(msg, x.width)
 
-			line = line + ExactWidth(msg, x.width)
 		}
 
 		lines = append(lines, line)

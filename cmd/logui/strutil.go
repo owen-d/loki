@@ -23,14 +23,32 @@ func CenterTo(msg string, ln int) string {
 }
 
 func RPad(msg string, ln int) string {
-	return runewidth.FillRight(msg, ln-runewidth.StringWidth(msg))
+	return runewidth.FillRight(msg, ln)
 }
 
 func LPad(msg string, ln int) string {
-	return runewidth.FillLeft(msg, ln-runewidth.StringWidth(msg))
+	return runewidth.FillLeft(msg, ln)
+}
+
+// Truncate removes any overflow past a desired length. It's possible for the result
+// to be shorter than the desired length.
+func Truncate(msg string, ln int) string {
+	if runewidth.StringWidth(msg) <= ln {
+		return msg
+	}
+
+	r := []rune(msg)
+	var i, rw int
+	for ; i < len(r); i++ {
+		rw += runewidth.RuneWidth(r[i])
+		if rw > ln {
+			break
+		}
+	}
+	return string(r[0:i])
 }
 
 // ExaExactWidth truncate a message to a particular length or add right padding until the length is hit.
 func ExactWidth(msg string, ln int) string {
-	return RPad(runewidth.Truncate(msg, ln, " "), ln)
+	return RPad(Truncate(msg, ln), ln)
 }

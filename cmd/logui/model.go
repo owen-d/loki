@@ -111,20 +111,20 @@ func (v *viewports) selected() (main *Viewport, secondaries []*Viewport) {
 // Size sets pane sizes (primary & secondaries) based on the golden ratio.
 func (v *viewports) Size() {
 	msg := v.totals
-	height := msg.Height - v.separatorsHeight() // reserver separator space
+	width := msg.Width
 	if !v.ready {
-		v.params.Model.Width = msg.Width
-		v.labels.Model.Width = msg.Width
-		v.logs.Model.Width = msg.Width
+		v.params.Model.Height = msg.Height
+		v.labels.Model.Height = msg.Height
+		v.logs.Model.Height = msg.Height
 		v.ready = true
 	}
 
-	primary := int(float64(height) / GoldenRatio)
-	secondary := (height - primary) / 2
+	primary := int(float64(width) / GoldenRatio)
+	secondary := (width - primary) / 2
 	main, secondaries := v.selected()
-	main.Height = primary
+	main.Model.Width = primary
 	for _, s := range secondaries {
-		s.Height = secondary
+		s.Model.Width = secondary
 	}
 }
 
@@ -161,18 +161,28 @@ func (v *viewports) headers() []string {
 }
 
 func (v *viewports) View() string {
-	if !v.ready {
-		return "\n  Initializing..."
+	merger := CrossMerge{
+		v.params,
+		v.labels,
+		v.logs,
 	}
 
-	strs := intersperse(v.headers(), []string{
-		viewport.View(v.params.Model),
-		viewport.View(v.labels.Model),
-		viewport.View(v.logs.Model),
-	})
-
-	return strings.Join(strs, "\n")
+	return merger.View()
 }
+
+// func (v *viewports) View() string {
+// 	if !v.ready {
+// 		return "\n  Initializing..."
+// 	}
+
+// 	strs := intersperse(v.headers(), []string{
+// 		viewport.View(v.params.Model),
+// 		viewport.View(v.labels.Model),
+// 		viewport.View(v.logs.Model),
+// 	})
+
+// 	return strings.Join(strs, "\n")
+// }
 
 // height of combined primary header & the two others
 // TODO: derive this
