@@ -53,6 +53,7 @@ type Model struct {
 }
 
 type viewports struct {
+	totals               tea.WindowSizeMsg
 	ready                bool
 	focusPane            Pane
 	params, labels, logs viewport.Model
@@ -74,13 +75,16 @@ func (v *viewports) Update(msg tea.Msg) tea.Cmd {
 
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		v.Size(msg)
+		v.totals = msg
+		v.Size()
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "n":
 			v.focusPane = v.focusPane.Next()
+			v.Size()
 		case "p":
 			v.focusPane = v.focusPane.Prev()
+			v.Size()
 		}
 	}
 
@@ -105,7 +109,8 @@ func (v *viewports) selected() (main *viewport.Model, secondaries []*viewport.Mo
 }
 
 // Size sets pane sizes (primary & secondaries) based on the golden ratio.
-func (v *viewports) Size(msg tea.WindowSizeMsg) {
+func (v *viewports) Size() {
+	msg := v.totals
 	height := msg.Height - v.separatorsHeight() // reserver separator space
 	if !v.ready {
 		v.params.Width = msg.Width
