@@ -100,7 +100,7 @@ func (v *viewports) Size(msg tea.WindowSizeMsg) {
 	}
 
 	primary := int(float64(msg.Height) / GoldenRatio)
-	secondary := (msg.Height - primary) / 3
+	secondary := (msg.Height - primary) / 2
 	main, secondaries := v.selected()
 	main.Height = primary
 	for _, s := range secondaries {
