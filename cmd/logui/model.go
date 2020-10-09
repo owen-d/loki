@@ -129,15 +129,25 @@ func (v *viewports) Size() {
 }
 
 func paneHeader(pane Pane, focus bool, width int) string {
-	headerTop := "╭─────────────╮"
-	headerBot := "╰─────────────╯"
+	headerTop := "╭─────────────"
+	headerBot := "╰─────────────"
+	if focus {
+		headerTop += "┬"
+		headerBot += "┴"
+	} else {
+		headerTop += "─"
+		headerBot += "─"
+	}
+
+	headerMid := "│" + padTo(pane.String(), runewidth.StringWidth(headerTop)-2) + "│"
+	headerTop = headerTop + strings.Repeat("─", width-runewidth.StringWidth(headerTop)-1) + "╮"
+	headerBot = headerBot + strings.Repeat("─", width-runewidth.StringWidth(headerBot)-1) + "╯"
+	headerMid = headerMid + strings.Repeat(" ", width-runewidth.StringWidth(headerMid)-1) + "│"
 
 	if !focus {
 		return strings.Join([]string{headerTop, headerBot}, "\n")
 	}
 
-	headerMid := "│" + padTo(pane.String(), runewidth.StringWidth(headerTop)-2) + "├"
-	headerMid += strings.Repeat("-", width-runewidth.StringWidth(headerMid))
 	return strings.Join([]string{headerTop, headerMid, headerBot}, "\n")
 
 }
