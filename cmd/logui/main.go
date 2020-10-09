@@ -44,6 +44,9 @@ func main() {
 func initialize() func() (tea.Model, tea.Cmd) {
 	return func() (tea.Model, tea.Cmd) {
 		var m Model
+		m.views.separator = MergableSep{
+			Sep: " │ ",
+		}
 
 		var garbage string
 		for i := 0; i < 200; i++ {

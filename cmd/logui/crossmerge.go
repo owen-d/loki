@@ -2,6 +2,8 @@ package main
 
 import (
 	"strings"
+
+	"github.com/mattn/go-runewidth"
 )
 
 /*
@@ -14,18 +16,29 @@ Idea here is to merge views which combine horizontally (on the same line)
 
 */
 
-type ViewLines interface {
+type CrossMergable interface {
 	Lines() []string
-}
-
-type HasWidth interface {
 	Width() int
 }
 
-type CrossMerge []interface {
-	ViewLines
-	HasWidth
+type MergableSep struct {
+	Height int
+	Sep    string
 }
+
+func (s MergableSep) Lines() []string {
+	lines := make([]string, 0, s.Height)
+	for i := 0; i < s.Height; i++ {
+		lines = append(lines, s.Sep)
+	}
+	return lines
+}
+
+func (s MergableSep) Width() int {
+	return runewidth.StringWidth(s.Sep)
+}
+
+type CrossMerge []CrossMergable
 
 func (c CrossMerge) Width() (res int) {
 	for _, x := range c {

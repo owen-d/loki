@@ -56,6 +56,7 @@ type viewports struct {
 	totals               tea.WindowSizeMsg
 	ready                bool
 	focusPane            Pane
+	separator            MergableSep
 	params, labels, logs Viewport
 }
 
@@ -75,16 +76,15 @@ func (v *viewports) Update(msg tea.Msg) tea.Cmd {
 
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		v.totals = msg
-		v.Size()
+		v.Size(msg)
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "n":
 			v.focusPane = v.focusPane.Next()
-			v.Size()
+			v.Size(v.totals)
 		case "p":
 			v.focusPane = v.focusPane.Prev()
-			v.Size()
+			v.Size(v.totals)
 		}
 	}
 
@@ -109,15 +109,17 @@ func (v *viewports) selected() (main *Viewport, secondaries []*Viewport) {
 }
 
 // Size sets pane sizes (primary & secondaries) based on the golden ratio.
-func (v *viewports) Size() {
-	msg := v.totals
-	width := msg.Width
+func (v *viewports) Size(msg tea.WindowSizeMsg) {
+	v.totals = msg
+	width := msg.Width - v.separator.Width()*2
 	if !v.ready {
-		v.params.Model.Height = msg.Height
-		v.labels.Model.Height = msg.Height
-		v.logs.Model.Height = msg.Height
 		v.ready = true
 	}
+
+	v.separator.Height = msg.Height
+	v.params.Model.Height = msg.Height
+	v.labels.Model.Height = msg.Height
+	v.logs.Model.Height = msg.Height
 
 	primary := int(float64(width) / GoldenRatio)
 	secondary := (width - primary) / 2
@@ -163,7 +165,9 @@ func (v *viewports) headers() []string {
 func (v *viewports) View() string {
 	merger := CrossMerge{
 		v.params,
+		v.separator,
 		v.labels,
+		v.separator,
 		v.logs,
 	}
 
@@ -184,6 +188,4 @@ func (v *viewports) View() string {
 // 	return strings.Join(strs, "\n")
 // }
 
-// height of combined primary header & the two others
-// TODO: derive this
-func (*viewports) separatorsHeight() int { return 3 + 2 + 2 }
+func (v *viewports) separatorsWidth() int { return runewidth.StringWidth(v.separator.Sep) }
