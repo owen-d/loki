@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/viewport"
@@ -116,10 +117,12 @@ func (v *viewports) Size(msg tea.WindowSizeMsg) {
 		v.ready = true
 	}
 
-	v.separator.Height = msg.Height
-	v.params.Model.Height = msg.Height
-	v.labels.Model.Height = msg.Height
-	v.logs.Model.Height = msg.Height
+	withoutHeaders := msg.Height - 3
+
+	v.separator.Height = withoutHeaders
+	v.params.Model.Height = withoutHeaders
+	v.labels.Model.Height = withoutHeaders
+	v.logs.Model.Height = withoutHeaders
 
 	primary := int(float64(width) / GoldenRatio)
 	secondary := (width - primary) / 2
@@ -130,39 +133,39 @@ func (v *viewports) Size(msg tea.WindowSizeMsg) {
 	}
 }
 
-func paneHeader(pane Pane, focus bool, width int) string {
-	headerTop := "╭─────────────"
-	headerBot := "╰─────────────"
-	if focus {
-		headerTop += "┬"
-		headerBot += "┴"
-	} else {
-		headerTop += "─"
-		headerBot += "─"
+func (v *viewports) header() string {
+	pane := v.focusPane
+	width := v.totals.Width
+	var start int
+
+	switch pane {
+	case Labels:
+		start = v.params.Width() + v.separator.Width()
+	case Logs:
+		start = v.params.Width()*2 + v.separator.Width()*2 // all non-primary panes have the same size
 	}
 
-	headerMid := "│" + CenterTo(pane.String(), runewidth.StringWidth(headerTop)-2) + "│"
-	headerTop = headerTop + strings.Repeat("─", width-runewidth.StringWidth(headerTop)-1) + "╮"
-	headerBot = headerBot + strings.Repeat("─", width-runewidth.StringWidth(headerBot)-1) + "╯"
-	headerMid = headerMid + strings.Repeat(" ", width-runewidth.StringWidth(headerMid)-1) + "│"
+	headerTopFrame := "╭─────────────╮"
+	headerBotFrame := "╰─────────────╯"
+	headerTop := ExactWidth(LPad(headerTopFrame, start+runewidth.StringWidth(headerTopFrame)), width)
+	headerBot := ExactWidth(LPad(headerBotFrame, start+runewidth.StringWidth(headerBotFrame)), width)
 
-	if !focus {
-		return strings.Join([]string{headerTop, headerBot}, "\n")
+	lConnector := "│"
+	if start > 0 {
+		lConnector = "┤"
 	}
+	headerMid := lConnector + CenterTo(pane.String(), runewidth.StringWidth(headerTopFrame)-2) + "├"
+	headerMid = LPadWith(headerMid, '─', start+runewidth.StringWidth(headerMid))
+	headerMid = RPadWith(headerMid, '─', width)
 
 	return strings.Join([]string{headerTop, headerMid, headerBot}, "\n")
-
-}
-
-func (v *viewports) headers() []string {
-	return []string{
-		paneHeader(Params, v.focusPane == Params, v.params.Width()),
-		paneHeader(Labels, v.focusPane == Labels, v.labels.Width()),
-		paneHeader(Logs, v.focusPane == Logs, v.logs.Width()),
-	}
 }
 
 func (v *viewports) View() string {
+	if !v.ready {
+		return "\n  Initializing..."
+	}
+
 	merger := CrossMerge{
 		v.params,
 		v.separator,
@@ -171,21 +174,5 @@ func (v *viewports) View() string {
 		v.logs,
 	}
 
-	return merger.View()
+	return fmt.Sprintf("%s\n%s", v.header(), merger.View())
 }
-
-// func (v *viewports) View() string {
-// 	if !v.ready {
-// 		return "\n  Initializing..."
-// 	}
-
-// 	strs := intersperse(v.headers(), []string{
-// 		viewport.View(v.params.Model),
-// 		viewport.View(v.labels.Model),
-// 		viewport.View(v.logs.Model),
-// 	})
-
-// 	return strings.Join(strs, "\n")
-// }
-
-func (v *viewports) separatorsWidth() int { return runewidth.StringWidth(v.separator.Sep) }

@@ -1,6 +1,8 @@
 package main
 
-import "github.com/mattn/go-runewidth"
+import (
+	"github.com/mattn/go-runewidth"
+)
 
 func intersperse(xs, ys []string) (res []string) {
 	for i := 0; i < len(xs) && i < len(ys); i++ {
@@ -30,6 +32,35 @@ func LPad(msg string, ln int) string {
 	return runewidth.FillLeft(msg, ln)
 }
 
+func LPadWith(msg string, x rune, ln int) string {
+	width := runewidth.StringWidth(msg)
+	count := ln - width
+	if count > 0 {
+		b := make([]rune, count/runewidth.RuneWidth(x))
+		for i := range b {
+			b[i] = x
+		}
+		return string(b) + msg
+	}
+	return msg
+
+}
+
+// RPadWith will append runes up to ln runewidths
+func RPadWith(msg string, x rune, ln int) string {
+	width := runewidth.StringWidth(msg)
+	count := ln - width
+	if count > 0 {
+		b := make([]rune, count/runewidth.RuneWidth(x))
+		for i := range b {
+			b[i] = x
+		}
+		return msg + string(b)
+	}
+	return msg
+
+}
+
 // Truncate removes any overflow past a desired length. It's possible for the result
 // to be shorter than the desired length.
 func Truncate(msg string, ln int) string {
@@ -50,5 +81,5 @@ func Truncate(msg string, ln int) string {
 
 // ExaExactWidth truncate a message to a particular length or add right padding until the length is hit.
 func ExactWidth(msg string, ln int) string {
-	return RPad(Truncate(msg, ln), ln)
+	return runewidth.FillRight(Truncate(msg, ln), ln)
 }
