@@ -4,13 +4,6 @@ import (
 	"github.com/mattn/go-runewidth"
 )
 
-func intersperse(xs, ys []string) (res []string) {
-	for i := 0; i < len(xs) && i < len(ys); i++ {
-		res = append(res, xs[i])
-		res = append(res, ys[i])
-	}
-	return res
-}
 func CenterTo(msg string, ln int) string {
 	msgLn := runewidth.StringWidth(msg)
 	rem := ln - msgLn

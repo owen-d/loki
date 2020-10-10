@@ -55,6 +55,7 @@ func initialize() func() (tea.Model, tea.Cmd) {
 		m.views.params.SetContent(garbage)
 		m.views.labels.SetContent(garbage)
 		m.views.logs.SetContent(garbage)
+		m.views.help = DefaultHelp
 		return m, nil
 	}
 }

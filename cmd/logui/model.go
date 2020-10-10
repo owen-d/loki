@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/viewport"
@@ -59,6 +58,7 @@ type viewports struct {
 	focusPane            Pane
 	separator            MergableSep
 	params, labels, logs Viewport
+	help                 HelpPane
 }
 
 func (v *viewports) focused() *viewport.Model {
@@ -117,12 +117,18 @@ func (v *viewports) Size(msg tea.WindowSizeMsg) {
 		v.ready = true
 	}
 
-	withoutHeaders := msg.Height - 3
+	v.help.Height = 4
+	v.help.Width = v.totals.Width
 
-	v.separator.Height = withoutHeaders
-	v.params.Model.Height = withoutHeaders
-	v.labels.Model.Height = withoutHeaders
-	v.logs.Model.Height = withoutHeaders
+	withoutHeaders := msg.Height - 3
+	withoutHelp := withoutHeaders - v.help.Height
+
+	height := withoutHelp
+
+	v.separator.Height = height
+	v.params.Model.Height = height
+	v.labels.Model.Height = height
+	v.logs.Model.Height = height
 
 	primary := int(float64(width) / GoldenRatio)
 	secondary := (width - primary) / 2
@@ -174,5 +180,12 @@ func (v *viewports) View() string {
 		v.logs,
 	}
 
-	return fmt.Sprintf("%s\n%s", v.header(), merger.View())
+	return strings.Join(
+		[]string{
+			v.header(),
+			merger.View(),
+			v.help.View(),
+		},
+		"\n",
+	)
 }

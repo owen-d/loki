@@ -14,6 +14,10 @@ func (v Viewport) Width() int {
 	return v.Model.Width
 }
 
+func (v Viewport) View() string {
+	return viewport.View(v.Model)
+}
+
 func (v Viewport) Lines() []string {
 	return strings.Split(viewport.View(v.Model), "\n")
 }

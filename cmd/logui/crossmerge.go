@@ -85,3 +85,18 @@ func (c CrossMerge) Lines() (lines []string) {
 func (c CrossMerge) View() string {
 	return strings.Join(c.Lines(), "\n")
 }
+
+func (c CrossMerge) Intersperse(x CrossMergable) CrossMerge {
+	ln := 2*len(c) - 1
+	res := make(CrossMerge, 0, ln)
+
+	for i, y := range c {
+		res = append(res, y)
+		if i < (len(c) - 1) {
+			res = append(res, x)
+		}
+	}
+
+	return res
+
+}
