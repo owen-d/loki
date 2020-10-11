@@ -5,6 +5,7 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/grafana/loki/pkg/logcli/client"
 	"github.com/muesli/termenv"
 )
 
@@ -53,32 +54,24 @@ func initialize() func() (tea.Model, tea.Cmd) {
 		for i := 0; i < 200; i++ {
 			garbage += fmt.Sprintf("%d - lorem ipsum\n", i)
 		}
-		m.views.params.Content = NewContent(garbage).Color(termenv.ANSIYellow)
+		m.params = DefaultParams
+		m.views.params.Content = m.params.Content().Color(termenv.ANSIYellow)
 		m.views.labels.Content = NewContent(garbage).Color(termenv.ANSICyan)
 		m.views.logs.Content = NewContent(garbage).Color(termenv.ANSIMagenta)
 		m.views.help = DefaultHelp
-		return m, nil
+
+		m.client = &client.DefaultClient{
+			Address:  os.Getenv("LOKI_ADDR"),
+			Username: os.Getenv("LOKI_USERNAME"),
+			Password: os.Getenv("LOKI_PASSWORD"),
+		}
+		return m, checkServer(m.client, m.params)
 	}
 }
 
 func update(msg tea.Msg, mdl tea.Model) (tea.Model, tea.Cmd) {
 	m, _ := mdl.(Model)
-
-	var cmds []tea.Cmd
-
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		// Ctrl+c exits
-		if msg.Type == tea.KeyCtrlC || msg.String() == "q" {
-			return m, tea.Quit
-		}
-	}
-
-	if cmd := m.views.Update(msg); cmd != nil {
-		cmds = append(cmds, cmd)
-	}
-
-	return m, tea.Batch(cmds...)
+	return m.Update(msg)
 }
 
 func view(mdl tea.Model) string {

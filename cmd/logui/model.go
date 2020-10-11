@@ -5,7 +5,11 @@ import (
 	"strings"
 	"time"
 
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/grafana/loki/pkg/logcli/client"
+	loghttp "github.com/grafana/loki/pkg/loghttp"
 	"github.com/grafana/loki/pkg/logproto"
+	"github.com/muesli/termenv"
 	"github.com/prometheus/prometheus/pkg/labels"
 )
 
@@ -50,8 +54,35 @@ func (p Pane) Prev() Pane {
 }
 
 type Model struct {
+	client client.Client
 	views  viewports
 	params Params
+}
+
+func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+
+	var cmds []tea.Cmd
+
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		// Ctrl+c exits
+		if msg.Type == tea.KeyCtrlC || msg.String() == "q" {
+			return m, tea.Quit
+		}
+	case *loghttp.QueryResponse:
+		var ls strings.Builder
+
+		for _, stream := range msg.Data.Result.(loghttp.Streams) {
+			ls.WriteString(stream.Labels.String() + "\n")
+		}
+		m.views.labels.Content = NewContent(ls.String()).Color(termenv.ANSICyan)
+	}
+
+	if cmd := m.views.Update(msg); cmd != nil {
+		cmds = append(cmds, cmd)
+	}
+
+	return *m, tea.Batch(cmds...)
 }
 
 // Hilarious we don't have type for this that's not bound to the ast.
@@ -73,7 +104,7 @@ func (f Filter) String() (res string) {
 		res = "!~"
 	}
 
-	return res + fmt.Sprintf(`"%s"`, f.Match)
+	return res + fmt.Sprintf(` "%s"`, f.Match)
 
 }
 
@@ -85,7 +116,42 @@ type Params struct {
 	Limit        int
 
 	// internals
+}
 
+func (p Params) Content() Content {
+	var b strings.Builder
+	for _, m := range p.Matchers {
+		b.WriteString(m.String() + "\n")
+	}
+	for _, f := range p.Filters {
+		b.WriteString(f.String() + "\n")
+	}
+	b.WriteString(fmt.Sprintf("since: %s\n", p.Since.String()))
+	b.WriteString(fmt.Sprintf("until: %s\n", p.Until.String()))
+	b.WriteString(fmt.Sprintf("direction: %s\n", p.Direction.String()))
+	b.WriteString(fmt.Sprintf("limit: %d\n", p.Limit))
+
+	return NewContent(b.String())
+}
+
+var DefaultParams = Params{
+	Matchers: []labels.Matcher{
+		{
+			Type:  labels.MatchEqual,
+			Name:  "job",
+			Value: "loki-dev/query-frontend",
+		},
+	},
+	Filters: []Filter{
+		{
+			Type:  labels.MatchNotEqual,
+			Match: "/metrics",
+		},
+	},
+	Since:     time.Hour,
+	Until:     0,
+	Direction: logproto.BACKWARD,
+	Limit:     200,
 }
 
 func (p Params) Query() string {
