@@ -20,10 +20,6 @@ type Viewable interface {
 	View() string
 }
 
-type Content string
-
-func (c Content) View() string { return string(c) }
-
 func NewGrid(vSpacing, hSpacing, height, width, maxColums int, views ...Viewable) Grid {
 
 	ln := len(views)
@@ -78,11 +74,10 @@ func (g Grid) View() string {
 	for _, row := range g.rows {
 		merger := make(CrossMerge, 0, len(row))
 		for _, v := range row {
-			merger = append(merger, v)
+			merger = append(merger, v.Drawable())
 		}
 		mergers = append(mergers, merger.Intersperse(MergableSep{
-			Height: g.unitHeight,
-			Sep:    " ",
+			Sep: " ",
 		}))
 	}
 
@@ -114,11 +109,11 @@ func (g Grid) View() string {
 	}
 
 	// Finally, bound it to a viewport to ensure desired size.
-	var v Viewport
-	v.Model.Height = g.height
-	v.Model.Width = g.width
+	var v viewport.Model
+	v.Height = g.height
+	v.Width = g.width
 	v.SetContent(result.String())
-	return v.View()
+	return viewport.View(v)
 
 }
 

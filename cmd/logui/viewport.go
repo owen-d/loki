@@ -5,23 +5,25 @@ import (
 
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/mattn/go-runewidth"
+	"github.com/muesli/reflow/ansi"
 )
 
 type Viewport struct {
 	viewport.Model
+	content Content
 }
 
-func (v Viewport) Width() int {
-	return v.Model.Width
+func (v *Viewport) Width() int { return v.Model.Width }
+
+func (v *Viewport) Height() int { return v.Model.Height }
+
+func (v Viewport) Drawable() *ViewportDraw {
+	return &ViewportDraw{Viewport: v, Content: v.content.Wrap(v.Width())}
 }
 
-func (v Viewport) View() string {
-	return viewport.View(v.Model)
-}
-
-func (v Viewport) Lines() []string {
-	return strings.Split(viewport.View(v.Model), "\n")
+type ViewportDraw struct {
+	Viewport
+	Content
 }
 
 type viewports struct {
@@ -97,7 +99,6 @@ func (v *viewports) Size(msg tea.WindowSizeMsg) {
 
 	height := withoutHelp
 
-	v.separator.Height = height
 	v.params.Model.Height = height
 	v.labels.Model.Height = height
 	v.logs.Model.Height = height
@@ -125,15 +126,15 @@ func (v *viewports) header() string {
 
 	headerTopFrame := "╭─────────────╮"
 	headerBotFrame := "╰─────────────╯"
-	headerTop := ExactWidth(LPad(headerTopFrame, start+runewidth.StringWidth(headerTopFrame)), width)
-	headerBot := ExactWidth(LPad(headerBotFrame, start+runewidth.StringWidth(headerBotFrame)), width)
+	headerTop := ExactWidth(LPad(headerTopFrame, start+ansi.PrintableRuneWidth(headerTopFrame)), width)
+	headerBot := ExactWidth(LPad(headerBotFrame, start+ansi.PrintableRuneWidth(headerBotFrame)), width)
 
 	lConnector := "│"
 	if start > 0 {
 		lConnector = "┤"
 	}
-	headerMid := lConnector + CenterTo(pane.String(), runewidth.StringWidth(headerTopFrame)-2) + "├"
-	headerMid = LPadWith(headerMid, '─', start+runewidth.StringWidth(headerMid))
+	headerMid := lConnector + CenterTo(pane.String(), ansi.PrintableRuneWidth(headerTopFrame)-2) + "├"
+	headerMid = LPadWith(headerMid, '─', start+ansi.PrintableRuneWidth(headerMid))
 	headerMid = RPadWith(headerMid, '─', width)
 
 	return strings.Join([]string{headerTop, headerMid, headerBot}, "\n")
@@ -145,11 +146,11 @@ func (v *viewports) View() string {
 	}
 
 	merger := CrossMerge{
-		v.params,
+		v.params.Drawable(),
 		v.separator,
-		v.labels,
+		v.labels.Drawable(),
 		v.separator,
-		v.logs,
+		v.logs.Drawable(),
 	}
 
 	return strings.Join(

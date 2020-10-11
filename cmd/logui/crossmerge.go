@@ -3,7 +3,7 @@ package main
 import (
 	"strings"
 
-	"github.com/mattn/go-runewidth"
+	"github.com/muesli/reflow/ansi"
 )
 
 /*
@@ -17,25 +17,27 @@ Idea here is to merge views which combine horizontally (on the same line)
 */
 
 type CrossMergable interface {
-	Lines() []string
+	Draw
+	Height() int
 	Width() int
 }
 
 type MergableSep struct {
-	Height int
-	Sep    string
+	Sep string
 }
 
-func (s MergableSep) Lines() []string {
-	lines := make([]string, 0, s.Height)
-	for i := 0; i < s.Height; i++ {
-		lines = append(lines, s.Sep)
-	}
-	return lines
+func (s MergableSep) Draw(n int) string {
+	return Truncate(s.Sep, n)
 }
+
+func (s MergableSep) Advance() {}
 
 func (s MergableSep) Width() int {
-	return runewidth.StringWidth(s.Sep)
+	return ansi.PrintableRuneWidth(s.Sep)
+}
+
+func (s MergableSep) Height() int {
+	return 0
 }
 
 type CrossMerge []CrossMergable
@@ -50,29 +52,17 @@ func (c CrossMerge) Width() (res int) {
 
 func (c CrossMerge) Lines() (lines []string) {
 	var maxLines int
-	subGrps := make([]struct {
-		lines []string
-		width int
-	}, len(c))
-
-	for i, x := range c {
-		subGrps[i].lines = x.Lines()
-		subGrps[i].width = x.Width()
-
-		if lineCt := len(subGrps[i].lines); lineCt > maxLines {
-			maxLines = lineCt
+	for _, x := range c {
+		if height := x.Height(); height > maxLines {
+			maxLines = height
 		}
 	}
 
 	for i := 0; i < maxLines; i++ {
 		var line string
-		for _, x := range subGrps {
-			var msg string
-			if i < len(x.lines) {
-				msg = x.lines[i]
-			}
-			line += ExactWidth(msg, x.width)
-
+		for _, x := range c {
+			line += x.Draw(x.Width())
+			x.Advance()
 		}
 
 		lines = append(lines, line)

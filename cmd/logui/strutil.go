@@ -2,10 +2,11 @@ package main
 
 import (
 	"github.com/mattn/go-runewidth"
+	"github.com/muesli/reflow/ansi"
 )
 
 func CenterTo(msg string, ln int) string {
-	msgLn := runewidth.StringWidth(msg)
+	msgLn := ansi.PrintableRuneWidth(msg)
 	rem := ln - msgLn
 	if rem < 1 {
 		return msg
@@ -26,7 +27,7 @@ func LPad(msg string, ln int) string {
 }
 
 func LPadWith(msg string, x rune, ln int) string {
-	width := runewidth.StringWidth(msg)
+	width := ansi.PrintableRuneWidth(msg)
 	count := ln - width
 	if count > 0 {
 		b := make([]rune, count/runewidth.RuneWidth(x))
@@ -41,7 +42,7 @@ func LPadWith(msg string, x rune, ln int) string {
 
 // RPadWith will append runes up to ln runewidths
 func RPadWith(msg string, x rune, ln int) string {
-	width := runewidth.StringWidth(msg)
+	width := ansi.PrintableRuneWidth(msg)
 	count := ln - width
 	if count > 0 {
 		b := make([]rune, count/runewidth.RuneWidth(x))
@@ -57,7 +58,7 @@ func RPadWith(msg string, x rune, ln int) string {
 // Truncate removes any overflow past a desired length. It's possible for the result
 // to be shorter than the desired length.
 func Truncate(msg string, ln int) string {
-	if runewidth.StringWidth(msg) <= ln {
+	if ansi.PrintableRuneWidth(msg) <= ln {
 		return msg
 	}
 

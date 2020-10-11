@@ -5,6 +5,7 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/muesli/termenv"
 )
 
 func main() {
@@ -52,9 +53,9 @@ func initialize() func() (tea.Model, tea.Cmd) {
 		for i := 0; i < 200; i++ {
 			garbage += fmt.Sprintf("%d - lorem ipsum\n", i)
 		}
-		m.views.params.SetContent(garbage)
-		m.views.labels.SetContent(garbage)
-		m.views.logs.SetContent(garbage)
+		m.views.params.content = NewContent(garbage).Color(termenv.ANSIYellow)
+		m.views.labels.content = NewContent(garbage).Color(termenv.ANSICyan)
+		m.views.logs.content = NewContent(garbage).Color(termenv.ANSIMagenta)
 		m.views.help = DefaultHelp
 		return m, nil
 	}
@@ -218,13 +219,13 @@ func view(mdl tea.Model) string {
 // 	headerTop := "╭───────────╮"
 // 	headerMid := "│   LogUI   ├"
 // 	headerBot := "╰───────────╯"
-// 	headerMid += strings.Repeat("─", m.viewport.Width-runewidth.StringWidth(headerMid))
+// 	headerMid += strings.Repeat("─", m.viewport.Width-ansi.PrintableRuneWidth(headerMid))
 // 	header := fmt.Sprintf("%s\n%s\n%s", headerTop, headerMid, headerBot)
 
 // 	footerTop := "╭──────╮"
 // 	footerMid := fmt.Sprintf("┤ %3.f%% │", m.viewport.ScrollPercent()*100)
 // 	footerBot := "╰──────╯"
-// 	gapSize := m.viewport.Width - runewidth.StringWidth(footerMid)
+// 	gapSize := m.viewport.Width - ansi.PrintableRuneWidth(footerMid)
 // 	footerTop = strings.Repeat(" ", gapSize) + footerTop
 // 	footerMid = strings.Repeat("─", gapSize) + footerMid
 // 	footerBot = strings.Repeat(" ", gapSize) + footerBot

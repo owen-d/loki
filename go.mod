@@ -40,7 +40,8 @@ require (
 	github.com/klauspost/compress v1.9.5
 	github.com/mattn/go-runewidth v0.0.9
 	github.com/mitchellh/mapstructure v1.2.2
-	github.com/muesli/reflow v0.1.0
+	github.com/muesli/reflow v0.1.1-0.20200715144030-a312cb5b2d8d
+	github.com/muesli/termenv v0.7.2
 	github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f
 	github.com/opentracing/opentracing-go v1.2.0
 	// github.com/pierrec/lz4 v2.0.5+incompatible
