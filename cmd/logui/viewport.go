@@ -3,22 +3,36 @@ package main
 import (
 	"strings"
 
-	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/muesli/reflow/ansi"
 )
 
 type Viewport struct {
-	viewport.Model
-	content Content
+	ModelWidth, ModelHeight, YPosition int
+	Content                            Content
 }
 
-func (v *Viewport) Width() int { return v.Model.Width }
+func (v *Viewport) Update(msg tea.Msg) tea.Cmd {
+	dir, err := GetDirection(msg)
+	if err != nil {
+		return nil
+	}
 
-func (v *Viewport) Height() int { return v.Model.Height }
+	switch dir {
+	case Down:
+		v.Content.Advance()
+	case Up:
+		v.Content.Retreat(1)
+	}
+	return nil
+}
+
+func (v *Viewport) Width() int { return v.ModelWidth }
+
+func (v *Viewport) Height() int { return v.ModelHeight }
 
 func (v Viewport) Drawable() *ViewportDraw {
-	return &ViewportDraw{Viewport: v, Content: v.content.Wrap(v.Width())}
+	return &ViewportDraw{Viewport: v, Content: v.Content.Wrap(v.Width())}
 }
 
 type ViewportDraw struct {
@@ -35,14 +49,14 @@ type viewports struct {
 	help                 HelpPane
 }
 
-func (v *viewports) focused() *viewport.Model {
+func (v *viewports) focused() *Viewport {
 	switch v.focusPane {
 	case LabelsPane:
-		return &v.labels.Model
+		return &v.labels
 	case LogsPane:
-		return &v.logs.Model
+		return &v.logs
 	default:
-		return &v.params.Model
+		return &v.params
 	}
 }
 
@@ -63,9 +77,7 @@ func (v *viewports) Update(msg tea.Msg) tea.Cmd {
 		}
 	}
 
-	focused := v.focused()
-	updated, cmd := viewport.Update(msg, *focused)
-	*focused = updated
+	cmd := v.focused().Update(msg)
 	cmds = append(cmds, cmd)
 
 	return tea.Batch(cmds...)
@@ -99,16 +111,16 @@ func (v *viewports) Size(msg tea.WindowSizeMsg) {
 
 	height := withoutHelp
 
-	v.params.Model.Height = height
-	v.labels.Model.Height = height
-	v.logs.Model.Height = height
+	v.params.ModelHeight = height
+	v.labels.ModelHeight = height
+	v.logs.ModelHeight = height
 
 	primary := int(float64(width) / GoldenRatio)
 	secondary := (width - primary) / 2
 	main, secondaries := v.selected()
-	main.Model.Width = primary
+	main.ModelWidth = primary
 	for _, s := range secondaries {
-		s.Model.Width = secondary
+		s.ModelWidth = secondary
 	}
 }
 

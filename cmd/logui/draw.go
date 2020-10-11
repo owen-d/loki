@@ -56,7 +56,7 @@ func (c *Content) Draw(n int) string {
 	}
 
 	var str string
-	if c.i < len(c.lines)-1 {
+	if c.i < len(c.lines) {
 		str = ExactWidth(c.lines[c.i], n)
 		if c.color != nil {
 			str = termenv.String(str).Foreground(profile.Convert(c.color)).String()
@@ -64,12 +64,16 @@ func (c *Content) Draw(n int) string {
 	} else {
 		str = RPad(str, n)
 	}
-	return str
 
+	return str
 }
 
 func (c *Content) Seek(i int) {
+	if i < 0 {
+		i = 0
+	}
 	c.i = i
 }
 
-func (c *Content) Advance() { c.i++ }
+func (c *Content) Retreat(n int) { c.Seek(c.i - n) }
+func (c *Content) Advance()      { c.i++ }

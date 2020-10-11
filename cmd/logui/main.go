@@ -53,9 +53,9 @@ func initialize() func() (tea.Model, tea.Cmd) {
 		for i := 0; i < 200; i++ {
 			garbage += fmt.Sprintf("%d - lorem ipsum\n", i)
 		}
-		m.views.params.content = NewContent(garbage).Color(termenv.ANSIYellow)
-		m.views.labels.content = NewContent(garbage).Color(termenv.ANSICyan)
-		m.views.logs.content = NewContent(garbage).Color(termenv.ANSIMagenta)
+		m.views.params.Content = NewContent(garbage).Color(termenv.ANSIYellow)
+		m.views.labels.Content = NewContent(garbage).Color(termenv.ANSICyan)
+		m.views.logs.Content = NewContent(garbage).Color(termenv.ANSIMagenta)
 		m.views.help = DefaultHelp
 		return m, nil
 	}

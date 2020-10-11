@@ -56,12 +56,10 @@ func NewGrid(vSpacing, hSpacing, height, width, maxColums int, views ...Viewable
 	for i, v := range views {
 		row := i / cols
 		vp := Viewport{
-			Model: viewport.Model{
-				Height: unitHeight,
-				Width:  unitWidth,
-			},
+			ModelHeight: unitHeight,
+			ModelWidth:  unitWidth,
+			Content:     NewContent(v.View()),
 		}
-		vp.SetContent(v.View())
 		grid.rows[row] = append(grid.rows[row], vp)
 	}
 
