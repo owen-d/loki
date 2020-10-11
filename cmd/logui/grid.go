@@ -79,38 +79,41 @@ func (g Grid) View() string {
 		}))
 	}
 
+	var output string
+
 	if len(g.rows) < 2 {
-		return mergers[0].View()
-	}
-
-	// build vertical separator
-	var sb strings.Builder
-	unit := strings.Repeat(" ", g.width) + "\n"
-	for i := 0; i < g.vSpacing; i++ {
-		sb.WriteString(unit)
-	}
-
-	if g.vSpacing == 0 {
-		// If there is zero vSpacing specified, just write a newline.
-		sb.WriteString("\n")
-	}
-
-	vSep := sb.String()
-
-	var result strings.Builder
-	for i, m := range mergers {
-		result.WriteString(m.View())
-		if i < len(mergers)-1 {
-			result.WriteString(vSep)
+		output = mergers[0].View()
+	} else {
+		// build vertical separator
+		var sb strings.Builder
+		unit := strings.Repeat(" ", g.width) + "\n"
+		for i := 0; i < g.vSpacing; i++ {
+			sb.WriteString(unit)
 		}
 
+		if g.vSpacing == 0 {
+			// If there is zero vSpacing specified, just write a newline.
+			sb.WriteString("\n")
+		}
+
+		vSep := sb.String()
+
+		var result strings.Builder
+		for i, m := range mergers {
+			result.WriteString(m.View())
+			if i < len(mergers)-1 {
+				result.WriteString(vSep)
+			}
+
+		}
+		output = result.String()
 	}
 
 	// Finally, bound it to a viewport to ensure desired size.
 	var v viewport.Model
 	v.Height = g.height
 	v.Width = g.width
-	v.SetContent(result.String())
+	v.SetContent(output)
 	return viewport.View(v)
 
 }
