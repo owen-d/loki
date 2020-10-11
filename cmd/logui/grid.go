@@ -20,10 +20,10 @@ type Viewable interface {
 	View() string
 }
 
-func NewGrid(vSpacing, hSpacing, height, width, maxColums int, views ...Viewable) Grid {
+func NewGrid(vSpacing, hSpacing, height, width, minColumnWidth, maxColumns int, views ...Viewable) Grid {
 
 	ln := len(views)
-	cols := min(maxColums, ln)
+	cols := max(1, min(min(maxColumns, ln), width/minColumnWidth))
 	rows := ln / cols
 	if ln%cols > 0 {
 		rows++

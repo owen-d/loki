@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"strings"
+
+	"github.com/muesli/reflow/ansi"
 )
 
 type Intent struct {
@@ -26,9 +28,13 @@ type HelpPane struct {
 }
 
 func (h HelpPane) View() string {
+	var minColumWidth int
 	vs := make([]Viewable, 0, len(h.intents))
 	for _, intent := range h.intents {
 		vs = append(vs, intent)
+		if w := ansi.PrintableRuneWidth(intent.View()); minColumWidth < w {
+			minColumWidth = w
+		}
 	}
 
 	topBorder := strings.Repeat("─", h.Width)
@@ -37,6 +43,7 @@ func (h HelpPane) View() string {
 		4,
 		h.Height-1,
 		h.Width,
+		minColumWidth,
 		7,
 		vs...,
 	).View()
