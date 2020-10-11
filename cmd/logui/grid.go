@@ -33,7 +33,18 @@ func NewGrid(vSpacing, hSpacing, height, width, maxColums int, views ...Viewable
 		rows++
 	}
 
-	unitHeight := (height - (rows-1)*vSpacing) / rows
+	var unitHeight int
+	for height > 0 && unitHeight < 1 {
+		unitHeight = (height - (rows-1)*vSpacing) / rows
+		if unitHeight > 0 {
+			break
+		}
+
+		// elimnate rows that would overflow
+		rows--
+		views = views[:rows*cols]
+
+	}
 	unitWidth := (width - (cols-1)*hSpacing) / cols
 
 	grid := Grid{
@@ -81,10 +92,16 @@ func (g Grid) View() string {
 
 	// build vertical separator
 	var sb strings.Builder
-	unit := strings.Repeat(" ", g.width)
+	unit := strings.Repeat(" ", g.width) + "\n"
 	for i := 0; i < g.vSpacing; i++ {
-		sb.WriteString(unit + "\n")
+		sb.WriteString(unit)
 	}
+
+	if g.vSpacing == 0 {
+		// If there is zero vSpacing specified, just write a newline.
+		sb.WriteString("\n")
+	}
+
 	vSep := sb.String()
 
 	var result strings.Builder
@@ -95,7 +112,13 @@ func (g Grid) View() string {
 		}
 
 	}
-	return result.String()
+
+	// Finally, bound it to a viewport to ensure desired size.
+	var v Viewport
+	v.Model.Height = g.height
+	v.Model.Width = g.width
+	v.SetContent(result.String())
+	return v.View()
 
 }
 

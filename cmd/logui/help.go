@@ -35,7 +35,7 @@ func (h HelpPane) View() string {
 	return topBorder + NewGrid(
 		0,
 		4,
-		h.Height,
+		h.Height-1,
 		h.Width,
 		7,
 		vs...,
