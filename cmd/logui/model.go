@@ -1,31 +1,32 @@
 package main
 
 import (
+	"fmt"
 	"strings"
+	"time"
 
-	"github.com/charmbracelet/bubbles/viewport"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/mattn/go-runewidth"
+	"github.com/grafana/loki/pkg/logproto"
+	"github.com/prometheus/prometheus/pkg/labels"
 )
 
 type Pane int
 
 const (
-	Params Pane = iota
-	Labels
-	Logs
+	ParamsPane Pane = iota
+	LabelsPane
+	LogsPane
 
-	MinPane = Params
-	MaxPane = Logs
+	MinPane = ParamsPane
+	MaxPane = LogsPane
 
 	GoldenRatio = 1.618
 )
 
 func (p Pane) String() string {
 	switch p {
-	case Labels:
+	case LabelsPane:
 		return "labels"
-	case Logs:
+	case LogsPane:
 		return "logs"
 	default:
 		return "params"
@@ -49,143 +50,53 @@ func (p Pane) Prev() Pane {
 }
 
 type Model struct {
-	views viewports
+	views  viewports
+	params Params
 }
 
-type viewports struct {
-	totals               tea.WindowSizeMsg
-	ready                bool
-	focusPane            Pane
-	separator            MergableSep
-	params, labels, logs Viewport
-	help                 HelpPane
+// Hilarious we don't have type for this that's not bound to the ast.
+// Mimic 2/3 of a label matcher :)
+type Filter struct {
+	Type  labels.MatchType
+	Match string
 }
 
-func (v *viewports) focused() *viewport.Model {
-	switch v.focusPane {
-	case Labels:
-		return &v.labels.Model
-	case Logs:
-		return &v.logs.Model
-	default:
-		return &v.params.Model
+func (f Filter) String() (res string) {
+	switch f.Type {
+	case labels.MatchEqual:
+		res = "|="
+	case labels.MatchRegexp:
+		res = "|~"
+	case labels.MatchNotEqual:
+		res = "!="
+	case labels.MatchNotRegexp:
+		res = "!~"
 	}
+
+	return res + fmt.Sprintf(`"%s"`, f.Match)
+
 }
 
-func (v *viewports) Update(msg tea.Msg) tea.Cmd {
-	var cmds []tea.Cmd
+type Params struct {
+	Matchers     []labels.Matcher
+	Filters      []Filter
+	Since, Until time.Duration
+	Direction    logproto.Direction
+	Limit        int
 
-	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		v.Size(msg)
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "n":
-			v.focusPane = v.focusPane.Next()
-			v.Size(v.totals)
-		case "p":
-			v.focusPane = v.focusPane.Prev()
-			v.Size(v.totals)
-		}
-	}
+	// internals
 
-	focused := v.focused()
-	updated, cmd := viewport.Update(msg, *focused)
-	*focused = updated
-	cmds = append(cmds, cmd)
-
-	return tea.Batch(cmds...)
 }
 
-func (v *viewports) selected() (main *Viewport, secondaries []*Viewport) {
-	switch v.focusPane {
-	case Labels:
-		return &v.labels, []*Viewport{&v.params, &v.logs}
-	case Logs:
-		return &v.logs, []*Viewport{&v.params, &v.labels}
-	// Params is the default
-	default:
-		return &v.params, []*Viewport{&v.labels, &v.logs}
-	}
-}
-
-// Size sets pane sizes (primary & secondaries) based on the golden ratio.
-func (v *viewports) Size(msg tea.WindowSizeMsg) {
-	v.totals = msg
-	width := msg.Width - v.separator.Width()*2
-	if !v.ready {
-		v.ready = true
+func (p Params) Query() string {
+	mStrs := make([]string, 0, len(p.Matchers))
+	for _, m := range p.Matchers {
+		mStrs = append(mStrs, m.String())
 	}
 
-	v.help.Height = 4
-	v.help.Width = v.totals.Width
-
-	withoutHeaders := msg.Height - 3
-	withoutHelp := withoutHeaders - v.help.Height
-
-	height := withoutHelp
-
-	v.separator.Height = height
-	v.params.Model.Height = height
-	v.labels.Model.Height = height
-	v.logs.Model.Height = height
-
-	primary := int(float64(width) / GoldenRatio)
-	secondary := (width - primary) / 2
-	main, secondaries := v.selected()
-	main.Model.Width = primary
-	for _, s := range secondaries {
-		s.Model.Width = secondary
+	var fStr strings.Builder
+	for _, f := range p.Filters {
+		fStr.WriteString(f.String())
 	}
-}
-
-func (v *viewports) header() string {
-	pane := v.focusPane
-	width := v.totals.Width
-	var start int
-
-	switch pane {
-	case Labels:
-		start = v.params.Width() + v.separator.Width()
-	case Logs:
-		start = v.params.Width()*2 + v.separator.Width()*2 // all non-primary panes have the same size
-	}
-
-	headerTopFrame := "╭─────────────╮"
-	headerBotFrame := "╰─────────────╯"
-	headerTop := ExactWidth(LPad(headerTopFrame, start+runewidth.StringWidth(headerTopFrame)), width)
-	headerBot := ExactWidth(LPad(headerBotFrame, start+runewidth.StringWidth(headerBotFrame)), width)
-
-	lConnector := "│"
-	if start > 0 {
-		lConnector = "┤"
-	}
-	headerMid := lConnector + CenterTo(pane.String(), runewidth.StringWidth(headerTopFrame)-2) + "├"
-	headerMid = LPadWith(headerMid, '─', start+runewidth.StringWidth(headerMid))
-	headerMid = RPadWith(headerMid, '─', width)
-
-	return strings.Join([]string{headerTop, headerMid, headerBot}, "\n")
-}
-
-func (v *viewports) View() string {
-	if !v.ready {
-		return "\n  Initializing..."
-	}
-
-	merger := CrossMerge{
-		v.params,
-		v.separator,
-		v.labels,
-		v.separator,
-		v.logs,
-	}
-
-	return strings.Join(
-		[]string{
-			v.header(),
-			merger.View(),
-			v.help.View(),
-		},
-		"\n",
-	)
+	return fmt.Sprintf("{%s}%s", strings.Join(mStrs, ","), fStr.String())
 }

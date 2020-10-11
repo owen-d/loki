@@ -47,17 +47,17 @@ var DefaultHelp = HelpPane{
 	Width:  0,
 	intents: []Intent{
 		{
+			Primary: "q",
+			Aliases: []string{"C-c"},
+			Msg:     "quit",
+		},
+		{
 			Primary: "n",
 			Msg:     "next pane",
 		},
 		{
 			Primary: "p",
 			Msg:     "previous pane",
-		},
-		{
-			Primary: "q",
-			Aliases: []string{"C-c"},
-			Msg:     "quit",
 		},
 		{
 			Primary: "h",
