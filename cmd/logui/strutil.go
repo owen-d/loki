@@ -19,11 +19,11 @@ func CenterTo(msg string, ln int) string {
 }
 
 func RPad(msg string, ln int) string {
-	return runewidth.FillRight(msg, ln)
+	return RPadWith(msg, ' ', ln)
 }
 
 func LPad(msg string, ln int) string {
-	return runewidth.FillLeft(msg, ln)
+	return LPadWith(msg, ' ', ln)
 }
 
 func LPadWith(msg string, x rune, ln int) string {
