@@ -9,35 +9,20 @@ import (
 
 type Viewport struct {
 	ModelWidth, ModelHeight, YPosition int
-	Content                            Content
-}
-
-func (v *Viewport) Update(msg tea.Msg) tea.Cmd {
-	dir, err := GetDirection(msg)
-	if err != nil {
-		return nil
-	}
-
-	switch dir {
-	case Down:
-		v.Content.Advance()
-	case Up:
-		v.Content.Retreat(1)
-	}
-	return nil
+	Component
 }
 
 func (v *Viewport) Width() int { return v.ModelWidth }
 
 func (v *Viewport) Height() int { return v.ModelHeight }
 
-func (v Viewport) Drawable() *ViewportDraw {
-	return &ViewportDraw{Viewport: v, Content: v.Content.Wrap(v.Width())}
+func (v Viewport) Drawable() *ViewportDrawer {
+	return &ViewportDrawer{Viewport: v, Drawer: v.Drawable()}
 }
 
-type ViewportDraw struct {
-	Viewport
-	Content
+type ViewportDrawer struct {
+	Viewport // embed for height/width methods
+	Drawer
 }
 
 type viewports struct {

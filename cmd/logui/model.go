@@ -70,12 +70,18 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 	case *loghttp.QueryResponse:
-		var ls strings.Builder
+		var o Overlay
 
 		for _, stream := range msg.Data.Result.(loghttp.Streams) {
-			ls.WriteString(stream.Labels.String() + "\n")
+			o.Add("{", nil)
+			for k, v := range stream.Labels {
+				o.Add(k+"=", nil)
+				o.Add(fmt.Sprintf(`"%s"`, v), termenv.ANSIYellow)
+			}
+			o.Add("}", nil)
 		}
-		m.views.labels.Content = NewContent(ls.String()).Color(termenv.ANSICyan)
+
+		m.views.labels.Component = NoopUpdater{&o}
 	}
 
 	if cmd := m.views.Update(msg); cmd != nil {
@@ -131,7 +137,7 @@ func (p Params) Content() Content {
 	b.WriteString(fmt.Sprintf("direction: %s\n", p.Direction.String()))
 	b.WriteString(fmt.Sprintf("limit: %d\n", p.Limit))
 
-	return NewContent(b.String())
+	return Content(b.String())
 }
 
 var DefaultParams = Params{

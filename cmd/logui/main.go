@@ -6,7 +6,6 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/grafana/loki/pkg/logcli/client"
-	"github.com/muesli/termenv"
 )
 
 func main() {
@@ -55,9 +54,9 @@ func initialize() func() (tea.Model, tea.Cmd) {
 			garbage += fmt.Sprintf("%d - lorem ipsum\n", i)
 		}
 		m.params = DefaultParams
-		m.views.params.Content = m.params.Content().Color(termenv.ANSIYellow)
-		m.views.labels.Content = NewContent(garbage).Color(termenv.ANSICyan)
-		m.views.logs.Content = NewContent(garbage).Color(termenv.ANSIMagenta)
+		m.views.params.Component = NoopUpdater{Content(m.params.Content())}
+		m.views.labels.Component = NoopUpdater{Content(garbage)}
+		m.views.logs.Component = NoopUpdater{Content(garbage)}
 		m.views.help = DefaultHelp
 
 		m.client = &client.DefaultClient{

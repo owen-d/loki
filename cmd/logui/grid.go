@@ -16,11 +16,7 @@ type Grid struct {
 	rows [][]Viewport
 }
 
-type Viewable interface {
-	View() string
-}
-
-func NewGrid(vSpacing, hSpacing, height, width, minColumnWidth, maxColumns int, views ...Viewable) Grid {
+func NewGrid(vSpacing, hSpacing, height, width, minColumnWidth, maxColumns int, views ...Drawable) Grid {
 
 	ln := len(views)
 	cols := max(1, min(min(maxColumns, ln), width/minColumnWidth))
@@ -58,7 +54,7 @@ func NewGrid(vSpacing, hSpacing, height, width, minColumnWidth, maxColumns int, 
 		vp := Viewport{
 			ModelHeight: unitHeight,
 			ModelWidth:  unitWidth,
-			Content:     NewContent(v.View()),
+			Component:   NoopUpdater{v},
 		}
 		grid.rows[row] = append(grid.rows[row], vp)
 	}

@@ -13,12 +13,17 @@ type index struct {
 }
 
 type Overlay struct {
-	xs   []*index
-	wrap int // should words be wrapped to newlines based on length?
+	xs []*index
 }
 
 func (o *Overlay) IsEmpty() bool {
 	return len(o.xs) == 0
+}
+
+// impl Drawable as well for convenience
+func (o *Overlay) Drawer() Drawer {
+	x := *o
+	return &x
 }
 
 func (o *Overlay) Add(s string, c termenv.Color) {

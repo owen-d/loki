@@ -22,6 +22,12 @@ func (i Intent) View() string {
 	return strings.Join(strs, " ")
 }
 
+func (i Intent) Drawer() Drawer {
+	var o Overlay
+	o.Add(i.View(), nil)
+	return &o
+}
+
 type HelpPane struct {
 	Height, Width int
 	intents       []Intent
@@ -29,7 +35,7 @@ type HelpPane struct {
 
 func (h HelpPane) View() string {
 	var minColumWidth int
-	vs := make([]Viewable, 0, len(h.intents))
+	vs := make([]Drawable, 0, len(h.intents))
 	for _, intent := range h.intents {
 		vs = append(vs, intent)
 		if w := ansi.PrintableRuneWidth(intent.View()); minColumWidth < w {

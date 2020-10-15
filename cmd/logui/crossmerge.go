@@ -17,7 +17,7 @@ Idea here is to merge views which combine horizontally (on the same line)
 */
 
 type CrossMergable interface {
-	Draw
+	Drawer
 	Height() int
 	Width() int
 }
