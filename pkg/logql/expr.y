@@ -47,6 +47,7 @@ import (
   LabelFormat             log.LabelFmt
   LabelsFormat            []log.LabelFmt
   UnwrapExpr              *unwrapExpr
+  RawExpr                 *rawExpr
 }
 
 %start root
@@ -84,6 +85,7 @@ import (
 %type <LabelsFormat>          labelsFormat
 %type <UnwrapExpr>            unwrapExpr
 %type <UnitFilter>            unitFilter
+%type <RawExpr>               rawExpr
 
 %token <bytes> BYTES
 %token <str>      IDENTIFIER STRING NUMBER
@@ -117,6 +119,7 @@ metricExpr:
     | binOpExpr                                     { $$ = $1 }
     | literalExpr                                   { $$ = $1 }
     | labelReplaceExpr                              { $$ = $1 }
+    | rawExpr                                       { $$ = $1 }
     | OPEN_PARENTHESIS metricExpr CLOSE_PARENTHESIS { $$ = $2 }
     ;
 
@@ -125,6 +128,9 @@ logExpr:
     | selector pipelineExpr                       { $$ = newPipelineExpr(newMatcherExpr($1), $2)}
     | OPEN_PARENTHESIS logExpr CLOSE_PARENTHESIS  { $$ = $2 }
     ;
+
+rawExpr:
+       logExpr unwrapExpr        { $$ = newRawExpr($1, $2) }
 
 logRangeExpr:
       selector RANGE                                                             { $$ = newLogRange(newMatcherExpr($1), $2, nil) }

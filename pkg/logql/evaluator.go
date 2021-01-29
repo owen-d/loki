@@ -201,6 +201,19 @@ func (ev *DefaultEvaluator) StepEvaluator(
 			return nil, err
 		}
 		return rangeAggEvaluator(iter.NewPeekingSampleIterator(it), e, q)
+	case *rawExpr:
+		it, err := ev.querier.SelectSamples(ctx, SelectSampleParams{
+			&logproto.SampleQueryRequest{
+				Start:    q.Start().Add(-e.left.interval),
+				End:      q.End(),
+				Selector: expr.String(),
+				Shards:   q.Shards(),
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+		return rawEvaluator(iter.NewPeekingSampleIterator(it), e, q)
 	case *binOpExpr:
 		return binOpStepEvaluator(ctx, nextEv, e, q)
 	case *labelReplaceExpr:
@@ -1016,4 +1029,33 @@ func absentLabels(expr SampleExpr) labels.Labels {
 		m = labels.NewBuilder(m).Del(v).Labels()
 	}
 	return m
+}
+
+func rawEvaluator(it iter.PeekingSampleIterator, expr *rawExpr, q Params) (StepEvaluator, error) {
+	return newStepEvaluator(
+		func() (bool, int64, promql.Vector) {
+			if !it.Next() {
+				return false, 0, nil
+			}
+			first := it.Sample()
+			m := map[string]*logproto.Sample{it.Labels(): &first}
+
+			for _, smp, ok := it.Peek(); ok && smp.Timestamp == first.Timestamp; {
+				it.Next()
+				next := it.Sample()
+				m[it.Labels()] = &next
+			}
+
+			vec := make(promql.Vector, 0, len(m))
+			for ls, smpl := range m {
+				vec = append(vec, promql.Sample{
+					// TODO(owen-d): this is very inefficient
+					Metric: mustParseLabels(ls),
+				})
+			}
+
+		},
+		it.Close,
+		it.Error,
+	)
 }

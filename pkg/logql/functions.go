@@ -56,16 +56,7 @@ func (r rangeAggregationExpr) extractor(override *grouping) (log.SampleExtractor
 	}
 	// unwrap...means we want to extract metrics from labels.
 	if r.left.unwrap != nil {
-		var convOp string
-		switch r.left.unwrap.operation {
-		case OpConvBytes:
-			convOp = log.ConvertBytes
-		case OpConvDuration, OpConvDurationSeconds:
-			convOp = log.ConvertDuration
-		default:
-			convOp = log.ConvertFloat
-		}
-
+		convOp := r.left.unwrap.Operation()
 		return log.LabelExtractorWithStages(
 			r.left.unwrap.identifier,
 			convOp, groups, without, noLabels, stages,

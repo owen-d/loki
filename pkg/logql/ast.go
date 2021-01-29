@@ -2,6 +2,7 @@ package logql
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -432,6 +433,42 @@ func mustNewFloat(s string) float64 {
 	return n
 }
 
+type rawExpr struct {
+	LogSelectorExpr
+	unwrap *unwrapExpr
+}
+
+// Impl SampleExpr
+func (e *rawExpr) Selector() LogSelectorExpr { return e.LogSelectorExpr }
+
+func (e *rawExpr) Extractor() (SampleExtractor, error) {
+	var stages []log.Stage
+	if p, ok := r.left.left.(*pipelineExpr); ok {
+		// if the expression is a pipeline then take all stages into account first.
+		st, err := p.pipeline.stages()
+		if err != nil {
+			return nil, err
+		}
+		stages = st
+	}
+
+	// unwrap...means we want to extract metrics from labels.
+	convOp := e.unwrap.Operation()
+	return nil, errors.New("unimplemented")
+	return log.LabelExtractorWithStages(
+		e.unwrap.identifier,
+		convOp, nil, false, false, stages,
+		log.ReduceAndLabelFilter(e.unwrap.postFilters),
+	)
+}
+
+func newRawExpr(log LogSelectorExpr, unwrap *unwrapExpr) *rawExpr {
+	return &rawExpr{
+		LogSelectorExpr: log,
+		unwrap:          unwrap,
+	}
+}
+
 type unwrapExpr struct {
 	identifier string
 	operation  string
@@ -450,6 +487,17 @@ func (u unwrapExpr) String() string {
 		sb.WriteString(fmt.Sprintf(" %s %s", OpPipe, f))
 	}
 	return sb.String()
+}
+
+func (u *unwrapExpr) Operation() string {
+	switch u.operation {
+	case OpConvBytes:
+		return log.ConvertBytes
+	case OpConvDuration, OpConvDurationSeconds:
+		return log.ConvertDuration
+	default:
+		return log.ConvertFloat
+	}
 }
 
 func (u *unwrapExpr) addPostFilter(f log.LabelFilterer) *unwrapExpr {
