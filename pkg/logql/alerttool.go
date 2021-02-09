@@ -31,8 +31,11 @@ func QueryAbsence(expr SampleExpr) (Expr, error) {
 			return lhs, nil
 		}
 
-		// always AND both sides when building a validation for an alert.
-		// If it has two sides in the query, we'll ensure both sides have data present.
+		// OR both sides when building a validation for an alert.
+		// Note: we could alternatively be more stringent and AND them together
+		// to ensure both sides have data present.
+		// That however, wouldn't work great for queries like
+		// `rate({foo="bar", mode="panic"}[5m]) / rate({foo="bar"}[5m])`
 		return &binOpExpr{
 			SampleExpr: lhs.(SampleExpr),
 			RHS:        rhs.(SampleExpr),
