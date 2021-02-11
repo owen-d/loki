@@ -12,14 +12,13 @@ import (
 )
 
 var (
+	// assert interface implementors
 	_ LabelFilterer = &BinaryLabelFilter{}
 	_ LabelFilterer = &BytesLabelFilter{}
 	_ LabelFilterer = &DurationLabelFilter{}
 	_ LabelFilterer = &NumericLabelFilter{}
 	_ LabelFilterer = &StringLabelFilter{}
-
-	// NoopLabelFilter is a label filter that doesn't filter out any values.
-	NoopLabelFilter = noopLabelFilter{}
+	_ LabelFilterer = NoopLabelFilter{}
 )
 
 // LabelFilterType is an enum for label filtering types.
@@ -63,7 +62,7 @@ type LabelFilterer interface {
 type BinaryLabelFilter struct {
 	Left  LabelFilterer
 	Right LabelFilterer
-	and   bool
+	And   bool
 }
 
 // NewAndLabelFilter creates a new LabelFilterer from a and binary operation of two LabelFilterer.
@@ -71,7 +70,7 @@ func NewAndLabelFilter(left LabelFilterer, right LabelFilterer) *BinaryLabelFilt
 	return &BinaryLabelFilter{
 		Left:  left,
 		Right: right,
-		and:   true,
+		And:   true,
 	}
 }
 
@@ -85,11 +84,11 @@ func NewOrLabelFilter(left LabelFilterer, right LabelFilterer) *BinaryLabelFilte
 
 func (b *BinaryLabelFilter) Process(line []byte, lbs *LabelsBuilder) ([]byte, bool) {
 	line, lok := b.Left.Process(line, lbs)
-	if !b.and && lok {
+	if !b.And && lok {
 		return line, true
 	}
 	line, rok := b.Right.Process(line, lbs)
-	if !b.and {
+	if !b.And {
 		return line, lok || rok
 	}
 	return line, lok && rok
@@ -106,7 +105,7 @@ func (b *BinaryLabelFilter) String() string {
 	var sb strings.Builder
 	sb.WriteString("( ")
 	sb.WriteString(b.Left.String())
-	if b.and {
+	if b.And {
 		sb.WriteString(" , ")
 	} else {
 		sb.WriteString(" or ")
@@ -116,16 +115,16 @@ func (b *BinaryLabelFilter) String() string {
 	return sb.String()
 }
 
-type noopLabelFilter struct{}
+type NoopLabelFilter struct{}
 
-func (noopLabelFilter) String() string                                         { return "" }
-func (noopLabelFilter) Process(line []byte, lbs *LabelsBuilder) ([]byte, bool) { return line, true }
-func (noopLabelFilter) RequiredLabelNames() []string                           { return []string{} }
+func (NoopLabelFilter) String() string                                         { return "" }
+func (NoopLabelFilter) Process(line []byte, lbs *LabelsBuilder) ([]byte, bool) { return line, true }
+func (NoopLabelFilter) RequiredLabelNames() []string                           { return []string{} }
 
 // ReduceAndLabelFilter Reduces multiple label filterer into one using binary and operation.
 func ReduceAndLabelFilter(filters []LabelFilterer) LabelFilterer {
 	if len(filters) == 0 {
-		return NoopLabelFilter
+		return NoopLabelFilter{}
 	}
 	if len(filters) == 1 {
 		return filters[0]

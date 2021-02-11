@@ -3,8 +3,9 @@ package logql
 import (
 	"fmt"
 
-	"github.com/grafana/loki/pkg/logql/log"
 	"github.com/prometheus/prometheus/pkg/labels"
+
+	"github.com/grafana/loki/pkg/logql/log"
 )
 
 // QueryAbsence maps one SampleExpr into another which will act as a heuristic for whether the first expression
@@ -89,6 +90,19 @@ func AbsenceLogSelector(expr LogSelectorExpr) (LogSelectorExpr, error) {
 			case *lineFilterExpr:
 				continue
 			case *labelFilterExpr:
+
+				// special handling for binops -- we want to preserve their (AND|OR)
+				// groupings but otherwise make them use non-empty regexp matchers.
+				if binop, ok := s.LabelFilterer.(*log.BinaryLabelFilter); ok {
+					stages = append(
+						stages,
+						&labelFilterExpr{
+							LabelFilterer: mapAbsenceBinFilter(binop),
+						},
+					)
+					continue
+				}
+
 				// Any label filters should be ammended
 				// to only require the tested label _exists_.
 				// We don't want to test the exact condition which
@@ -99,12 +113,7 @@ func AbsenceLogSelector(expr LogSelectorExpr) (LogSelectorExpr, error) {
 					stages = append(
 						stages,
 						&labelFilterExpr{
-							LabelFilterer: log.NewStringLabelFilter(
-								labels.MustNewMatcher(
-									labels.MatchRegexp,
-									l, ".+",
-								),
-							),
+							LabelFilterer: nonEmptyRegexpLabelFilter(l),
 						},
 					)
 				}
@@ -125,4 +134,37 @@ func AbsenceLogSelector(expr LogSelectorExpr) (LogSelectorExpr, error) {
 		return nil, fmt.Errorf("AbsenceLogSelector unexpected type %T", expr)
 	}
 
+}
+
+func mapAbsenceBinFilter(expr *log.BinaryLabelFilter) *log.BinaryLabelFilter {
+	res := &log.BinaryLabelFilter{
+		And: expr.And,
+	}
+
+	if lhs, ok := expr.Left.(*log.BinaryLabelFilter); ok {
+		res.Left = mapAbsenceBinFilter(lhs)
+	} else {
+		// Otherwise it's not a binop and it can't possibly be a noop
+		// because a binop isn't created when one leg is a noop, so it must have one label.
+		res.Left = nonEmptyRegexpLabelFilter(expr.Left.RequiredLabelNames()[0])
+	}
+
+	if rhs, ok := expr.Right.(*log.BinaryLabelFilter); ok {
+		res.Right = mapAbsenceBinFilter(rhs)
+	} else {
+		// Otherwise it's not a binop and it can't possibly be a noop
+		// because a binop isn't created when one leg is a noop, so it must have one label.
+		res.Right = nonEmptyRegexpLabelFilter(expr.Right.RequiredLabelNames()[0])
+	}
+
+	return res
+}
+
+func nonEmptyRegexpLabelFilter(lName string) *log.StringLabelFilter {
+	return log.NewStringLabelFilter(
+		labels.MustNewMatcher(
+			labels.MatchRegexp,
+			lName, ".+",
+		),
+	)
 }
