@@ -51,6 +51,10 @@ func Test_Validity(t *testing.T) {
 			// Once there are no more `foo="bar"` streams, the alert itself would fire.
 			query: `absent_over_time({foo="bar"}[5m])`,
 		},
+		{
+			query:    `sum by (org_id) (count_over_time({job="loki-prod/query-frontend"} |= "metrics.go:84" | logfmt | duration > 10s [5m])) > 10 `,
+			validity: `{job="loki-prod/query-frontend"} |= "metrics.go:84" | logfmt | duration=~".+" | org_id =~".+"`,
+		},
 	} {
 		t.Run(tc.query, func(t *testing.T) {
 			expr, err := ParseExpr(tc.query)
