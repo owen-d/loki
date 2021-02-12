@@ -15,17 +15,17 @@ func Test_Validity(t *testing.T) {
 		// 	// when it's just a set of matchers, do nothing. The alert & meta alert would be equivalent.
 		// 	query: `rate({foo="bar"}[5m])`,
 		// },
-		// {
-		// 	// when it's just a set of matchers but is a binop, ensure the underlying data exists.
-		// 	query:    `rate({foo="bar"}[5m]) > 1`,
-		// 	validity: `absent_over_time({foo="bar"}[5m])`,
-		// },
+		{
+			// when it's just a set of matchers but is a binop, ensure the underlying data exists.
+			query:    `rate({foo="bar"}[5m]) > 1`,
+			validity: `absent_over_time({foo="bar"}[5m])`,
+		},
 		// {
 		// 	// when a grouping exists, ensure the label is present.
 		// 	// Note: this could be improved to detect when indexed labels are used vs
 		// 	// when it's not known.
 		// 	query:    `sum by (cluster) (rate({foo="bar"}[1m]))`,
-		// 	validity: `absent_over_time({foo="bar"} |= cluster=~".+" [1m])`,
+		// 	validity: `absent_over_time({foo="bar"} | cluster=~".+" [1m])`,
 		// },
 		{
 			// respect OR'd label filters
@@ -37,11 +37,9 @@ func Test_Validity(t *testing.T) {
 		},
 		{
 			// strip out line filters -- we just want to know if the underlying streams exist, not if the alert is firing.
-			query: `sum(rate({foo="bar"} |= "error" [5m])) / sum(rate({foo="bar"}[5m]))`,
-			// note: this can be reduced further
-			validity: `
-			absent_over_time({foo="bar"} [5m]) or absent_over_time({foo="bar"} [5m])
-			`,
+			// future optimization: this is reducible
+			query:    `sum(rate({foo="bar"} |= "error" [5m])) / sum(rate({foo="bar"}[5m]))`,
+			validity: `absent_over_time({foo="bar"} [5m]) or absent_over_time({foo="bar"} [5m])`,
 		},
 		{
 			// for binops, ensure at least one leg exists as these are usually comparisons between a subset & a full set.
@@ -60,7 +58,7 @@ func Test_Validity(t *testing.T) {
 			sampleExpr, ok := expr.(SampleExpr)
 			require.Equal(t, true, ok)
 
-			absence, err := QueryAbsence(sampleExpr)
+			absence, err := MetaAlert(sampleExpr)
 			if tc.err != nil {
 				require.Equal(t, tc.err, err)
 				return

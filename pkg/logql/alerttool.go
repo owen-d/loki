@@ -8,6 +8,19 @@ import (
 	"github.com/grafana/loki/pkg/logql/log"
 )
 
+func MetaAlert(expr SampleExpr) (Expr, error) {
+	res, err := QueryAbsence(expr)
+	if err != nil || res == nil {
+		return nil, err
+	}
+
+	// no need for a meta alert which is identical to the alert condition itself
+	if res.String() == expr.String() {
+		return nil, nil
+	}
+	return res, nil
+}
+
 // QueryAbsence maps one SampleExpr into another which will act as a heuristic for whether the first expression
 // could fire as an alert. It's used to create "meta-alerts" which can detect when log based alerting
 // drifts out of sync with the code it monitors.
@@ -61,7 +74,7 @@ func QueryAbsence(expr SampleExpr) (Expr, error) {
 
 func AbsenceLogRange(expr *logRange) (Expr, error) {
 	selector, err := AbsenceLogSelector(expr.left)
-	if err != nil {
+	if err != nil || selector == nil {
 		return nil, err
 	}
 
