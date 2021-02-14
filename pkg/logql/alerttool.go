@@ -9,22 +9,34 @@ import (
 )
 
 func MetaAlert(expr SampleExpr) (Expr, error) {
-	res, err := QueryAbsence(expr)
-	if err != nil || res == nil {
-		return nil, err
+	rules := []func(SampleExpr) (SampleExpr, error){
+		OnlyMatchersAlert,
+		QueryAbsence,
+		func(mapped SampleExpr) (SampleExpr, error) {
+			// no need for a meta alert which is identical to the alert condition itself
+			if expr.String() == mapped.String() {
+				return nil, nil
+			}
+			return mapped, nil
+		},
 	}
 
-	// no need for a meta alert which is identical to the alert condition itself
-	if res.String() == expr.String() {
-		return nil, nil
+	next := expr
+	var err error
+	for _, rule := range rules {
+		next, err = rule(next)
+		if err != nil || next == nil {
+			return nil, err
+		}
 	}
-	return res, nil
+
+	return next, nil
 }
 
 // QueryAbsence maps one SampleExpr into another which will act as a heuristic for whether the first expression
 // could fire as an alert. It's used to create "meta-alerts" which can detect when log based alerting
 // drifts out of sync with the code it monitors.
-func QueryAbsence(expr SampleExpr) (Expr, error) {
+func QueryAbsence(expr SampleExpr) (SampleExpr, error) {
 	switch e := expr.(type) {
 	case *literalExpr:
 		return nil, nil
@@ -72,7 +84,7 @@ func QueryAbsence(expr SampleExpr) (Expr, error) {
 	}
 }
 
-func AbsenceLogRange(expr *logRange) (Expr, error) {
+func AbsenceLogRange(expr *logRange) (SampleExpr, error) {
 	selector, err := AbsenceLogSelector(expr.left)
 	if err != nil || selector == nil {
 		return nil, err
@@ -180,4 +192,40 @@ func nonEmptyRegexpLabelFilter(lName string) *log.StringLabelFilter {
 			lName, ".+",
 		),
 	)
+}
+
+// Only returns non nil when this is not a binOpExpr and there is nothing more complex than
+// a set of matchers. This is because the generated alert would be the inverse of the firing state
+// and thus not helpful.
+// For instance, the alert `rate({foo="bar"}[5m])` would likely create a dead mans switch like
+// `absent_over_time({foo="bar"}[5m])`, which would mean either the alert or the switch would
+// always be firing: not very helpful.
+// In contrast, consider `rate({foo="bar"}[5m]) > 1`. The generated switch,
+// `absent_over_time({foo="bar"}[5m])`, makes a lot of sense to keep as there is a threshold
+// in the original alert.
+func OnlyMatchersAlert(expr SampleExpr) (SampleExpr, error) {
+	onlyMatchers, err := expr.Fold(func(accum interface{}, expr interface{}) (interface{}, error) {
+		acc := accum.(bool)
+		switch e := expr.(type) {
+		case *logRange:
+			_, isMatchers := e.left.(*matchersExpr)
+			// only return true if all log ranges are only
+			// simple matchersExprs
+			return acc && isMatchers, nil
+		}
+		return acc, nil
+	}, true)
+
+	if err != nil {
+		return nil, err
+	}
+
+	_, isBinOp := expr.(*binOpExpr)
+
+	if onlyMatchers.(bool) && !isBinOp {
+		return nil, nil
+	}
+
+	return expr, nil
+
 }
