@@ -8,44 +8,51 @@ import (
 	"github.com/grafana/loki/pkg/logql/log"
 )
 
-func MetaAlert(expr SampleExpr) (Expr, error) {
-	rules := []func(SampleExpr) (SampleExpr, error){
-		OnlyMatchersAlert,
-		QueryAbsence,
-		func(mapped SampleExpr) (SampleExpr, error) {
-			// no need for a meta alert which is identical to the alert condition itself
-			if expr.String() == mapped.String() {
-				return nil, nil
-			}
-			return mapped, nil
-		},
-	}
+type rule struct {
+	test   func(SampleExpr) (bool, error)
+	mapper func(SampleExpr) (SampleExpr, error)
+}
 
-	next := expr
-	var err error
+func MetaAlert(expr SampleExpr) (Expr, error) {
+	rules := []rule{
+		onlyMatchersAlert,
+		queryAbesenceAlert,
+	}
 	for _, rule := range rules {
-		next, err = rule(next)
-		if err != nil || next == nil {
+		shouldMap, err := rule.test(expr)
+		if err != nil {
 			return nil, err
+		}
+		if shouldMap {
+			return rule.mapper(expr)
 		}
 	}
 
-	return next, nil
+	return nil, nil
+}
+
+var queryAbesenceAlert = rule{
+	test: func(expr SampleExpr) (bool, error) {
+		return true, nil
+	},
+	mapper: func(expr SampleExpr) (SampleExpr, error) {
+		return QueryAbsence(expr, astMetadata{})
+	},
 }
 
 // QueryAbsence maps one SampleExpr into another which will act as a heuristic for whether the first expression
 // could fire as an alert. It's used to create "meta-alerts" which can detect when log based alerting
 // drifts out of sync with the code it monitors.
-func QueryAbsence(expr SampleExpr) (SampleExpr, error) {
+func QueryAbsence(expr SampleExpr, hints astMetadata) (SampleExpr, error) {
 	switch e := expr.(type) {
 	case *literalExpr:
 		return nil, nil
 	case *binOpExpr:
-		lhs, err := QueryAbsence(e.SampleExpr)
+		lhs, err := QueryAbsence(e.SampleExpr, hints)
 		if err != nil {
 			return nil, err
 		}
-		rhs, err := QueryAbsence(e.RHS)
+		rhs, err := QueryAbsence(e.RHS, hints)
 		if err != nil {
 			return nil, err
 		}
@@ -69,23 +76,34 @@ func QueryAbsence(expr SampleExpr) (SampleExpr, error) {
 		}, nil
 
 	case *vectorAggregationExpr:
-		// does not affect, descend
-		return QueryAbsence(e.left)
+		// add any groupings as extraLabels
+		if e.grouping != nil && !e.grouping.without {
+			hints.extraLabels = append(hints.extraLabels, e.grouping.groups...)
+		}
+		return QueryAbsence(e.left, hints)
 	case *labelReplaceExpr:
-		return QueryAbsence(e.left)
+		return QueryAbsence(e.left, hints)
 	case *rangeAggregationExpr:
 		if e.operation == OpRangeTypeAbsent {
 			// Absent queries already satisfy the absence heuristic
 			return nil, nil
 		}
-		return AbsenceLogRange(e.left)
+		// add any groupings as extraLabels
+		if e.grouping != nil && !e.grouping.without {
+			hints.extraLabels = append(hints.extraLabels, e.grouping.groups...)
+		}
+		return AbsenceLogRange(e.left, hints)
 	default:
 		return nil, fmt.Errorf("QueryAbsence unexpected type %T", expr)
 	}
 }
 
-func AbsenceLogRange(expr *logRange) (SampleExpr, error) {
-	selector, err := AbsenceLogSelector(expr.left)
+func AbsenceLogRange(expr *logRange, hints astMetadata) (SampleExpr, error) {
+	if expr.unwrap != nil {
+		hints.extraLabels = append(hints.extraLabels, expr.unwrap.identifier)
+	}
+
+	selector, err := AbsenceLogSelector(expr.left, hints)
 	if err != nil || selector == nil {
 		return nil, err
 	}
@@ -102,17 +120,25 @@ func AbsenceLogRange(expr *logRange) (SampleExpr, error) {
 	), nil
 }
 
-func AbsenceLogSelector(expr LogSelectorExpr) (LogSelectorExpr, error) {
+func AbsenceLogSelector(expr LogSelectorExpr, hints astMetadata) (LogSelectorExpr, error) {
 	switch e := expr.(type) {
 	case *literalExpr:
 		return nil, nil
 	case *matchersExpr:
+		if len(hints.extraLabels) > 0 {
+			return newPipelineExpr(e, nonEmptyRegexpStages(hints.extraLabels...)), nil
+		}
 		return e, nil
 	case *pipelineExpr:
 		var stages MultiStageExpr
-		for _, p := range e.pipeline {
+		for i, p := range e.pipeline {
 			switch s := p.(type) {
 			case *lineFilterExpr:
+
+				// if a parser follows this filter, include it
+				if hasParser(e.pipeline[i+1:]) {
+					stages = append(stages, s)
+				}
 				continue
 			case *labelFilterExpr:
 
@@ -134,20 +160,15 @@ func AbsenceLogSelector(expr LogSelectorExpr) (LogSelectorExpr, error) {
 				// would cause the alert to fire. Instead, we
 				// want to ensure the labels that will be tested
 				// are _present_.
-				for _, l := range s.RequiredLabelNames() {
-					stages = append(
-						stages,
-						&labelFilterExpr{
-							LabelFilterer: nonEmptyRegexpLabelFilter(l),
-						},
-					)
-				}
-
+				extraStages := nonEmptyRegexpStages(s.RequiredLabelNames()...)
+				stages = append(stages, extraStages...)
 			default:
 				stages = append(stages, s)
 			}
-
 		}
+
+		// add any extra labels that may be referenced by upstream aggregations
+		stages = append(stages, nonEmptyRegexpStages(hints.extraLabels...)...)
 
 		if len(stages) == 0 {
 			return e.left, nil
@@ -194,6 +215,28 @@ func nonEmptyRegexpLabelFilter(lName string) *log.StringLabelFilter {
 	)
 }
 
+func nonEmptyRegexpStages(ls ...string) MultiStageExpr {
+	var stages MultiStageExpr
+	for _, l := range ls {
+		stages = append(
+			stages,
+			&labelFilterExpr{
+				LabelFilterer: nonEmptyRegexpLabelFilter(l),
+			},
+		)
+	}
+	return stages
+}
+
+func hasParser(xs MultiStageExpr) (hasParser bool) {
+	for _, s := range xs {
+		if _, ok := s.(*labelParserExpr); ok {
+			hasParser = true
+		}
+	}
+	return hasParser
+}
+
 // Only returns non nil when this is not a binOpExpr and there is nothing more complex than
 // a set of matchers. This is because the generated alert would be the inverse of the firing state
 // and thus not helpful.
@@ -203,29 +246,82 @@ func nonEmptyRegexpLabelFilter(lName string) *log.StringLabelFilter {
 // In contrast, consider `rate({foo="bar"}[5m]) > 1`. The generated switch,
 // `absent_over_time({foo="bar"}[5m])`, makes a lot of sense to keep as there is a threshold
 // in the original alert.
-func OnlyMatchersAlert(expr SampleExpr) (SampleExpr, error) {
-	onlyMatchers, err := expr.Fold(func(accum interface{}, expr interface{}) (interface{}, error) {
-		acc := accum.(bool)
+var onlyMatchersAlert = rule{
+	test: func(expr SampleExpr) (bool, error) {
+
 		switch e := expr.(type) {
-		case *logRange:
-			_, isMatchers := e.left.(*matchersExpr)
-			// only return true if all log ranges are only
-			// simple matchersExprs
-			return acc && isMatchers, nil
+		case *rangeAggregationExpr:
+			// not only matchers, we'll need to check for aggregated labels
+			if e.grouping != nil && !e.grouping.without && len(e.grouping.groups) > 0 {
+				return false, nil
+			}
+		case *vectorAggregationExpr:
+			// not only matchers, we'll need to check for aggregated labels
+			if e.grouping != nil && !e.grouping.without && len(e.grouping.groups) > 0 {
+				return false, nil
+			}
+
+		default:
+			// We're only interested in range/vec aggs
+			return false, nil
 		}
-		return acc, nil
-	}, true)
+
+		onlyMatchers, err := expr.Fold(func(accum interface{}, expr interface{}) (interface{}, error) {
+			acc := accum.(bool)
+			switch e := expr.(type) {
+			case *logRange:
+				_, isMatchers := e.left.(*matchersExpr)
+				// only return true if all log ranges are only
+				// simple matchersExprs
+				return acc && isMatchers, nil
+			}
+			return acc, nil
+		}, true)
+
+		if err != nil {
+			return false, err
+		}
+
+		return onlyMatchers.(bool), nil
+	},
+
+	mapper: func(expr SampleExpr) (SampleExpr, error) {
+
+		if _, isBinOp := expr.(*binOpExpr); !isBinOp {
+			return nil, nil
+		}
+
+		return expr, nil
+
+	},
+}
+
+type astMetadata struct {
+	matchers    []*labels.Matcher
+	groupings   []*grouping
+	extraLabels []string
+}
+
+func astMeta(expr SampleExpr) (*astMetadata, error) {
+	md, err := expr.Fold(func(accum interface{}, expr interface{}) (interface{}, error) {
+		md := accum.(*astMetadata)
+
+		switch e := expr.(type) {
+		case *matchersExpr:
+			md.matchers = append(md.matchers, e.matchers...)
+		case *vectorAggregationExpr:
+			md.groupings = append(md.groupings, e.grouping)
+		case *rangeAggregationExpr:
+			md.groupings = append(md.groupings, e.grouping)
+		}
+
+		return md, nil
+
+	}, &astMetadata{})
 
 	if err != nil {
 		return nil, err
 	}
-
-	_, isBinOp := expr.(*binOpExpr)
-
-	if onlyMatchers.(bool) && !isBinOp {
-		return nil, nil
-	}
-
-	return expr, nil
+	return md.(*astMetadata), nil
 
 }

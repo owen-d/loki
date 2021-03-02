@@ -16,17 +16,26 @@ func Test_Validity(t *testing.T) {
 			query: `rate({foo="bar"}[5m])`,
 		},
 		{
+			// Same with sum
+			query: `sum(rate({foo="bar"}[5m]))`,
+		},
+		{
 			// when it's just a set of matchers but is a binop, ensure the underlying data exists.
 			query:    `rate({foo="bar"}[5m]) > 1`,
 			validity: `absent_over_time({foo="bar"}[5m])`,
 		},
-		// {
-		// 	// when a grouping exists, ensure the label is present.
-		// 	// Note: this could be improved to detect when indexed labels are used vs
-		// 	// when it's not known.
-		// 	query:    `sum by (cluster) (rate({foo="bar"}[1m]))`,
-		// 	validity: `absent_over_time({foo="bar"} | cluster=~".+" [1m])`,
-		// },
+		{
+			// when a grouping exists, ensure the label is present.
+			// Note: this could be improved to detect when indexed labels are used vs
+			// when it's not known.
+			query:    `sum by (cluster) (rate({foo="bar"}[1m]))`,
+			validity: `absent_over_time({foo="bar"} | cluster=~".+" [1m])`,
+		},
+		{
+			// Same as above, but under a binop
+			query:    `sum by (cluster) (rate({foo="bar"}[1m])) / sum by (cluster) (rate({foo="bar"}[1m]))`,
+			validity: `absent_over_time({foo="bar"} | cluster=~".+"[1m]) or absent_over_time({foo="bar"} | cluster=~".+"[1m])`,
+		},
 		{
 			// respect OR'd label filters
 			query:    `rate({foo="bar"} | logfmt | bazz="a" or buzz="b" [5m])`,
@@ -51,10 +60,10 @@ func Test_Validity(t *testing.T) {
 			// Once there are no more `foo="bar"` streams, the alert itself would fire.
 			query: `absent_over_time({foo="bar"}[5m])`,
 		},
-		// {
-		// 	query:    `sum by (org_id) (count_over_time({job="loki-prod/query-frontend"} |= "metrics.go:84" | logfmt | duration > 10s [5m])) > 10 `,
-		// 	validity: `{job="loki-prod/query-frontend"} |= "metrics.go:84" | logfmt | duration=~".+" | org_id =~".+"`,
-		// },
+		{
+			query:    `sum by (org_id) (count_over_time({job="loki-prod/query-frontend"} |= "metrics.go:84" | logfmt | duration > 10s [5m])) > 10 `,
+			validity: `absent_over_time({job="loki-prod/query-frontend"} |= "metrics.go:84" | logfmt | duration=~".+" | org_id =~".+" [5m])`,
+		},
 	} {
 		t.Run(tc.query, func(t *testing.T) {
 			expr, err := ParseExpr(tc.query)
@@ -77,6 +86,8 @@ func Test_Validity(t *testing.T) {
 
 			expected, err := ParseExpr(tc.validity)
 			require.Nil(t, err)
+			require.NotNil(t, expected)
+			require.NotNil(t, absence)
 			require.Equal(t, expected.String(), absence.String())
 
 		})
