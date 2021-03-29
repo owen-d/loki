@@ -207,10 +207,6 @@ func validateRuleNode(r *rulefmt.RuleNode) error {
 		return errors.Errorf("one of 'record' or 'alert' must be set")
 	}
 
-	if r.Record.Value != "" && r.Alert.Value != "" {
-		return errors.Errorf("only one of 'record' or 'alert' must be set")
-	}
-
 	if r.Expr.Value == "" {
 		return errors.Errorf("field 'expr' must be set in rule")
 	} else if _, err := logql.ParseExpr(r.Expr.Value); err != nil {
