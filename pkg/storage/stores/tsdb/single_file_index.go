@@ -92,10 +92,10 @@ func (i *TSDBIndex) GetChunkRefs(_ context.Context, userID string, from, through
 				}
 
 				res = append(res, ChunkRef{
-					User:        userID, // assumed to be the same, will be enforced by caller.
-					Fingerprint: fp,
-					Start:       chk.From(),
-					End:         chk.Through(),
+					UserID:      userID, // assumed to be the same, will be enforced by caller.
+					Fingerprint: uint64(fp),
+					From:        chk.From(),
+					Through:     chk.Through(),
 					Checksum:    chk.Checksum,
 				})
 			}
@@ -122,7 +122,7 @@ func (i *TSDBIndex) Series(_ context.Context, _ string, from, through model.Time
 					// this series has at least one chunk in the desired range
 					res = append(res, Series{
 						Labels:      ls.Copy(),
-						Fingerprint: fp,
+						Fingerprint: uint64(fp),
 					})
 					break
 				}

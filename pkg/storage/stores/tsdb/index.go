@@ -6,30 +6,16 @@ import (
 	"github.com/prometheus/common/model"
 	"github.com/prometheus/prometheus/model/labels"
 
+	"github.com/grafana/loki/pkg/logproto"
 	"github.com/grafana/loki/pkg/storage/stores/tsdb/index"
 )
 
 type Series struct {
 	Labels      labels.Labels
-	Fingerprint model.Fingerprint
+	Fingerprint uint64
 }
 
-type ChunkRef struct {
-	User        string
-	Fingerprint model.Fingerprint
-	Start, End  model.Time
-	Checksum    uint32
-}
-
-// Compares by (Start, End)
-// Assumes User is equivalent
-func (r ChunkRef) Less(x ChunkRef) bool {
-	if r.Start != x.Start {
-		return r.Start < x.Start
-	}
-	return r.End <= x.End
-}
-
+type ChunkRef = logproto.ChunkRef
 type Index interface {
 	Bounded
 	// GetChunkRefs accepts an optional []ChunkRef argument.

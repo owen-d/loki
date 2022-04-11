@@ -135,7 +135,7 @@ func (i *MultiIndex) Series(ctx context.Context, userID string, from, through mo
 		return nil, err
 	}
 
-	seen := make(map[model.Fingerprint]struct{})
+	seen := make(map[uint64]struct{})
 
 	for _, x := range groups {
 		seriesSet := x.([]Series)
