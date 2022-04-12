@@ -39,6 +39,7 @@ const (
 	StorageTypeSwift          = "swift"
 	// BoltDBShipperType holds the index type for using boltdb with shipper which keeps flushing them to a shared storage
 	BoltDBShipperType = "boltdb-shipper"
+	TSDBType          = "tsdb"
 )
 
 var (

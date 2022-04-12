@@ -178,10 +178,12 @@ func (s *store) chunkClientForPeriod(p config.PeriodConfig) (client.Client, erro
 }
 
 func (s *store) storeForPeriod(p config.PeriodConfig, chunkClient client.Client, f *fetcher.Fetcher) (stores.ChunkWriter, stores.Index, func(), error) {
-	// todo switch tsdb.
-
 	indexClientReg := prometheus.WrapRegistererWith(
 		prometheus.Labels{"component": "index-store-" + p.From.String()}, s.registerer)
+
+	if p.IndexType == config.TSDBType {
+		panic("unimplemented tsdb store")
+	}
 
 	idx, err := NewIndexClient(p.IndexType, s.cfg, s.schemaCfg, s.limits, s.clientMetrics, indexClientReg)
 	if err != nil {

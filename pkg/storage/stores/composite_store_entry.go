@@ -25,6 +25,7 @@ type StoreLimits interface {
 	MaxQueryLength(userID string) time.Duration
 }
 
+// TODO(owen-d): define a sharded version that TSDB can impl, then use in query planning
 type Index interface {
 	GetChunkRefs(ctx context.Context, userID string, from, through model.Time, matchers ...*labels.Matcher) ([]logproto.ChunkRef, error)
 	GetSeries(ctx context.Context, userID string, from, through model.Time, matchers ...*labels.Matcher) ([]labels.Labels, error)

@@ -26,6 +26,7 @@ import (
 	"github.com/grafana/loki/pkg/storage/stores/series/index"
 	"github.com/grafana/loki/pkg/storage/stores/shipper"
 	"github.com/grafana/loki/pkg/storage/stores/shipper/downloads"
+	"github.com/grafana/loki/pkg/storage/stores/tsdb"
 	util_log "github.com/grafana/loki/pkg/util/log"
 )
 
@@ -63,6 +64,7 @@ type Config struct {
 
 	MaxChunkBatchSize   int            `yaml:"max_chunk_batch_size"`
 	BoltDBShipperConfig shipper.Config `yaml:"boltdb_shipper"`
+	TSDBConfig          tsdb.Config    `yaml:"tsdb"`
 }
 
 // RegisterFlags adds the flags required to configure this flag set.
@@ -162,6 +164,12 @@ func NewIndexClient(name string, cfg Config, schemaCfg config.SchemaConfig, limi
 		boltDBIndexClientWithShipper, err = shipper.NewShipper(cfg.BoltDBShipperConfig, objectClient, limits, registerer)
 
 		return boltDBIndexClientWithShipper, err
+	case config.TSDBType:
+		_, err := NewObjectClient(cfg.TSDBConfig.Store, cfg, cm)
+		if err != nil {
+			return nil, err
+		}
+		panic("unimplemented TSDB Index Client")
 	default:
 		return nil, fmt.Errorf("Unrecognized storage client %v, choose one of: %v, %v, %v, %v, %v, %v", name, config.StorageTypeAWS, config.StorageTypeCassandra, config.StorageTypeInMemory, config.StorageTypeGCP, config.StorageTypeBigTable, config.StorageTypeBigTableHashed)
 	}
