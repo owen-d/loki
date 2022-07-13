@@ -208,15 +208,17 @@ type limitedRoundTripper struct {
 
 	codec      queryrangebase.Codec
 	middleware queryrangebase.Middleware
+	metrics    *Metrics
 }
 
 // NewLimitedRoundTripper creates a new roundtripper that enforces MaxQueryParallelism to the `next` roundtripper across `middlewares`.
-func NewLimitedRoundTripper(next http.RoundTripper, codec queryrangebase.Codec, limits Limits, middlewares ...queryrangebase.Middleware) http.RoundTripper {
+func NewLimitedRoundTripper(metrics *Metrics, next http.RoundTripper, codec queryrangebase.Codec, limits Limits, middlewares ...queryrangebase.Middleware) http.RoundTripper {
 	transport := limitedRoundTripper{
 		next:       next,
 		codec:      codec,
 		limits:     limits,
 		middleware: queryrangebase.MergeMiddlewares(middlewares...),
+		metrics:    metrics,
 	}
 	return transport
 }
@@ -288,10 +290,13 @@ func (rt limitedRoundTripper) RoundTrip(r *http.Request) (*http.Response, error)
 
 	response, err := rt.middleware.Wrap(
 		queryrangebase.HandlerFunc(func(ctx context.Context, r queryrangebase.Request) (queryrangebase.Response, error) {
+			start := time.Now()
 			w := newWork(ctx, r)
 			select {
 			case intermediate <- w:
+				rt.metrics.preQueue.Observe(time.Since(start).Seconds())
 			case <-ctx.Done():
+				rt.metrics.preQueue.Observe(time.Since(start).Seconds())
 				return nil, ctx.Err()
 			}
 			select {

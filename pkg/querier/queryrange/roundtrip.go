@@ -300,7 +300,7 @@ func NewLogFilterTripperware(
 
 	return func(next http.RoundTripper) http.RoundTripper {
 		if len(queryRangeMiddleware) > 0 {
-			return NewLimitedRoundTripper(next, codec, limits, queryRangeMiddleware...)
+			return NewLimitedRoundTripper(metrics, next, codec, limits, queryRangeMiddleware...)
 		}
 		return next
 	}, nil
@@ -347,7 +347,7 @@ func NewSeriesTripperware(
 
 	return func(next http.RoundTripper) http.RoundTripper {
 		if len(queryRangeMiddleware) > 0 {
-			return NewLimitedRoundTripper(next, codec, limits, queryRangeMiddleware...)
+			return NewLimitedRoundTripper(metrics, next, codec, limits, queryRangeMiddleware...)
 		}
 		return next
 	}, nil
@@ -461,7 +461,7 @@ func NewMetricTripperware(
 	return func(next http.RoundTripper) http.RoundTripper {
 		// Finally, if the user selected any query range middleware, stitch it in.
 		if len(queryRangeMiddleware) > 0 {
-			rt := NewLimitedRoundTripper(next, codec, limits, queryRangeMiddleware...)
+			rt := NewLimitedRoundTripper(metrics, next, codec, limits, queryRangeMiddleware...)
 			return queryrangebase.RoundTripFunc(func(r *http.Request) (*http.Response, error) {
 				if !strings.HasSuffix(r.URL.Path, "/query_range") {
 					return next.RoundTrip(r)
@@ -507,7 +507,7 @@ func NewInstantMetricTripperware(
 
 	return func(next http.RoundTripper) http.RoundTripper {
 		if len(queryRangeMiddleware) > 0 {
-			return NewLimitedRoundTripper(next, codec, limits, queryRangeMiddleware...)
+			return NewLimitedRoundTripper(metrics, next, codec, limits, queryRangeMiddleware...)
 		}
 		return next
 	}, nil

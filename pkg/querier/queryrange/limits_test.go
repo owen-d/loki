@@ -156,7 +156,7 @@ func Test_MaxQueryParallelism(t *testing.T) {
 	r, err := http.NewRequestWithContext(ctx, "GET", "/query_range", http.NoBody)
 	require.Nil(t, err)
 
-	_, _ = NewLimitedRoundTripper(f, LokiCodec, fakeLimits{maxQueryParallelism: maxQueryParallelism},
+	_, _ = NewLimitedRoundTripper(NewMetrics(nil), f, LokiCodec, fakeLimits{maxQueryParallelism: maxQueryParallelism},
 		queryrangebase.MiddlewareFunc(func(next queryrangebase.Handler) queryrangebase.Handler {
 			return queryrangebase.HandlerFunc(func(c context.Context, r queryrangebase.Request) (queryrangebase.Response, error) {
 				var wg sync.WaitGroup
@@ -190,7 +190,7 @@ func Test_MaxQueryParallelismLateScheduling(t *testing.T) {
 	r, err := http.NewRequestWithContext(ctx, "GET", "/query_range", http.NoBody)
 	require.Nil(t, err)
 
-	_, _ = NewLimitedRoundTripper(f, LokiCodec, fakeLimits{maxQueryParallelism: maxQueryParallelism},
+	_, _ = NewLimitedRoundTripper(NewMetrics(nil), f, LokiCodec, fakeLimits{maxQueryParallelism: maxQueryParallelism},
 		queryrangebase.MiddlewareFunc(func(next queryrangebase.Handler) queryrangebase.Handler {
 			return queryrangebase.HandlerFunc(func(c context.Context, r queryrangebase.Request) (queryrangebase.Response, error) {
 				for i := 0; i < 10; i++ {
@@ -218,7 +218,7 @@ func Test_MaxQueryParallelismDisable(t *testing.T) {
 	r, err := http.NewRequestWithContext(ctx, "GET", "/query_range", http.NoBody)
 	require.Nil(t, err)
 
-	_, err = NewLimitedRoundTripper(f, LokiCodec, fakeLimits{maxQueryParallelism: maxQueryParallelism},
+	_, err = NewLimitedRoundTripper(NewMetrics(nil), f, LokiCodec, fakeLimits{maxQueryParallelism: maxQueryParallelism},
 		queryrangebase.MiddlewareFunc(func(next queryrangebase.Handler) queryrangebase.Handler {
 			return queryrangebase.HandlerFunc(func(c context.Context, r queryrangebase.Request) (queryrangebase.Response, error) {
 				for i := 0; i < 10; i++ {
