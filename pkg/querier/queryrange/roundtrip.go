@@ -1,6 +1,7 @@
 package queryrange
 
 import (
+	"context"
 	"flag"
 	"net/http"
 	"strings"
@@ -10,6 +11,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/prometheus/model/labels"
 	"github.com/weaveworks/common/httpgrpc"
+	"github.com/weaveworks/common/user"
 
 	"github.com/grafana/dskit/tenant"
 
@@ -300,10 +302,54 @@ func NewLogFilterTripperware(
 
 	return func(next http.RoundTripper) http.RoundTripper {
 		if len(queryRangeMiddleware) > 0 {
-			return NewLimitedRoundTripper(next, codec, limits, queryRangeMiddleware...)
+			return passthroughRoundTripper{
+				middleware: queryrangebase.MergeMiddlewares(queryRangeMiddleware...),
+				next:       next,
+			}
 		}
 		return next
 	}, nil
+}
+
+type passthroughRoundTripper struct {
+	middleware queryrangebase.Middleware
+	next       http.RoundTripper
+	Codec
+}
+
+func (c passthroughRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
+
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+
+	req, err := c.DecodeRequest(ctx, r, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.middleware.Wrap(queryrangebase.HandlerFunc(func(ctx context.Context, r queryrangebase.Request) (queryrangebase.Response, error) {
+		request, err := c.EncodeRequest(ctx, r)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := user.InjectOrgIDIntoHTTPRequest(ctx, request); err != nil {
+			return nil, httpgrpc.Errorf(http.StatusBadRequest, err.Error())
+		}
+
+		response, err := c.next.RoundTrip(request)
+		if err != nil {
+			return nil, err
+		}
+		defer func() { _ = response.Body.Close() }()
+
+		return c.DecodeResponse(ctx, response, r)
+	})).Do(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.EncodeResponse(ctx, resp)
 }
 
 // NewSeriesTripperware creates a new frontend tripperware responsible for handling series requests
