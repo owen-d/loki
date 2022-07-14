@@ -153,6 +153,9 @@ func (f *Frontend) stopping(_ error) error {
 
 // RoundTripGRPC round trips a proto (instead of a HTTP request).
 func (f *Frontend) RoundTripGRPC(ctx context.Context, req *httpgrpc.HTTPRequest) (*httpgrpc.HTTPResponse, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "frontend.RoundTripGRPC")
+	defer span.Finish()
+
 	if s := f.State(); s != services.Running {
 		return nil, fmt.Errorf("frontend not running: %v", s)
 	}
@@ -194,16 +197,22 @@ func (f *Frontend) RoundTripGRPC(ctx context.Context, req *httpgrpc.HTTPRequest)
 
 	retries := f.cfg.WorkerConcurrency + 1 // To make sure we hit at least two different schedulers.
 
+	sp, _ := opentracing.StartSpanFromContext(ctx, "frontend.RoundTripGRPC.queued")
+	defer sp.Finish()
+
 enqueueAgain:
 	var cancelCh chan<- uint64
+	start := time.Now()
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
 
 	case f.requestsCh <- freq:
+		sp.LogKV("msg", "queued", "wait", time.Since(start).String(), "retry", retries)
 		// Enqueued, let's wait for response.
 		enqRes := <-freq.enqueue
 
+		sp.LogKV("msg", "scheduler_responded", "status", enqRes.status)
 		if enqRes.status == waitForResponse {
 			cancelCh = enqRes.cancelCh
 			break // go wait for response.
