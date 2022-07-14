@@ -344,6 +344,9 @@ func (t *Loki) ListTargets() {
 
 // Run starts Loki running, and blocks until a Loki stops.
 func (t *Loki) Run(opts RunOpts) error {
+	rt.SetBlockProfileRate(1)
+	rt.SetMutexProfileFraction(1)
+
 	serviceMap, err := t.ModuleManager.InitModuleServices(t.Cfg.Target...)
 	if err != nil {
 		return err
