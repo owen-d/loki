@@ -123,8 +123,8 @@ func (ast *astMapperware) Do(ctx context.Context, r queryrangebase.Request) (que
 		return nil, err
 	}
 
-	span, _ := opentracing.StartSpanFromContext(ctx, "astMapperware.Do.Parse")
-	noop, parsed, err := mapper.Parse(r.GetQuery())
+	span, spCtx := opentracing.StartSpanFromContext(ctx, "astMapperware.Do.Parse")
+	noop, parsed, err := mapper.Parse(spCtx, r.GetQuery())
 	span.Finish()
 	if err != nil {
 		level.Warn(logger).Log("msg", "failed mapping AST", "err", err.Error(), "query", r.GetQuery())

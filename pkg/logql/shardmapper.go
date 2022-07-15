@@ -1,9 +1,11 @@
 package logql
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/go-kit/log/level"
+	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 
@@ -36,7 +38,8 @@ func NewShardMapperMetrics(registerer prometheus.Registerer) *MapperMetrics {
 	return newMapperMetrics(registerer, "shard")
 }
 
-func (m ShardMapper) Parse(query string) (noop bool, expr syntax.Expr, err error) {
+func (m ShardMapper) Parse(ctx context.Context, query string) (noop bool, expr syntax.Expr, err error) {
+	sp := opentracing.SpanFromContext(ctx)
 	parsed, err := syntax.ParseExpr(query)
 	if err != nil {
 		return false, nil, err
@@ -45,6 +48,9 @@ func (m ShardMapper) Parse(query string) (noop bool, expr syntax.Expr, err error
 	recorder := m.metrics.downstreamRecorder()
 
 	mapped, err := m.Map(parsed, recorder)
+	if sp != nil {
+		sp.LogKV("msg", "mapped")
+	}
 	if err != nil {
 		m.metrics.ParsedQueries.WithLabelValues(FailureKey).Inc()
 		return false, nil, err
@@ -52,6 +58,9 @@ func (m ShardMapper) Parse(query string) (noop bool, expr syntax.Expr, err error
 
 	originalStr := parsed.String()
 	mappedStr := mapped.String()
+	if sp != nil {
+		sp.LogKV("msg", "stringified")
+	}
 	noop = originalStr == mappedStr
 	if noop {
 		m.metrics.ParsedQueries.WithLabelValues(NoopKey).Inc()
