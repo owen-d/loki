@@ -2,6 +2,7 @@ package v2
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"strconv"
 	"strings"
@@ -307,5 +308,26 @@ func (m *mockScheduler) FrontendLoop(frontend schedulerpb.SchedulerForFrontend_F
 		if err := frontend.Send(reply); err != nil {
 			return err
 		}
+	}
+}
+
+func BenchmarkXxx(b *testing.B) {
+	for _, factor := range []int{1, 2, 4, 16, 32, 64} {
+		b.Run(fmt.Sprint(factor), func(b *testing.B) {
+			// ch := make(chan uint64)
+			chs := make([]chan uint64, factor)
+			for i := 0; i < factor; i++ {
+				chs[i] = make(chan uint64)
+				go func(ch chan uint64) {
+					for {
+						<-ch
+					}
+				}(chs[i])
+			}
+
+			for i := 0; i < b.N; i++ {
+				chs[i%factor] <- 0
+			}
+		})
 	}
 }

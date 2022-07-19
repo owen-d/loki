@@ -192,12 +192,14 @@ func (f *Frontend) RoundTripGRPC(ctx context.Context, req *httpgrpc.HTTPRequest)
 		response: make(chan *frontendv2pb.QueryResultRequest, 1),
 	}
 
+	sp, _ := opentracing.StartSpanFromContext(ctx, "frontend.RoundTripGRPC.putReq")
 	f.requests.put(freq)
+	sp.Finish()
 	defer f.requests.delete(freq.queryID)
 
 	retries := f.cfg.WorkerConcurrency + 1 // To make sure we hit at least two different schedulers.
 
-	sp, _ := opentracing.StartSpanFromContext(ctx, "frontend.RoundTripGRPC.queued")
+	sp, _ = opentracing.StartSpanFromContext(ctx, "frontend.RoundTripGRPC.queued")
 	defer sp.Finish()
 
 enqueueAgain:
