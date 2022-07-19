@@ -108,8 +108,23 @@ func (sp *schedulerProcessor) querierLoop(c schedulerpb.SchedulerForQuerier_Quer
 	ctx, cancel := context.WithCancel(c.Context())
 	defer cancel()
 
+	var accumulatedIdle, accumulatedBusy time.Duration
+
 	for {
+		// adjust/reset querySecond metrics if above a measurable threshold
+		if idleS := accumulatedIdle.Seconds(); idleS > 0 {
+			sp.metrics.querySeconds.WithLabelValues("idle").Add(idleS)
+			accumulatedIdle = 0
+		}
+		if busyS := accumulatedBusy.Seconds(); busyS > 0 {
+			sp.metrics.querySeconds.WithLabelValues("busy").Add(busyS)
+			accumulatedBusy = 0
+		}
+
+		start := time.Now()
 		request, err := c.Recv()
+		idle := time.Since(start)
+		accumulatedIdle += idle
 		if err != nil {
 			return err
 		}
@@ -129,6 +144,7 @@ func (sp *schedulerProcessor) querierLoop(c schedulerpb.SchedulerForQuerier_Quer
 			sp.metrics.inflightRequests.Inc()
 
 			sp.runRequest(ctx, logger, request.QueryID, request.FrontendAddress, request.StatsEnabled, request.HttpRequest)
+			accumulatedBusy += time.Since(start) - idle
 
 			sp.metrics.inflightRequests.Dec()
 
