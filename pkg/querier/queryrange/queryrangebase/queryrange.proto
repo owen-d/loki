@@ -6,6 +6,7 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/duration.proto";
 import "pkg/logproto/logproto.proto";
+import "pkg/querier/queryrange/queryrangebase/caching/caching.proto";
 
 option go_package = "github.com/grafana/loki/pkg/querier/queryrange/queryrangebase";
 option (gogoproto.marshaler_all) = true;
@@ -25,7 +26,7 @@ message PrometheusRequest {
     (gogoproto.nullable) = false
   ];
   string query = 6;
-  CachingOptions cachingOptions = 7 [(gogoproto.nullable) = false];
+  caching.CachingOptions cachingOptions = 7 [(gogoproto.nullable) = false];
   repeated PrometheusRequestHeader Headers = 8 [(gogoproto.jsontag) = "-"];
 }
 
@@ -84,6 +85,3 @@ message Extent {
   google.protobuf.Any response = 5 [(gogoproto.jsontag) = "response"];
 }
 
-message CachingOptions {
-  bool disabled = 1;
-}

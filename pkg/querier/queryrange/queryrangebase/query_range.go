@@ -23,6 +23,7 @@ import (
 	"github.com/weaveworks/common/httpgrpc"
 
 	"github.com/grafana/loki/pkg/logproto"
+	"github.com/grafana/loki/pkg/querier/queryrange/queryrangebase/caching"
 	"github.com/grafana/loki/pkg/util"
 	"github.com/grafana/loki/pkg/util/spanlogger"
 )
@@ -80,7 +81,7 @@ type Request interface {
 	// GetQuery returns the query of the request.
 	GetQuery() string
 	// GetCachingOptions returns the caching options.
-	GetCachingOptions() CachingOptions
+	GetCachingOptions() caching.CachingOptions
 	// WithStartEnd clone the current request with different start and end timestamp.
 	WithStartEnd(startTime int64, endTime int64) Request
 	// WithQuery clone the current request with a different query.

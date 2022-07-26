@@ -9,6 +9,7 @@ import (
 	"github.com/prometheus/prometheus/model/timestamp"
 
 	"github.com/grafana/loki/pkg/querier/queryrange/queryrangebase"
+	"github.com/grafana/loki/pkg/querier/queryrange/queryrangebase/caching"
 )
 
 // Satisfy queryrangebase.Request
@@ -32,7 +33,7 @@ func (m *IndexStatsRequest) GetQuery() string {
 }
 
 // GetCachingOptions returns the caching options.
-func (m *IndexStatsRequest) GetCachingOptions() (res queryrangebase.CachingOptions) { return }
+func (m *IndexStatsRequest) GetCachingOptions() (res caching.CachingOptions) { return }
 
 // WithStartEnd clone the current request with different start and end timestamp.
 func (m *IndexStatsRequest) WithStartEnd(startTime int64, endTime int64) queryrangebase.Request {

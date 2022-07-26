@@ -17,6 +17,7 @@ import (
 
 	"github.com/grafana/loki/pkg/logproto"
 	"github.com/grafana/loki/pkg/logqlmodel/stats"
+	"github.com/grafana/loki/pkg/querier/queryrange/queryrangebase/caching"
 	"github.com/grafana/loki/pkg/storage/chunk/cache"
 )
 
@@ -45,7 +46,7 @@ var (
 		End:            1536716898 * 1e3,
 		Step:           120 * 1e3,
 		Query:          "sum(container_memory_rss) by (namespace)",
-		CachingOptions: CachingOptions{Disabled: true},
+		CachingOptions: caching.CachingOptions{Disabled: true},
 	}
 	respHeaders = []*PrometheusResponseHeader{
 		{

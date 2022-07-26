@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package caching;
+
+option go_package = "github.com/grafana/loki/pkg/querier/queryrange/queryrangebase/caching";
+
+// This is put into it's own file to ease circular importing issues
+
+message CachingOptions {
+  bool disabled = 1;
+}
+
+
