@@ -87,7 +87,7 @@ type seriesResponseAdapter struct {
 	Data   []map[string]string `json:"data"`
 }
 
-// WriteIndexStatsResponseJSON marshals a gatewaypb.Stats to JSON and then
+// WriteIndexStatsResponseJSON marshals a Stats to JSON and then
 // writes it to the provided io.Writer.
 func WriteIndexStatsResponseJSON(r *stats.Stats, w io.Writer) error {
 	return jsoniter.NewEncoder(w).Encode(r)

@@ -1,4 +1,4 @@
-package indexgatewaypb
+package logproto
 
 import (
 	"time"
