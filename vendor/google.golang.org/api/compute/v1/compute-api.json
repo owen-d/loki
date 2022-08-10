@@ -7308,7 +7308,7 @@
           ]
         },
         "listManagedInstances": {
-          "description": "Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported.",
+          "description": "Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported. The `pageToken` query parameter is supported only in the alpha and beta API and only if the group's `listManagedInstancesResults` field is set to `PAGINATED`.",
           "flatPath": "projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances",
           "httpMethod": "POST",
           "id": "compute.instanceGroupManagers.listManagedInstances",
@@ -8765,7 +8765,7 @@
           ]
         },
         "bulkInsert": {
-          "description": "Creates multiple instances. Count specifies the number of instances to create.",
+          "description": "Creates multiple instances. Count specifies the number of instances to create. For more information, see About bulk creation of VMs.",
           "flatPath": "projects/{project}/zones/{zone}/instances/bulkInsert",
           "httpMethod": "POST",
           "id": "compute.instances.bulkInsert",
@@ -19492,7 +19492,7 @@
           ]
         },
         "listManagedInstances": {
-          "description": "Lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported.",
+          "description": "Lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported. The `pageToken` query parameter is supported only in the alpha and beta API and only if the group's `listManagedInstancesResults` field is set to `PAGINATED`.",
           "flatPath": "projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances",
           "httpMethod": "POST",
           "id": "compute.regionInstanceGroupManagers.listManagedInstances",
@@ -31172,7 +31172,7 @@
       }
     }
   },
-  "revision": "20220526",
+  "revision": "20220720",
   "rootUrl": "https://compute.googleapis.com/",
   "schemas": {
     "AcceleratorConfig": {
@@ -31287,6 +31287,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -31315,6 +31316,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -31405,6 +31407,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -31433,6 +31436,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -31505,6 +31509,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -31533,6 +31538,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -31845,6 +31851,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -31873,6 +31880,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -31963,6 +31971,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -31991,6 +32000,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -32063,6 +32073,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -32091,6 +32102,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -32260,6 +32272,20 @@
       "description": "An instance-attached disk resource.",
       "id": "AttachedDisk",
       "properties": {
+        "architecture": {
+          "description": "[Output Only] The architecture of the attached disk. Valid values are ARM64 or X86_64.",
+          "enum": [
+            "ARCHITECTURE_UNSPECIFIED",
+            "ARM64",
+            "X86_64"
+          ],
+          "enumDescriptions": [
+            "Default value indicating Architecture is not set.",
+            "Machines with architecture ARM64",
+            "Machines with architecture X86_64"
+          ],
+          "type": "string"
+        },
         "autoDelete": {
           "description": "Specifies whether the disk will be auto-deleted when the instance is deleted (but not when the disk is detached from the instance).",
           "type": "boolean"
@@ -32360,6 +32386,20 @@
       "description": "[Input Only] Specifies the parameters for a new disk that will be created alongside the new instance. Use initialization parameters to create boot disks or local SSDs attached to the new instance. This field is persisted and returned for instanceTemplate and not returned in the context of instance. This property is mutually exclusive with the source property; you can only define one or the other, but not both.",
       "id": "AttachedDiskInitializeParams",
       "properties": {
+        "architecture": {
+          "description": "The architecture of the attached disk. Valid values are arm64 or x86_64.",
+          "enum": [
+            "ARCHITECTURE_UNSPECIFIED",
+            "ARM64",
+            "X86_64"
+          ],
+          "enumDescriptions": [
+            "Default value indicating Architecture is not set.",
+            "Machines with architecture ARM64",
+            "Machines with architecture X86_64"
+          ],
+          "type": "string"
+        },
         "description": {
           "description": "An optional description. Provide this property when creating the disk.",
           "type": "string"
@@ -32659,6 +32699,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -32687,6 +32728,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -32777,6 +32819,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -32805,6 +32848,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -32935,6 +32979,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -32963,6 +33008,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -33264,7 +33310,7 @@
           "type": "number"
         },
         "maxUtilization": {
-          "description": "Optional parameter to define a target capacity for the UTILIZATIONbalancing mode. The valid range is [0.0, 1.0]. For usage guidelines, see Utilization balancing mode.",
+          "description": "Optional parameter to define a target capacity for the UTILIZATION balancing mode. The valid range is [0.0, 1.0]. For usage guidelines, see Utilization balancing mode.",
           "format": "float",
           "type": "number"
         }
@@ -33500,6 +33546,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -33528,6 +33575,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -33881,6 +33929,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -33909,6 +33958,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -34220,6 +34270,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -34248,6 +34299,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -34402,6 +34454,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -34430,6 +34483,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -34762,7 +34816,7 @@
         },
         "locationPolicy": {
           "$ref": "LocationPolicy",
-          "description": "Policy for chosing target zone."
+          "description": "Policy for chosing target zone. For more information, see Create VMs in bulk ."
         },
         "minCount": {
           "description": "The minimum number of instances to create. If no min_count is specified then count is used as the default value. If min_count instances cannot be created, then no instances will be created and instances already created will be deleted.",
@@ -34987,11 +35041,13 @@
           "description": "[Output Only] Status of the commitment with regards to eventual expiration (each commitment has an end date defined). One of the following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.",
           "enum": [
             "ACTIVE",
+            "CANCELLED",
             "CREATING",
             "EXPIRED",
             "NOT_YET_ACTIVE"
           ],
           "enumDescriptions": [
+            "",
             "",
             "",
             "",
@@ -35085,6 +35141,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -35113,6 +35170,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -35203,6 +35261,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -35231,6 +35290,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -35303,6 +35363,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -35331,6 +35392,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -35659,6 +35721,20 @@
       "description": "Represents a Persistent Disk resource. Google Compute Engine has two Disk resources: * [Zonal](/compute/docs/reference/rest/v1/disks) * [Regional](/compute/docs/reference/rest/v1/regionDisks) Persistent disks are required for running your VM instances. Create both boot and non-boot (data) persistent disks. For more information, read Persistent Disks. For more storage options, read Storage options. The disks resource represents a zonal persistent disk. For more information, read Zonal persistent disks. The regionDisks resource represents a regional persistent disk. For more information, read Regional resources.",
       "id": "Disk",
       "properties": {
+        "architecture": {
+          "description": "The architecture of the disk. Valid values are ARM64 or X86_64.",
+          "enum": [
+            "ARCHITECTURE_UNSPECIFIED",
+            "ARM64",
+            "X86_64"
+          ],
+          "enumDescriptions": [
+            "Default value indicating Architecture is not set.",
+            "Machines with architecture ARM64",
+            "Machines with architecture X86_64"
+          ],
+          "type": "string"
+        },
         "creationTimestamp": {
           "description": "[Output Only] Creation timestamp in RFC3339 text format.",
           "type": "string"
@@ -35903,6 +35979,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -35931,6 +36008,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -36062,6 +36140,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -36090,6 +36169,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -36256,6 +36336,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -36284,6 +36365,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -36374,6 +36456,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -36402,6 +36485,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -36474,6 +36558,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -36502,6 +36587,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -36611,6 +36697,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -36639,6 +36726,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -36757,6 +36845,28 @@
       },
       "type": "object"
     },
+    "ErrorInfo": {
+      "description": "Describes the cause of the error with structured details. Example of an error when contacting the \"pubsub.googleapis.com\" API when it is not enabled: { \"reason\": \"API_DISABLED\" \"domain\": \"googleapis.com\" \"metadata\": { \"resource\": \"projects/123\", \"service\": \"pubsub.googleapis.com\" } } This response indicates that the pubsub.googleapis.com API is not enabled. Example of an error that is returned when attempting to create a Spanner instance in a region that is out of stock: { \"reason\": \"STOCKOUT\" \"domain\": \"spanner.googleapis.com\", \"metadata\": { \"availableRegions\": \"us-central1,us-east2\" } }",
+      "id": "ErrorInfo",
+      "properties": {
+        "domain": {
+          "description": "The logical grouping to which the \"reason\" belongs. The error domain is typically the registered service name of the tool or product that generates the error. Example: \"pubsub.googleapis.com\". If the error is generated by some common infrastructure, the error domain must be a globally unique value that identifies the infrastructure. For Google API infrastructure, the error domain is \"googleapis.com\".",
+          "type": "string"
+        },
+        "metadatas": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Additional structured details about this error. Keys should match /[a-zA-Z0-9-_]/ and be limited to 64 characters in length. When identifying the current value of an exceeded limit, the units should be contained in the key, not the value. For example, rather than {\"instanceLimit\": \"100/request\"}, should be returned as, {\"instanceLimitPerRequest\": \"100\"}, if the client exceeds the number of instances that can be created in a single (batch) request.",
+          "type": "object"
+        },
+        "reason": {
+          "description": "The reason of the error. This is a constant value that identifies the proximate cause of the error. Error reasons are unique within a particular domain of errors. This should be at most 63 characters and match /[A-Z0-9_]+/.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "ExchangedPeeringRoute": {
       "id": "ExchangedPeeringRoute",
       "properties": {
@@ -36835,6 +36945,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -36863,6 +36974,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -37067,6 +37179,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -37095,6 +37208,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -37361,6 +37475,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -37389,6 +37504,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -37620,6 +37736,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -37648,6 +37765,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -37933,7 +38051,7 @@
           "type": "string"
         },
         "ipVersion": {
-          "description": "The IP Version that will be used by this forwarding rule. Valid options are IPV4 or IPV6. This can only be specified for an external global forwarding rule.",
+          "description": "The IP Version that will be used by this forwarding rule. Valid options are IPV4 or IPV6.",
           "enum": [
             "IPV4",
             "IPV6",
@@ -38043,6 +38161,7 @@
           "enum": [
             "ACCEPTED",
             "CLOSED",
+            "NEEDS_ATTENTION",
             "PENDING",
             "REJECTED",
             "STATUS_UNSPECIFIED"
@@ -38050,6 +38169,7 @@
           "enumDescriptions": [
             "The connection has been accepted by the producer.",
             "The connection has been closed by the producer and will not serve traffic going forward.",
+            "The connection has been accepted by the producer, but the producer needs to take further action before the forwarding rule can serve traffic.",
             "The connection is pending acceptance by the producer.",
             "The connection has been rejected by the producer.",
             ""
@@ -38139,6 +38259,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -38167,6 +38288,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -38257,6 +38379,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -38285,6 +38408,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -38385,6 +38509,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -38413,6 +38538,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -38980,6 +39106,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -39008,6 +39135,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -39204,6 +39332,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -39232,6 +39361,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -39329,6 +39459,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -39357,6 +39488,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -39429,6 +39561,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -39457,6 +39590,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -39602,6 +39736,35 @@
             "",
             ""
           ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Help": {
+      "description": "Provides links to documentation or for performing an out of band action. For example, if a quota check failed with an error indicating the calling project hasn't enabled the accessed service, this can contain a URL pointing directly to the right place in the developer console to flip the bit.",
+      "id": "Help",
+      "properties": {
+        "links": {
+          "description": "URL(s) pointing to additional information on handling the current error.",
+          "items": {
+            "$ref": "HelpLink"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "HelpLink": {
+      "description": "Describes a URL link.",
+      "id": "HelpLink",
+      "properties": {
+        "description": {
+          "description": "Describes what the link offers.",
+          "type": "string"
+        },
+        "url": {
+          "description": "The URL of the link.",
           "type": "string"
         }
       },
@@ -39879,6 +40042,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -39907,6 +40071,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -40279,6 +40444,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -40307,6 +40473,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -40359,6 +40526,20 @@
       "description": "Represents an Image resource. You can use images to create boot disks for your VM instances. For more information, read Images.",
       "id": "Image",
       "properties": {
+        "architecture": {
+          "description": "The architecture of the image. Valid values are ARM64 or X86_64.",
+          "enum": [
+            "ARCHITECTURE_UNSPECIFIED",
+            "ARM64",
+            "X86_64"
+          ],
+          "enumDescriptions": [
+            "Default value indicating Architecture is not set.",
+            "Machines with architecture ARM64",
+            "Machines with architecture X86_64"
+          ],
+          "type": "string"
+        },
         "archiveSizeBytes": {
           "description": "Size of the image tar.gz archive stored in Google Cloud Storage (in bytes).",
           "format": "int64",
@@ -40605,6 +40786,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -40633,6 +40815,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -40774,6 +40957,20 @@
         "id": {
           "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
           "format": "uint64",
+          "type": "string"
+        },
+        "keyRevocationActionType": {
+          "description": "KeyRevocationActionType of the instance. Supported options are \"STOP\" and \"NONE\". The default value is \"NONE\" if it is not specified.",
+          "enum": [
+            "KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED",
+            "NONE",
+            "STOP"
+          ],
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "Indicates user chose no operation.",
+            "Indicates user chose to opt for VM shutdown on key revocation."
+          ],
           "type": "string"
         },
         "kind": {
@@ -41000,6 +41197,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -41028,6 +41226,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -41197,6 +41396,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -41225,6 +41425,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -41315,6 +41516,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -41343,6 +41545,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -41641,6 +41844,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -41669,6 +41873,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -41774,6 +41979,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -41802,6 +42008,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -42176,6 +42383,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -42204,6 +42412,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -42303,6 +42512,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -42331,6 +42541,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -42475,6 +42686,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -42503,6 +42715,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -42606,6 +42819,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -42634,6 +42848,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -42742,6 +42957,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -42770,6 +42986,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -42860,6 +43077,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -42888,6 +43106,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -43076,6 +43295,20 @@
             "$ref": "AcceleratorConfig"
           },
           "type": "array"
+        },
+        "keyRevocationActionType": {
+          "description": "KeyRevocationActionType of the instance. Supported options are \"STOP\" and \"NONE\". The default value is \"NONE\" if it is not specified.",
+          "enum": [
+            "KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED",
+            "NONE",
+            "STOP"
+          ],
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "Indicates user chose no operation.",
+            "Indicates user chose to opt for VM shutdown on key revocation."
+          ],
+          "type": "string"
         },
         "labels": {
           "additionalProperties": {
@@ -43269,6 +43502,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -43297,6 +43531,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -43501,6 +43736,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -43529,6 +43765,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -44128,6 +44365,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -44156,6 +44394,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -44246,6 +44485,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -44274,6 +44514,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -44377,6 +44618,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -44405,6 +44647,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -44641,6 +44884,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -44669,6 +44913,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -44867,6 +45112,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -44895,6 +45141,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -45272,6 +45519,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -45300,6 +45548,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -45368,6 +45617,21 @@
       },
       "type": "object"
     },
+    "LocalizedMessage": {
+      "description": "Provides a localized error message that is safe to return to the user which can be attached to an RPC error.",
+      "id": "LocalizedMessage",
+      "properties": {
+        "locale": {
+          "description": "The locale used following the specification defined at http://www.rfc-editor.org/rfc/bcp/bcp47.txt. Examples are: \"en-US\", \"fr-CH\", \"es-MX\"",
+          "type": "string"
+        },
+        "message": {
+          "description": "The localized error message in the above locale.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "LocationPolicy": {
       "description": "Configuration for location policy among multiple possible locations (e.g. preferences for zone selection among zones in a single region).",
       "id": "LocationPolicy",
@@ -45399,8 +45663,12 @@
     "LocationPolicyLocation": {
       "id": "LocationPolicyLocation",
       "properties": {
+        "constraints": {
+          "$ref": "LocationPolicyLocationConstraints",
+          "description": "Constraints that the caller requires on the result distribution in this zone."
+        },
         "preference": {
-          "description": "Preference for a given location.",
+          "description": "Preference for a given location. Set to either ALLOW or DENY.",
           "enum": [
             "ALLOW",
             "DENY",
@@ -45412,6 +45680,18 @@
             "Default value, unused."
           ],
           "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "LocationPolicyLocationConstraints": {
+      "description": "Per-zone constraints on location policy for this zone.",
+      "id": "LocationPolicyLocationConstraints",
+      "properties": {
+        "maxCount": {
+          "description": "Maximum number of items that are allowed to be placed in this zone. The value must be non-negative.",
+          "format": "int32",
+          "type": "integer"
         }
       },
       "type": "object"
@@ -45665,6 +45945,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -45693,6 +45974,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -45893,6 +46175,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -45921,6 +46204,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -46011,6 +46295,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -46039,6 +46324,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -46111,6 +46397,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -46139,6 +46426,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -46330,6 +46618,24 @@
                     "description": "[Output Only] The error type identifier for this error.",
                     "type": "string"
                   },
+                  "errorDetails": {
+                    "description": "[Output Only] An optional list of messages that contain the error details. There is a set of defined message types to use for providing details.The syntax depends on the error code. For example, QuotaExceededInfo will have details when the error code is QUOTA_EXCEEDED.",
+                    "items": {
+                      "properties": {
+                        "errorInfo": {
+                          "$ref": "ErrorInfo"
+                        },
+                        "help": {
+                          "$ref": "Help"
+                        },
+                        "localizedMessage": {
+                          "$ref": "LocalizedMessage"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
                   "location": {
                     "description": "[Output Only] Indicates the field in the request that caused the error. This property is optional.",
                     "type": "string"
@@ -46494,6 +46800,10 @@
         "enableUlaInternalIpv6": {
           "description": "Enable ULA internal ipv6 on this network. Enabling this feature will assign a /48 from google defined ULA prefix fd20::/20. .",
           "type": "boolean"
+        },
+        "firewallPolicy": {
+          "description": "[Output Only] URL of the firewall policy the network is associated with.",
+          "type": "string"
         },
         "gatewayIPv4": {
           "description": "[Output Only] The gateway address for default routing out of the network, selected by GCP.",
@@ -46673,6 +46983,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -46701,6 +47012,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -46773,6 +47085,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -46801,6 +47114,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -47033,6 +47347,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -47061,6 +47376,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -47118,7 +47434,7 @@
           "type": "string"
         },
         "urlMask": {
-          "description": "A template to parse service and version fields from a request URL. URL mask allows for routing to multiple App Engine services without having to create multiple Network Endpoint Groups and backend services. For example, the request URLs \"foo1-dot-appname.appspot.com/v1\" and \"foo1-dot-appname.appspot.com/v2\" can be backed by the same Serverless NEG with URL mask \"-dot-appname.appspot.com/\". The URL mask will parse them to { service = \"foo1\", version = \"v1\" } and { service = \"foo1\", version = \"v2\" } respectively.",
+          "description": "A template to parse service and version fields from a request URL. URL mask allows for routing to multiple App Engine services without having to create multiple Network Endpoint Groups and backend services. For example, the request URLs \"foo1-dot-appname.appspot.com/v1\" and \"foo1-dot-appname.appspot.com/v2\" can be backed by the same Serverless NEG with URL mask \"\u003cservice\u003e-dot-appname.appspot.com/\u003cversion\u003e\". The URL mask will parse them to { service = \"foo1\", version = \"v1\" } and { service = \"foo1\", version = \"v2\" } respectively.",
           "type": "string"
         },
         "version": {
@@ -47137,7 +47453,7 @@
           "type": "string"
         },
         "urlMask": {
-          "description": "A template to parse function field from a request URL. URL mask allows for routing to multiple Cloud Functions without having to create multiple Network Endpoint Groups and backend services. For example, request URLs \" mydomain.com/function1\" and \"mydomain.com/function2\" can be backed by the same Serverless NEG with URL mask \"/\". The URL mask will parse them to { function = \"function1\" } and { function = \"function2\" } respectively.",
+          "description": "A template to parse function field from a request URL. URL mask allows for routing to multiple Cloud Functions without having to create multiple Network Endpoint Groups and backend services. For example, request URLs \" mydomain.com/function1\" and \"mydomain.com/function2\" can be backed by the same Serverless NEG with URL mask \"/\u003cfunction\u003e\". The URL mask will parse them to { function = \"function1\" } and { function = \"function2\" } respectively.",
           "type": "string"
         }
       },
@@ -47203,6 +47519,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -47231,6 +47548,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -47360,6 +47678,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -47388,6 +47707,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -47460,6 +47780,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -47488,6 +47809,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -47701,6 +48023,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -47729,6 +48052,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -48131,6 +48455,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -48159,6 +48484,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -48281,6 +48607,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -48309,6 +48636,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -48515,6 +48843,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -48543,6 +48872,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -48615,6 +48945,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -48643,6 +48974,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -48852,6 +49184,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -48880,6 +49213,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -48970,6 +49304,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -48998,6 +49333,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -49085,6 +49421,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -49113,6 +49450,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -49271,6 +49609,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -49299,6 +49638,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -49389,6 +49729,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -49417,6 +49758,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -49489,6 +49831,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -49517,6 +49860,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -49676,6 +50020,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -49704,6 +50049,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -49782,6 +50128,24 @@
                   "code": {
                     "description": "[Output Only] The error type identifier for this error.",
                     "type": "string"
+                  },
+                  "errorDetails": {
+                    "description": "[Output Only] An optional list of messages that contain the error details. There is a set of defined message types to use for providing details.The syntax depends on the error code. For example, QuotaExceededInfo will have details when the error code is QUOTA_EXCEEDED.",
+                    "items": {
+                      "properties": {
+                        "errorInfo": {
+                          "$ref": "ErrorInfo"
+                        },
+                        "help": {
+                          "$ref": "Help"
+                        },
+                        "localizedMessage": {
+                          "$ref": "LocalizedMessage"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "type": "array"
                   },
                   "location": {
                     "description": "[Output Only] Indicates the field in the request that caused the error. This property is optional.",
@@ -49897,6 +50261,7 @@
                   "EXTERNAL_API_WARNING",
                   "FIELD_VALUE_OVERRIDEN",
                   "INJECTED_KERNELS_DEPRECATED",
+                  "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                   "LARGE_DEPLOYMENT_WARNING",
                   "MISSING_TYPE_DEPENDENCY",
                   "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -49925,6 +50290,7 @@
                   "Warning that is present in an external api call",
                   "Warning that value of a field has been overridden. Deprecated unused field.",
                   "The operation involved use of an injected kernel, which is deprecated.",
+                  "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                   "When deploying a deployment with a exceedingly large number of resources",
                   "A resource depends on a missing type",
                   "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -50028,6 +50394,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -50056,6 +50423,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -50146,6 +50514,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -50174,6 +50543,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -50246,6 +50616,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -50274,6 +50645,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -50572,6 +50944,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -50600,6 +50973,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -50738,6 +51112,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -50766,6 +51141,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -50907,6 +51283,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -50935,6 +51312,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -51486,6 +51864,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -51514,6 +51893,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -51721,6 +52101,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -51749,6 +52130,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -51838,6 +52220,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -51866,6 +52249,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -51981,6 +52365,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -52009,6 +52394,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -52483,6 +52869,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -52511,6 +52898,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -52600,6 +52988,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -52628,6 +53017,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -52755,6 +53145,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -52783,6 +53174,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -52887,6 +53279,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -52915,6 +53308,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -53130,6 +53524,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -53158,6 +53553,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -53305,6 +53701,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -53333,6 +53730,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -53464,6 +53862,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -53492,6 +53891,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -53641,7 +54041,7 @@
       "id": "RegionTargetHttpsProxiesSetSslCertificatesRequest",
       "properties": {
         "sslCertificates": {
-          "description": "New set of SslCertificate resources to associate with this TargetHttpsProxy resource. Currently exactly one SslCertificate resource must be specified.",
+          "description": "New set of SslCertificate resources to associate with this TargetHttpsProxy resource.",
           "items": {
             "type": "string"
           },
@@ -53665,7 +54065,7 @@
       "id": "RequestMirrorPolicy",
       "properties": {
         "backendService": {
-          "description": "The full or partial URL to the BackendService resource being mirrored to.",
+          "description": "The full or partial URL to the BackendService resource being mirrored to. The backend service configured for a mirroring policy must reference backends that are of the same type as the original backend service matched in the URL map. Serverless NEG backends are not currently supported as a mirrored backend service. ",
           "type": "string"
         }
       },
@@ -53836,6 +54236,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -53864,6 +54265,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -53953,6 +54355,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -53981,6 +54384,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -54064,6 +54468,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -54092,6 +54497,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -54208,6 +54614,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -54236,6 +54643,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -54412,6 +54820,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -54440,6 +54849,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -54639,6 +55049,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -54667,6 +55078,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -55040,6 +55452,7 @@
                   "EXTERNAL_API_WARNING",
                   "FIELD_VALUE_OVERRIDEN",
                   "INJECTED_KERNELS_DEPRECATED",
+                  "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                   "LARGE_DEPLOYMENT_WARNING",
                   "MISSING_TYPE_DEPENDENCY",
                   "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -55068,6 +55481,7 @@
                   "Warning that is present in an external api call",
                   "Warning that value of a field has been overridden. Deprecated unused field.",
                   "The operation involved use of an injected kernel, which is deprecated.",
+                  "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                   "When deploying a deployment with a exceedingly large number of resources",
                   "A resource depends on a missing type",
                   "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -55190,6 +55604,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -55218,6 +55633,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -55413,6 +55829,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -55441,6 +55858,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -55786,6 +56204,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -55814,6 +56233,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -56342,6 +56762,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -56370,6 +56791,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -56650,6 +57072,20 @@
       "description": "An instance-attached disk resource.",
       "id": "SavedDisk",
       "properties": {
+        "architecture": {
+          "description": "[Output Only] The architecture of the attached disk.",
+          "enum": [
+            "ARCHITECTURE_UNSPECIFIED",
+            "ARM64",
+            "X86_64"
+          ],
+          "enumDescriptions": [
+            "Default value indicating Architecture is not set.",
+            "Machines with architecture ARM64",
+            "Machines with architecture X86_64"
+          ],
+          "type": "string"
+        },
         "kind": {
           "default": "compute#savedDisk",
           "description": "[Output Only] Type of the resource. Always compute#savedDisk for attached disks.",
@@ -56710,7 +57146,7 @@
       "type": "object"
     },
     "Scheduling": {
-      "description": "Sets the scheduling options for an Instance. NextID: 21",
+      "description": "Sets the scheduling options for an Instance.",
       "id": "Scheduling",
       "properties": {
         "automaticRestart": {
@@ -56878,6 +57314,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -56906,6 +57343,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -56987,6 +57425,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -57015,6 +57454,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -57264,6 +57704,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -57292,6 +57733,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -57808,6 +58250,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -57836,6 +58279,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -57902,6 +58346,7 @@
           "enum": [
             "ACCEPTED",
             "CLOSED",
+            "NEEDS_ATTENTION",
             "PENDING",
             "REJECTED",
             "STATUS_UNSPECIFIED"
@@ -57909,6 +58354,7 @@
           "enumDescriptions": [
             "The connection has been accepted by the producer.",
             "The connection has been closed by the producer.",
+            "The connection has been accepted by the producer, but the producer needs to take further action before the forwarding rule can serve traffic.",
             "The connection is pending acceptance by the producer.",
             "The consumer is still connected but not using the connection.",
             ""
@@ -57974,6 +58420,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -58002,6 +58449,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -58074,6 +58522,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -58102,6 +58551,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -58274,12 +58724,31 @@
       "description": "Represents a Persistent Disk Snapshot resource. You can use snapshots to back up data on a regular interval. For more information, read Creating persistent disk snapshots.",
       "id": "Snapshot",
       "properties": {
+        "architecture": {
+          "description": "[Output Only] The architecture of the snapshot. Valid values are ARM64 or X86_64.",
+          "enum": [
+            "ARCHITECTURE_UNSPECIFIED",
+            "ARM64",
+            "X86_64"
+          ],
+          "enumDescriptions": [
+            "Default value indicating Architecture is not set.",
+            "Machines with architecture ARM64",
+            "Machines with architecture X86_64"
+          ],
+          "type": "string"
+        },
         "autoCreated": {
           "description": "[Output Only] Set to true if snapshots are automatically created by applying resource policy on the target disk.",
           "type": "boolean"
         },
         "chainName": {
           "description": "Creates the new snapshot in the snapshot chain labeled with the specified name. The chain name must be 1-63 characters long and comply with RFC1035. This is an uncommon option only for advanced service owners who needs to create separate snapshot chains, for example, for chargeback tracking. When you describe your snapshot resource, this field is visible only if it has a non-empty value.",
+          "type": "string"
+        },
+        "creationSizeBytes": {
+          "description": "[Output Only] Size in bytes of the snapshot at creation time.",
+          "format": "int64",
           "type": "string"
         },
         "creationTimestamp": {
@@ -58363,6 +58832,18 @@
           "$ref": "CustomerEncryptionKey",
           "description": "Encrypts the snapshot using a customer-supplied encryption key. After you encrypt a snapshot using a customer-supplied key, you must provide the same key if you use the snapshot later. For example, you must provide the encryption key when you create a disk from the encrypted snapshot in a future request. Customer-supplied encryption keys do not protect access to metadata of the snapshot. If you do not provide an encryption key when creating the snapshot, then the snapshot will be encrypted using an automatically generated key and you do not need to provide a key to use the snapshot later."
         },
+        "snapshotType": {
+          "description": "Indicates the type of the snapshot.",
+          "enum": [
+            "ARCHIVE",
+            "STANDARD"
+          ],
+          "enumDescriptions": [
+            "",
+            ""
+          ],
+          "type": "string"
+        },
         "sourceDisk": {
           "description": "The source disk used to create this snapshot.",
           "type": "string"
@@ -58373,6 +58854,14 @@
         },
         "sourceDiskId": {
           "description": "[Output Only] The ID value of the disk used to create this snapshot. This value may be used to determine whether the snapshot was taken from the current or a previous instance of a given disk name.",
+          "type": "string"
+        },
+        "sourceSnapshotSchedulePolicy": {
+          "description": "[Output Only] URL of the resource policy which created this scheduled snapshot.",
+          "type": "string"
+        },
+        "sourceSnapshotSchedulePolicyId": {
+          "description": "[Output Only] ID of the resource policy which created this scheduled snapshot.",
           "type": "string"
         },
         "status": {
@@ -58462,6 +58951,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -58490,6 +58980,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -58595,6 +59086,20 @@
             "$ref": "AcceleratorConfig"
           },
           "type": "array"
+        },
+        "keyRevocationActionType": {
+          "description": "KeyRevocationActionType of the instance. Supported options are \"STOP\" and \"NONE\". The default value is \"NONE\" if it is not specified.",
+          "enum": [
+            "KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED",
+            "NONE",
+            "STOP"
+          ],
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "Indicates user chose no operation.",
+            "Indicates user chose to opt for VM shutdown on key revocation."
+          ],
+          "type": "string"
         },
         "labels": {
           "additionalProperties": {
@@ -58768,6 +59273,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -58796,6 +59302,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -58886,6 +59393,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -58914,6 +59422,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -59060,6 +59569,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -59088,6 +59598,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -59177,6 +59688,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -59205,6 +59717,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -59360,6 +59873,7 @@
                   "EXTERNAL_API_WARNING",
                   "FIELD_VALUE_OVERRIDEN",
                   "INJECTED_KERNELS_DEPRECATED",
+                  "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                   "LARGE_DEPLOYMENT_WARNING",
                   "MISSING_TYPE_DEPENDENCY",
                   "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -59388,6 +59902,7 @@
                   "Warning that is present in an external api call",
                   "Warning that value of a field has been overridden. Deprecated unused field.",
                   "The operation involved use of an injected kernel, which is deprecated.",
+                  "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                   "When deploying a deployment with a exceedingly large number of resources",
                   "A resource depends on a missing type",
                   "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -59704,6 +60219,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -59732,6 +60248,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -59822,6 +60339,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -59850,6 +60368,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -60008,6 +60527,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -60036,6 +60556,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -60277,6 +60798,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -60305,6 +60827,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -60377,6 +60900,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -60405,6 +60929,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -60584,6 +61109,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -60612,6 +61138,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -60684,6 +61211,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -60712,6 +61240,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -60940,6 +61469,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -60968,6 +61498,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -61058,6 +61589,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -61086,6 +61618,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -61166,7 +61699,7 @@
           "type": "string"
         },
         "natPolicy": {
-          "description": "NAT option controlling how IPs are NAT'ed to the instance. Currently only NO_NAT (default value) is supported.",
+          "description": "Must have a value of NO_NAT. Protocol forwarding delivers packets while preserving the destination IP address of the forwarding rule referencing the target instance.",
           "enum": [
             "NO_NAT"
           ],
@@ -61239,6 +61772,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -61267,6 +61801,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -61357,6 +61892,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -61385,6 +61921,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -61457,6 +61994,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -61485,6 +62023,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -61667,6 +62206,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -61695,6 +62235,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -61802,6 +62343,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -61830,6 +62372,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -61954,6 +62497,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -61982,6 +62526,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -62197,6 +62742,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -62225,6 +62771,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -62397,6 +62944,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -62425,6 +62973,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -62604,6 +63153,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -62632,6 +63182,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -62722,6 +63273,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -62750,6 +63302,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -62822,6 +63375,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -62850,6 +63404,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -63107,6 +63662,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -63135,6 +63691,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -63322,6 +63879,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -63350,6 +63908,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -63422,6 +63981,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -63450,6 +64010,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -63693,6 +64254,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -63721,6 +64283,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -63829,6 +64392,13 @@
           "format": "int32",
           "type": "integer"
         },
+        "ruleMappings": {
+          "description": "Information about mappings provided by rules in this NAT.",
+          "items": {
+            "$ref": "VmEndpointNatMappingsInterfaceNatMappingsNatRuleMappings"
+          },
+          "type": "array"
+        },
         "sourceAliasIpRange": {
           "description": "Alias IP range for this interface endpoint. It will be a private (RFC 1918) IP range. Examples: \"10.33.4.55/32\", or \"192.168.5.0/24\".",
           "type": "string"
@@ -63836,6 +64406,42 @@
         "sourceVirtualIp": {
           "description": "Primary IP of the VM for this NIC.",
           "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "VmEndpointNatMappingsInterfaceNatMappingsNatRuleMappings": {
+      "description": "Contains information of NAT Mappings provided by a NAT Rule.",
+      "id": "VmEndpointNatMappingsInterfaceNatMappingsNatRuleMappings",
+      "properties": {
+        "drainNatIpPortRanges": {
+          "description": "List of all drain IP:port-range mappings assigned to this interface by this rule. These ranges are inclusive, that is, both the first and the last ports can be used for NAT. Example: [\"2.2.2.2:12345-12355\", \"1.1.1.1:2234-2234\"].",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "natIpPortRanges": {
+          "description": "A list of all IP:port-range mappings assigned to this interface by this rule. These ranges are inclusive, that is, both the first and the last ports can be used for NAT. Example: [\"2.2.2.2:12345-12355\", \"1.1.1.1:2234-2234\"].",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "numTotalDrainNatPorts": {
+          "description": "Total number of drain ports across all NAT IPs allocated to this interface by this rule. It equals the aggregated port number in the field drain_nat_ip_port_ranges.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "numTotalNatPorts": {
+          "description": "Total number of ports across all NAT IPs allocated to this interface by this rule. It equals the aggregated port number in the field nat_ip_port_ranges.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "ruleNumber": {
+          "description": "Rule number of the NAT Rule.",
+          "format": "int32",
+          "type": "integer"
         }
       },
       "type": "object"
@@ -63882,6 +64488,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -63910,6 +64517,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -64090,6 +64698,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -64118,6 +64727,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -64208,6 +64818,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -64236,6 +64847,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -64426,6 +65038,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -64454,6 +65067,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -64693,6 +65307,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -64721,6 +65336,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -64811,6 +65427,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -64839,6 +65456,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -64911,6 +65529,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -64939,6 +65558,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -65082,6 +65702,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -65110,6 +65731,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
@@ -65287,6 +65909,7 @@
                 "EXTERNAL_API_WARNING",
                 "FIELD_VALUE_OVERRIDEN",
                 "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
                 "LARGE_DEPLOYMENT_WARNING",
                 "MISSING_TYPE_DEPENDENCY",
                 "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
@@ -65315,6 +65938,7 @@
                 "Warning that is present in an external api call",
                 "Warning that value of a field has been overridden. Deprecated unused field.",
                 "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP/HTTPS/HTTP2.",
                 "When deploying a deployment with a exceedingly large number of resources",
                 "A resource depends on a missing type",
                 "The route's nextHopIp address is not assigned to an instance on the network.",
