@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"github.com/grafana/dskit/multierror"
-	"github.com/pkg/errors"
 	"github.com/prometheus/common/model"
 	"github.com/prometheus/prometheus/model/labels"
 	"golang.org/x/sync/errgroup"
@@ -65,16 +64,12 @@ type MultiIndex struct {
 	indices IndexIterator
 }
 
-func NewMultiIndex(xs ...Index) (*MultiIndex, error) {
+func NewMultiIndex(xs ...Index) *MultiIndex {
 	return NewMultiIndexFromIter(NewSliceIndexIterator(xs))
 }
 
-func NewMultiIndexFromIter(itr IndexIterator) (*MultiIndex, error) {
-	if !itr.Next() {
-		return nil, errors.New("must supply at least one index")
-	}
-	itr.Reset()
-	return &MultiIndex{indices: itr}, nil
+func NewMultiIndexFromIter(itr IndexIterator) *MultiIndex {
+	return &MultiIndex{indices: itr}
 }
 
 func (i *MultiIndex) Bounds() (model.Time, model.Time) {

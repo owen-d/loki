@@ -122,11 +122,7 @@ func (t *tableCompactor) CompactTable() error {
 
 	var multiTenantIndex Index = NoopIndex{}
 	if len(multiTenantIndices) > 0 {
-		var err error
-		multiTenantIndex, err = NewMultiIndex(multiTenantIndices...)
-		if err != nil {
-			return err
-		}
+		multiTenantIndex = NewMultiIndex(multiTenantIndices...)
 	}
 
 	// find all the user ids from the multi-tenant indexes using TenantLabel.

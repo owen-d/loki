@@ -55,10 +55,7 @@ func (i *indexShipperQuerier) indices(ctx context.Context, from, through model.T
 	if len(indices) == 0 {
 		return NoopIndex{}, nil
 	}
-	idx, err := NewMultiIndex(indices...)
-	if err != nil {
-		return nil, err
-	}
+	idx := NewMultiIndex(indices...)
 
 	if i.chunkFilter != nil {
 		idx.SetChunkFilterer(i.chunkFilter)
