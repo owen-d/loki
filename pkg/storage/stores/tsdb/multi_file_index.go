@@ -2,9 +2,10 @@ package tsdb
 
 import (
 	"context"
-	"errors"
+	"sync"
 
 	"github.com/grafana/dskit/multierror"
+	"github.com/pkg/errors"
 	"github.com/prometheus/common/model"
 	"github.com/prometheus/prometheus/model/labels"
 	"golang.org/x/sync/errgroup"
@@ -13,21 +14,75 @@ import (
 	"github.com/grafana/loki/pkg/storage/stores/tsdb/index"
 )
 
-type MultiIndex struct {
-	indices []Index
+type IndexIterator interface {
+	Reset()
+	Next() bool
+	At() Index
 }
 
-func NewMultiIndex(indices ...Index) (*MultiIndex, error) {
-	if len(indices) == 0 {
+type SliceIndexIterator struct {
+	xs  []Index
+	cur int
+}
+
+func NewSliceIndexIterator(xs []Index) *SliceIndexIterator {
+	return &SliceIndexIterator{
+		xs:  xs,
+		cur: -1,
+	}
+}
+
+func (i *SliceIndexIterator) Reset() {
+	i.cur = -1
+}
+func (i *SliceIndexIterator) Next() bool {
+	i.cur++
+	return i.cur < len(i.xs)
+}
+
+func (i *SliceIndexIterator) At() Index { return i.xs[i.cur] }
+
+// adapter to wrap an IndexIterator with a specific ChunkFilterer
+type chunkFilterIdxIter struct {
+	filter chunk.RequestChunkFilterer
+	IndexIterator
+}
+
+func newChunkFilterIdxIter(filter chunk.RequestChunkFilterer, itr IndexIterator) chunkFilterIdxIter {
+	return chunkFilterIdxIter{
+		filter:        filter,
+		IndexIterator: itr,
+	}
+}
+
+func (i chunkFilterIdxIter) At() Index {
+	idx := i.IndexIterator.At()
+	idx.SetChunkFilterer(i.filter)
+	return idx
+}
+
+type MultiIndex struct {
+	indices IndexIterator
+}
+
+func NewMultiIndex(xs ...Index) (*MultiIndex, error) {
+	return NewMultiIndexFromIter(NewSliceIndexIterator(xs))
+}
+
+func NewMultiIndexFromIter(itr IndexIterator) (*MultiIndex, error) {
+	if !itr.Next() {
 		return nil, errors.New("must supply at least one index")
 	}
-
-	return &MultiIndex{indices: indices}, nil
+	itr.Reset()
+	return &MultiIndex{indices: itr}, nil
 }
 
 func (i *MultiIndex) Bounds() (model.Time, model.Time) {
+	defer i.indices.Reset()
+
 	var lowest, highest model.Time
-	for _, idx := range i.indices {
+	for i.indices.Next() {
+		idx := i.indices.At()
 		from, through := idx.Bounds()
 		if lowest == 0 || from < lowest {
 			lowest = from
@@ -37,36 +92,36 @@ func (i *MultiIndex) Bounds() (model.Time, model.Time) {
 			highest = through
 		}
 	}
-
 	return lowest, highest
 }
 
 func (i *MultiIndex) SetChunkFilterer(chunkFilter chunk.RequestChunkFilterer) {
-	for _, x := range i.indices {
-		x.SetChunkFilterer(chunkFilter)
-	}
+	i.indices = newChunkFilterIdxIter(chunkFilter, i.indices)
 }
 
 func (i *MultiIndex) Close() error {
 	var errs multierror.MultiError
-	for _, idx := range i.indices {
+	for i.indices.Next() {
+		idx := i.indices.At()
 		if err := idx.Close(); err != nil {
 			errs = append(errs, err)
 		}
+
 	}
 	return errs.Err()
-
 }
 
 func (i *MultiIndex) forIndices(ctx context.Context, from, through model.Time, fn func(context.Context, Index) (interface{}, error)) ([]interface{}, error) {
+	defer i.indices.Reset()
+
 	queryBounds := newBounds(from, through)
 	g, ctx := errgroup.WithContext(ctx)
 
-	// ensure we prebuffer the channel by the maximum possible
-	// return length so our goroutines don't block
-	ch := make(chan interface{}, len(i.indices))
+	var mtx sync.Mutex
+	var results []interface{}
 
-	for _, idx := range i.indices {
+	for i.indices.Next() {
+		idx := i.indices.At()
 		// ignore indices which can't match this query
 		if Overlap(queryBounds, idx) {
 			// run all queries in linked goroutines (cancel after first err),
@@ -80,7 +135,9 @@ func (i *MultiIndex) forIndices(ctx context.Context, from, through model.Time, f
 					if err != nil {
 						return err
 					}
-					ch <- got
+					mtx.Lock()
+					results = append(results, got)
+					mtx.Unlock()
 					return nil
 				})
 			}(idx)
@@ -91,12 +148,6 @@ func (i *MultiIndex) forIndices(ctx context.Context, from, through model.Time, f
 	// wait for work to finish or error|ctx expiration
 	if err := g.Wait(); err != nil {
 		return nil, err
-	}
-	close(ch)
-
-	results := make([]interface{}, 0, len(i.indices))
-	for x := range ch {
-		results = append(results, x)
 	}
 	return results, nil
 }
@@ -174,8 +225,8 @@ func (i *MultiIndex) LabelNames(ctx context.Context, userID string, from, throug
 		return nil, err
 	}
 
-	var maxLn int // maximum number of chunk refs, assuming no duplicates
-	xs := make([][]string, 0, len(i.indices))
+	var maxLn int // maximum number of results, assuming no duplicates
+	var xs [][]string
 	for _, group := range groups {
 		x := group.([]string)
 		maxLn += len(x)
@@ -209,8 +260,8 @@ func (i *MultiIndex) LabelValues(ctx context.Context, userID string, from, throu
 		return nil, err
 	}
 
-	var maxLn int // maximum number of chunk refs, assuming no duplicates
-	xs := make([][]string, 0, len(i.indices))
+	var maxLn int // maximum number of results, assuming no duplicates
+	var xs [][]string
 	for _, group := range groups {
 		x := group.([]string)
 		maxLn += len(x)
