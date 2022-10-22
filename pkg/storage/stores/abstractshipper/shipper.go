@@ -67,7 +67,35 @@ func (tm *TableManager) loop(ctx context.Context) {
 	}
 }
 
-func (tm *TableManager) sync(ctx context.Context) {}
+func (tm *TableManager) sync(ctx context.Context) {
+	// TODO(owen-d)
+}
+
+func (tm *TableManager) ensureTables(
+	ctx context.Context,
+	tables, users []string,
+) {
+	// First we see if the required tables exist using only RLock.
+	// If they don't exist, we'll need to check them again with Lock
+	// because it may require putting new keys in the map
+	var withLock []string
+
+	tm.mtx.RLock()
+	for _, tName := range tables {
+		table, ok := tm.tables[tName]
+		if !ok {
+			withLock = append(withLock, tName)
+			continue
+		}
+
+		// TODO(owen-d): don't hold lock while downloading.
+		// Instead, return a channel to announce when completed?
+		table.sync(ctx, users)
+
+	}
+	tm.mtx.RUnlock()
+
+}
 
 func (tm *TableManager) ForEach(ctx context.Context, userID string, tableNames []string, fn func(context.Context, Index) error) error {
 	g, ctx := errgroup.WithContext(ctx)
