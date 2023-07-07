@@ -38,6 +38,14 @@ func (k *key) Cmp(other *key) Cmp {
 	return Gt
 }
 
+// Distance function, describes how far away two keys are
+func (k key) Distance(other key) uint64 {
+	if k > other {
+		return uint64(k - other)
+	}
+	return uint64(other - k)
+}
+
 // A Keyspace is an arbitrary domain
 // Modeled off of object storage lexicographic DHT.
 type keyspace struct {
