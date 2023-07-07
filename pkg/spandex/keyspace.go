@@ -35,6 +35,8 @@ func (k *key) Cmp(other *key) Cmp {
 	return Gt
 }
 
+// A Keyspace is an arbitrary domain
+// Modeled off of object storage lexicographic DHT.
 type keyspace struct {
 	From    key
 	Through *key
@@ -47,10 +49,13 @@ func newKeySpace(from key, through *key) keyspace {
 	}
 }
 
+// [From, through)
+// through may be nil to indicate wrapping to end of keyspace
 func (ks keyspace) Bounds() (from key, through *key) {
 	return ks.From, ks.Through
 }
 
+// Owned tests if a key is owned by a keyspace.
 func (ks keyspace) Owned(k key) bool {
 	if ks.From.Cmp(&k) == Gt {
 		return false
@@ -110,12 +115,4 @@ func (left keyspace) Union(right keyspace) keyspace {
 		From:    newFrom,
 		Through: newThrough,
 	}
-}
-
-type file struct {
-	Addr string
-}
-
-func (f file) Address() string {
-	return f.Addr
 }
