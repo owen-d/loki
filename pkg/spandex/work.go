@@ -1,5 +1,7 @@
 package spandex
 
+import "math"
+
 // If a node owns a keyspace and is overloaded, where do we split it into two? Ideally in the middle of a hot spot.
 // keyspace:
 // A                  B center  C                                  D
@@ -15,6 +17,10 @@ package spandex
 // (2) The middle point of the owned keyspace at which half the work is on either side. Exactness is not required but finding a good compute_cost(memory|cpu) to accuracy ratio is important.
 // TODO(research): https://en.wikipedia.org/wiki/Mainline_DHT -- something like k-buckets?
 
+const (
+	bucketBitFactor = 4
+)
+
 type node struct {
 	address key // the address of this node
 	// a bucket for each 4 bits in the uint64 to keep track of distances
@@ -25,7 +31,7 @@ type node struct {
 	// for keys with distances between the current & previous bucket:
 	// `16 <= diff < 256`
 	// This means we keep track of key accesses with exponentially decaying granularity based on their distance from the node's address.
-	buckets [16]bucket
+	buckets [64 / bucketBitFactor]bucket
 }
 
 func (n *node) Pressure() (res int) {
@@ -46,6 +52,25 @@ func (n *node) Decay() {
 		n.buckets[i].left = left
 		n.buckets[i].right = right
 	}
+}
+
+func (n *node) Record(k key, weight int) {
+	dist := n.address.Distance(k)
+	position := bucketFor(dist)
+
+	// technically we weight the node's address itself on the left side
+	// which is incorrect but rare enough and close enough
+	// to not make a significant difference (i think)
+	if n.address.Cmp(&k) != Lt {
+		n.buckets[position].left += weight
+	} else {
+		n.buckets[position].right += weight
+	}
+}
+
+func bucketFor(distance uint64) int {
+	bits := uint64(math.Log2(float64(distance)))
+	return int(bits / bucketBitFactor)
 }
 
 type bucket struct {
