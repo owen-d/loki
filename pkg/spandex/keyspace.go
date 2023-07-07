@@ -1,6 +1,9 @@
 package spandex
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 type key uint64
 
@@ -115,4 +118,17 @@ func (left keyspace) Union(right keyspace) keyspace {
 		From:    newFrom,
 		Through: newThrough,
 	}
+}
+
+func (ks keyspace) Center() key {
+	from, through := ks.Bounds()
+	var max key
+	if through == nil {
+		max = math.MaxUint64
+	} else {
+		max = *through
+	}
+
+	diff := max - from
+	return key(max - diff/2)
 }

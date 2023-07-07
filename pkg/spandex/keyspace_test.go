@@ -153,3 +153,50 @@ func Test_Owned(t *testing.T) {
 		})
 	}
 }
+
+func Test_Center(t *testing.T) {
+	for _, tc := range []struct {
+		desc string
+		ks   keyspace
+		exp  key
+	}{
+		{
+			desc: "full keyspace",
+			ks:   keyspace{},
+			exp:  key(1 << 63),
+		},
+		{
+			desc: "splits keyspace with nil through",
+			ks: keyspace{
+				From: key(1 << 63),
+			},
+			exp: key(uint64(3) << 62),
+		},
+		{
+			desc: "splits bounded keyspace",
+			ks: keyspace{
+				From: key(10),
+				Through: func() *key {
+					x := key(20)
+					return &x
+				}(),
+			},
+			exp: key(15),
+		},
+		{
+			desc: "integer division",
+			ks: keyspace{
+				From: key(10),
+				Through: func() *key {
+					x := key(21)
+					return &x
+				}(),
+			},
+			exp: key(16),
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			require.Equal(t, tc.exp, tc.ks.Center())
+		})
+	}
+}
