@@ -34,6 +34,7 @@ type node struct {
 	buckets [64 / bucketBitFactor]bucket
 }
 
+// aggregates buckets to report the node's current pressure
 func (n *node) Pressure() (res int) {
 	for _, b := range n.buckets {
 		res += b.left
@@ -61,7 +62,7 @@ func (n *node) Record(k key, weight int) {
 	// technically we weight the node's address itself on the left side
 	// which is incorrect but rare enough and close enough
 	// to not make a significant difference (i think)
-	if n.address.Cmp(&k) != Lt {
+	if k.Cmp(&n.address) != Gt {
 		n.buckets[position].left += weight
 	} else {
 		n.buckets[position].right += weight
