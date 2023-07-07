@@ -74,3 +74,82 @@ func Test_KeyCmp(t *testing.T) {
 		})
 	}
 }
+
+func Test_Owned(t *testing.T) {
+	type comparisons []struct {
+		k   key
+		exp bool
+	}
+	for _, tc := range []struct {
+		desc string
+		ks   keyspace
+		cmps comparisons
+	}{
+		{
+			desc: "full keyspace owns everything",
+			ks: keyspace{
+				From: 0,
+			},
+			cmps: comparisons{
+				{0, true},
+				{1, true},
+			},
+		},
+		{
+			desc: "partial keyspace",
+			ks: keyspace{
+				From: 5,
+				Through: func() *key {
+					x := key(10)
+					return &x
+				}(),
+			},
+			cmps: comparisons{
+				{0, false},
+				{5, true},
+				{6, true},
+				{10, false},
+			},
+		},
+		{
+			desc: "intersection keyspace",
+			ks: func() keyspace {
+				ten := key(10)
+				fifteen := key(15)
+				left := newKeySpace(0, &ten)
+				right := newKeySpace(5, &fifteen)
+				return left.Intersect(right)
+			}(),
+			cmps: comparisons{
+				{0, false},
+				{5, true},
+				{9, true},
+				{10, false},
+			},
+		},
+		{
+			desc: "union keyspace",
+			ks: func() keyspace {
+				ten := key(10)
+				fifteen := key(15)
+				left := newKeySpace(1, &ten)
+				right := newKeySpace(5, &fifteen)
+				return left.Union(right)
+			}(),
+			cmps: comparisons{
+				{0, false},
+				{1, true},
+				{5, true},
+				{10, true},
+				{14, true},
+				{15, false},
+			},
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			for _, exp := range tc.cmps {
+				require.Equal(t, exp.exp, tc.ks.Owned(exp.k))
+			}
+		})
+	}
+}

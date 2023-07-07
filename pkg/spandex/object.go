@@ -40,6 +40,13 @@ type keyspace struct {
 	Through *key
 }
 
+func newKeySpace(from key, through *key) keyspace {
+	return keyspace{
+		From:    from,
+		Through: through,
+	}
+}
+
 func (ks keyspace) Bounds() (from key, through *key) {
 	return ks.From, ks.Through
 }
@@ -56,22 +63,22 @@ func (ks keyspace) Owned(k key) bool {
 	return true
 }
 
-func (ks keyspace) Reduce(from key, through *key) keyspace {
+func (left keyspace) Intersect(right keyspace) keyspace {
 	var newFrom key
 	var newThrough *key
 
-	switch ks.From.Cmp(&from) {
+	switch left.From.Cmp(&right.From) {
 	case Eq, Gt:
-		newFrom = ks.From
+		newFrom = left.From
 	case Lt:
-		newFrom = from
+		newFrom = right.From
 	}
 
-	switch ks.Through.Cmp(through) {
+	switch left.Through.Cmp(right.Through) {
 	case Lt, Eq:
-		newThrough = ks.Through
+		newThrough = left.Through
 	case Gt:
-		newThrough = through
+		newThrough = right.Through
 	}
 
 	return keyspace{
@@ -79,6 +86,30 @@ func (ks keyspace) Reduce(from key, through *key) keyspace {
 		Through: newThrough,
 	}
 
+}
+
+func (left keyspace) Union(right keyspace) keyspace {
+	var newFrom key
+	var newThrough *key
+
+	switch left.From.Cmp(&right.From) {
+	case Lt, Eq:
+		newFrom = left.From
+	case Gt:
+		newFrom = right.From
+	}
+
+	switch left.Through.Cmp(right.Through) {
+	case Gt:
+		newThrough = left.Through
+	case Lt, Eq:
+		newThrough = right.Through
+	}
+
+	return keyspace{
+		From:    newFrom,
+		Through: newThrough,
+	}
 }
 
 type file struct {
