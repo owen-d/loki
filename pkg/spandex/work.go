@@ -74,6 +74,32 @@ func bucketFor(distance uint64) int {
 	return int(bits / bucketBitFactor)
 }
 
+// CalculateSplit a node, guessing two points in the node's current keyspace
+// which would evenly distribute the work between them
+func (n *node) CalculateSplit() (key, key) {
+	half := n.Pressure() / 2
+
+	// TODO(owen-d): is this a good algorithm?
+	var left, right int
+
+	for i := len(n.buckets) - 1; i >= 0; i-- {
+		nextL := left + n.buckets[i].left
+		nextR := right + n.buckets[i].right
+
+		if nextL >= half {
+			overageProportion := (nextL - half) / half
+			farthestInBucket := math.Exp2(i*bucketBitFactor + bucketBitFactor)
+
+			// bucketDist
+		}
+
+		if nextR >= half {
+
+		}
+	}
+
+}
+
 type bucket struct {
 	// Left & right track some measurement of work done in a bucket
 	// of some given distance range from a node's address
