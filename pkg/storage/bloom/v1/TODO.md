@@ -10,7 +10,7 @@
   * encode bloom parameters in block: sbf params, hashing strategy, tokenizer
 * caching
 * ability to download indices without chunks
-
+* case insensitive tokens
 
 # merge querier for different blocks
 * how to merge two block queriers with the same fp

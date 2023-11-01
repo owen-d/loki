@@ -84,6 +84,13 @@ func NewBlockQuerier(b *Block) *BlockQuerier {
 	}
 }
 
+func (bq *BlockQuerier) FingerprintBounds() FingerprintBounds {
+	return FingerprintBounds{
+		Min: bq.series.b.dataRange.FromFp,
+		Max: bq.series.b.dataRange.ThroughFp,
+	}
+}
+
 func (bq *BlockQuerier) Seek(fp model.Fingerprint) error {
 	return bq.series.Seek(fp)
 }

@@ -7,20 +7,20 @@ import (
 	"testing"
 
 	"github.com/grafana/dskit/concurrency"
+	"github.com/prometheus/common/model"
 	"github.com/stretchr/testify/require"
 
 	"github.com/grafana/loki/pkg/chunkenc"
 )
 
-func TestFusedQuerier(t *testing.T) {
+func seedBlockQuerier(t *testing.T, numSeries int, startFp, endFp model.Fingerprint) (*BlockQuerier, []SeriesWithBloom) {
 	// references for linking in memory reader+writer
 	indexBuf := bytes.NewBuffer(nil)
 	bloomsBuf := bytes.NewBuffer(nil)
 	writer := NewMemoryBlockWriter(indexBuf, bloomsBuf)
 	reader := NewByteReader(indexBuf, bloomsBuf)
-	numSeries := 100
 	numKeysPerSeries := 10000
-	data, _ := mkBasicSeriesWithBlooms(numSeries, numKeysPerSeries, 0, 0xffff, 0, 10000)
+	data, _ := mkBasicSeriesWithBlooms(numSeries, numKeysPerSeries, startFp, endFp, 0, 10000)
 
 	builder, err := NewBlockBuilder(
 		BlockOptions{
@@ -38,6 +38,12 @@ func TestFusedQuerier(t *testing.T) {
 	require.Nil(t, builder.BuildFrom(itr))
 	block := NewBlock(reader)
 	querier := NewBlockQuerier(block)
+	return querier, data
+}
+
+func TestFusedQuerier(t *testing.T) {
+	numSeries := 100
+	querier, data := seedBlockQuerier(t, 100, 0, 0xffff)
 
 	nReqs := 10
 	var inputs [][]request
@@ -100,6 +106,82 @@ func TestFusedQuerier(t *testing.T) {
 			)
 		}
 	}
+}
+
+func TestMultiFuse(t *testing.T) {
+	// a few nonoverlapping blocks
+	minFp, maxFp := 0, 4000
+	nBlocks := 4
+	nReqs := 10
+	fpPerReq := 100
+	var fpRanges []FingerprintBounds
+	for i := 0; i < nBlocks; i++ {
+		fpRanges = append(fpRanges, FingerprintBounds{
+			Min: model.Fingerprint(minFp + i*(maxFp-minFp)/nBlocks),
+			Max: model.Fingerprint(minFp + (i+1)*(maxFp-minFp)/nBlocks),
+		})
+	}
+
+	qs := Map(
+		fpRanges,
+		func(x FingerprintBounds) *BlockQuerier {
+			querier, _ := seedBlockQuerier(t, 100, x.Min, x.Max)
+			return querier
+		},
+	)
+
+	reqs := make([][]request, nReqs)
+	for i := 0; i < nReqs; i++ {
+		for j := 0; j < fpPerReq; j++ {
+			r := request{
+				fp:       model.Fingerprint(i*(maxFp-minFp)/nBlocks + j),
+				response: make(chan output, nBlocks),
+			}
+			reqs[i] = append(reqs[i], r)
+		}
+	}
+
+	fused := fuseBlocks(reqs, qs)
+	for _, f := range fused {
+		require.Nil(t, f.Run())
+	}
+}
+
+func TestPartitionFingerprintRange(t *testing.T) {
+	queries := []request{
+		{
+			fp: 0,
+		},
+		{
+			fp: 1,
+		},
+		{
+			fp: 2,
+		},
+		{
+			fp: 3,
+		},
+	}
+
+	consumers := []FingerprintBounds{
+		{0, 2},
+		{1, 3},
+		{5, 7},
+	}
+
+	partitions := partitionFingerprintRange(queries, consumers)
+	expected := [][]request{
+		{
+			{fp: 0}, {fp: 1}, {fp: 2},
+		},
+		{
+			{fp: 1}, {fp: 2}, {fp: 3},
+		},
+		nil,
+	}
+
+	require.Equal(t, expected, partitions)
+
 }
 
 func setupBlockForBenchmark(b *testing.B) (*BlockQuerier, [][]request) {

@@ -19,8 +19,10 @@ func mkBasicSeries(n int, fromFp, throughFp model.Fingerprint, fromTs, throughTs
 		timeDelta := fromTs + (throughTs-fromTs)/model.Time(n)*model.Time(i)
 		series.Chunks = []ChunkRef{
 			{
-				Start:    fromTs + timeDelta*model.Time(i),
-				End:      fromTs + timeDelta*model.Time(i),
+				ChunkBounds: ChunkBounds{
+					Start: fromTs + timeDelta*model.Time(i),
+					End:   fromTs + timeDelta*model.Time(i),
+				},
 				Checksum: uint32(i),
 			},
 		}
@@ -47,13 +49,18 @@ func TestSeriesEncoding(t *testing.T) {
 			Fingerprint: model.Fingerprint(1),
 			Chunks: []ChunkRef{
 				{
-					Start:    1,
-					End:      2,
+					ChunkBounds: ChunkBounds{
+						Start: 1,
+						End:   2,
+					},
+
 					Checksum: 3,
 				},
 				{
-					Start:    4,
-					End:      5,
+					ChunkBounds: ChunkBounds{
+						Start: 4,
+						End:   5,
+					},
 					Checksum: 6,
 				},
 			},
@@ -88,53 +95,53 @@ func TestChunkRefCompare(t *testing.T) {
 		{
 			desc:      "left empty",
 			left:      nil,
-			right:     ChunkRefs{{Start: 1, End: 2}},
+			right:     ChunkRefs{{ChunkBounds: ChunkBounds{Start: 1, End: 2}}},
 			exclusive: nil,
 			inclusive: nil,
 		},
 		{
 			desc:      "right empty",
-			left:      ChunkRefs{{Start: 1, End: 2}},
+			left:      ChunkRefs{{ChunkBounds: ChunkBounds{Start: 1, End: 2}}},
 			right:     nil,
-			exclusive: ChunkRefs{{Start: 1, End: 2}},
+			exclusive: ChunkRefs{{ChunkBounds: ChunkBounds{Start: 1, End: 2}}},
 			inclusive: nil,
 		},
 		{
 			desc:      "left before right",
-			left:      ChunkRefs{{Start: 1, End: 2}},
-			right:     ChunkRefs{{Start: 3, End: 4}},
-			exclusive: ChunkRefs{{Start: 1, End: 2}},
+			left:      ChunkRefs{{ChunkBounds: ChunkBounds{Start: 1, End: 2}}},
+			right:     ChunkRefs{{ChunkBounds: ChunkBounds{Start: 3, End: 4}}},
+			exclusive: ChunkRefs{{ChunkBounds: ChunkBounds{Start: 1, End: 2}}},
 			inclusive: nil,
 		},
 		{
 			desc:      "left after right",
-			left:      ChunkRefs{{Start: 3, End: 4}},
-			right:     ChunkRefs{{Start: 1, End: 2}},
-			exclusive: ChunkRefs{{Start: 3, End: 4}},
+			left:      ChunkRefs{{ChunkBounds: ChunkBounds{Start: 3, End: 4}}},
+			right:     ChunkRefs{{ChunkBounds: ChunkBounds{Start: 1, End: 2}}},
+			exclusive: ChunkRefs{{ChunkBounds: ChunkBounds{Start: 3, End: 4}}},
 			inclusive: nil,
 		},
 		{
 			desc: "left overlaps right",
 			left: ChunkRefs{
-				{Start: 1, End: 3},
-				{Start: 2, End: 4},
-				{Start: 3, End: 5},
-				{Start: 4, End: 6},
-				{Start: 5, End: 7},
+				{ChunkBounds: ChunkBounds{Start: 1, End: 3}},
+				{ChunkBounds: ChunkBounds{Start: 2, End: 4}},
+				{ChunkBounds: ChunkBounds{Start: 3, End: 5}},
+				{ChunkBounds: ChunkBounds{Start: 4, End: 6}},
+				{ChunkBounds: ChunkBounds{Start: 5, End: 7}},
 			},
 			right: ChunkRefs{
-				{Start: 2, End: 4},
-				{Start: 4, End: 6},
-				{Start: 5, End: 6}, // not in left
+				{ChunkBounds: ChunkBounds{Start: 2, End: 4}},
+				{ChunkBounds: ChunkBounds{Start: 4, End: 6}},
+				{ChunkBounds: ChunkBounds{Start: 5, End: 6}}, // not in left
 			},
 			exclusive: ChunkRefs{
-				{Start: 1, End: 3},
-				{Start: 3, End: 5},
-				{Start: 5, End: 7},
+				{ChunkBounds: ChunkBounds{Start: 1, End: 3}},
+				{ChunkBounds: ChunkBounds{Start: 3, End: 5}},
+				{ChunkBounds: ChunkBounds{Start: 5, End: 7}},
 			},
 			inclusive: ChunkRefs{
-				{Start: 2, End: 4},
-				{Start: 4, End: 6},
+				{ChunkBounds: ChunkBounds{Start: 2, End: 4}},
+				{ChunkBounds: ChunkBounds{Start: 4, End: 6}},
 			},
 		},
 	} {

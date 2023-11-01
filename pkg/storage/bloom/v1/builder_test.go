@@ -23,8 +23,11 @@ func mkBasicSeriesWithBlooms(nSeries, keysPerSeries int, fromFp, throughFp model
 		timeDelta := fromTs + (throughTs-fromTs)/model.Time(nSeries)*model.Time(i)
 		series.Chunks = []ChunkRef{
 			{
-				Start:    fromTs + timeDelta*model.Time(i),
-				End:      fromTs + timeDelta*model.Time(i),
+				ChunkBounds: ChunkBounds{
+					Start: fromTs + timeDelta*model.Time(i),
+					End:   fromTs + timeDelta*model.Time(i),
+				},
+
 				Checksum: uint32(i),
 			},
 		}

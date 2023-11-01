@@ -386,9 +386,24 @@ func (s *SeriesWithOffset) Decode(dec *encoding.Decbuf, previousFp model.Fingerp
 	return s.Fingerprint, s.Offset, dec.Err()
 }
 
+type ChunkBounds struct {
+	Start, End model.Time // inclusive
+}
+
+// Check returns the chunk bounds' relative position to the other bounds
+func (b ChunkBounds) Check(other ChunkBounds) BoundsCheck {
+	if b.End < other.Start {
+		return Before
+	}
+	if b.Start > other.End {
+		return After
+	}
+	return Overlap
+}
+
 type ChunkRef struct {
-	Start, End model.Time
-	Checksum   uint32
+	ChunkBounds
+	Checksum uint32
 }
 
 func (r *ChunkRef) Less(other ChunkRef) bool {

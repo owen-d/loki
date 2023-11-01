@@ -241,3 +241,42 @@ func PointerSlice[T any](xs []T) []*T {
 	}
 	return out
 }
+
+type BoundsCheck uint8
+
+const (
+	Before BoundsCheck = iota
+	Overlap
+	After
+)
+
+type BoundedIter[V any] struct {
+	Iterator[V]
+	cmp func(V) BoundsCheck
+}
+
+func (bi *BoundedIter[V]) Next() bool {
+	for bi.Iterator.Next() {
+		switch bi.cmp(bi.Iterator.At()) {
+		case Before:
+			continue
+		case After:
+			return false
+		default:
+			return true
+		}
+	}
+	return false
+}
+
+func NewBoundedIter[V any](itr Iterator[V], cmp func(V) BoundsCheck) *BoundedIter[V] {
+	return &BoundedIter[V]{Iterator: itr, cmp: cmp}
+}
+
+func Map[A, B any](xs []A, f func(A) B) []B {
+	res := make([]B, len(xs))
+	for i, x := range xs {
+		res[i] = f(x)
+	}
+	return res
+}
