@@ -28,12 +28,25 @@ func (bq *BlockQuerier) Fuse(inputs []PeekingIterator[request]) *FusedQuerier {
 	return NewFusedQuerier(bq, inputs)
 }
 
+// BlockIter is an interface for iterating over a block
+// It gives access to the underlying linked iterators individually for performance,
+// but calling `Next()` on the top level iterator will re-syncronize the underlying iterators
+type BlockIter interface {
+	// main iter
+	SeekIter[model.Fingerprint, *SeriesWithBloom]
+	// access to underlying specific iters for more performant access
+	Series() SeekIter[model.Fingerprint, *SeriesWithOffset]
+	Blooms() SeekIter[BloomOffset, *Bloom]
+	// bounds
+	FingerprintBounds() FingerprintBounds
+}
+
 type FusedQuerier struct {
-	bq     *BlockQuerier
+	block  BlockIter
 	inputs Iterator[[]request]
 }
 
-func NewFusedQuerier(bq *BlockQuerier, inputs []PeekingIterator[request]) *FusedQuerier {
+func NewFusedQuerier(b BlockIter, inputs []PeekingIterator[request]) *FusedQuerier {
 	heap := NewHeapIterator[request](
 		func(a, b request) bool {
 			return a.fp < b.fp
@@ -52,7 +65,7 @@ func NewFusedQuerier(bq *BlockQuerier, inputs []PeekingIterator[request]) *Fused
 		NewPeekingIter[request](heap),
 	)
 	return &FusedQuerier{
-		bq:     bq,
+		block:  b,
 		inputs: merging,
 	}
 }
@@ -65,16 +78,17 @@ func (fq *FusedQuerier) Run() error {
 		fp := nextBatch[0].fp
 
 		// advance the series iterator to the next fingerprint
-		if err := fq.bq.Seek(fp); err != nil {
+		if err := fq.block.Seek(fp); err != nil {
 			return errors.Wrap(err, "seeking to fingerprint")
 		}
 
-		if !fq.bq.series.Next() {
+		seriesItr := fq.block.Series()
+		if !seriesItr.Next() {
 			// no more series, we're done since we're iterating desired fingerprints in order
 			return nil
 		}
 
-		series := fq.bq.series.At()
+		series := seriesItr.At()
 		if series.Fingerprint != fp {
 			// fingerprint not found, can't remove chunks
 			for _, input := range nextBatch {
@@ -85,9 +99,13 @@ func (fq *FusedQuerier) Run() error {
 			}
 		}
 
-		// Now that we've found the series, we need to find the unpack the bloom
-		fq.bq.blooms.Seek(series.Offset)
-		if !fq.bq.blooms.Next() {
+		// Now that we've found the series, we need to unpack the bloom
+		bloomItr := fq.block.Blooms()
+		if err := bloomItr.Seek(series.Offset); err != nil {
+			return errors.Wrapf(err, "seeking to bloom for series: %v", series.Fingerprint)
+		}
+
+		if !bloomItr.Next() {
 			// fingerprint not found, can't remove chunks
 			for _, input := range nextBatch {
 				input.response <- output{
@@ -98,7 +116,8 @@ func (fq *FusedQuerier) Run() error {
 			continue
 		}
 
-		bloom := fq.bq.blooms.At()
+		bloom := bloomItr.At()
+
 		// test every input against this chunk
 	inputLoop:
 		for _, input := range nextBatch {
@@ -225,3 +244,13 @@ func fuseBlocks(reqs [][]request, blocks []*BlockQuerier) (res []*FusedQuerier) 
 
 	return
 }
+
+// func foo(inputs []*FusedQuerier) {
+// 	// [][]chunks -> []blocks -> []iter[result]
+// 	Map(
+// 		inputs,
+// 		func(f *FusedQuerier)  {}
+// 	)
+// 	NewHeapIterator[]()
+
+// }

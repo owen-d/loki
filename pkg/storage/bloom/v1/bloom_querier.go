@@ -32,7 +32,7 @@ func (it *LazyBloomIter) ensureInit() {
 	}
 }
 
-func (it *LazyBloomIter) Seek(offset BloomOffset) {
+func (it *LazyBloomIter) Seek(offset BloomOffset) error {
 	it.ensureInit()
 
 	// if we need a different page or the current page hasn't been loaded,
@@ -40,13 +40,11 @@ func (it *LazyBloomIter) Seek(offset BloomOffset) {
 	if it.curPageIndex != offset.Page || it.curPage == nil {
 		r, err := it.b.reader.Blooms()
 		if err != nil {
-			it.err = errors.Wrap(err, "getting blooms reader")
-			return
+			return errors.Wrap(err, "getting blooms reader")
 		}
 		decoder, err := it.b.blooms.BloomPageDecoder(r, offset.Page)
 		if err != nil {
-			it.err = errors.Wrap(err, "loading bloom page")
-			return
+			return errors.Wrap(err, "loading bloom page")
 		}
 
 		it.curPageIndex = offset.Page
@@ -55,6 +53,7 @@ func (it *LazyBloomIter) Seek(offset BloomOffset) {
 	}
 
 	it.curPage.Seek(offset.ByteOffset)
+	return nil
 }
 
 func (it *LazyBloomIter) Next() bool {

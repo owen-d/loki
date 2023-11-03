@@ -109,8 +109,10 @@ func (bt *BloomTokenizer) PopulateSeriesWithBloom(seriesWithBloom *SeriesWithBlo
 			}
 		}
 		seriesWithBloom.Series.Chunks = append(seriesWithBloom.Series.Chunks, ChunkRef{
-			Start:    chunks[idx].From,
-			End:      chunks[idx].Through,
+			ChunkBounds: ChunkBounds{
+				Start: chunks[idx].From,
+				End:   chunks[idx].Through,
+			},
 			Checksum: chunks[idx].Checksum,
 		})
 	} // for each chunk

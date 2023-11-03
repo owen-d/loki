@@ -84,6 +84,14 @@ func NewBlockQuerier(b *Block) *BlockQuerier {
 	}
 }
 
+func (bq *BlockQuerier) Series() SeekIter[model.Fingerprint, *SeriesWithOffset] {
+	return bq.series
+}
+
+func (bq *BlockQuerier) Blooms() SeekIter[BloomOffset, *Bloom] {
+	return bq.blooms
+}
+
 func (bq *BlockQuerier) FingerprintBounds() FingerprintBounds {
 	return FingerprintBounds{
 		Min: bq.series.b.dataRange.FromFp,
@@ -102,7 +110,9 @@ func (bq *BlockQuerier) Next() bool {
 
 	series := bq.series.At()
 
-	bq.blooms.Seek(series.Offset)
+	if err := bq.blooms.Seek(series.Offset); err != nil {
+		return false
+	}
 	if !bq.blooms.Next() {
 		return false
 	}
@@ -147,9 +157,12 @@ func (bq *BlockQuerier) CheckChunksForSeries(fp model.Fingerprint, chks ChunkRef
 		return chks, nil
 	}
 
-	bq.blooms.Seek(series.Offset)
-	if !bq.blooms.Next() {
+	if err := bq.blooms.Seek(series.Offset); err != nil {
 		return chks, fmt.Errorf("seeking to bloom for fp: %v", fp)
+	}
+
+	if !bq.blooms.Next() {
+		return nil, fmt.Errorf("unexpected end of bloom iterator for fp: %v", fp)
 	}
 
 	bloom := bq.blooms.At()
