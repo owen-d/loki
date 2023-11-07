@@ -99,8 +99,8 @@ func TestFusedQuerier(t *testing.T) {
 			require.Equal(
 				t,
 				output{
-					fp:   req.fp,
-					chks: req.chks,
+					fp:     req.fp,
+					ignore: nil,
 				},
 				resp,
 			)
@@ -130,25 +130,23 @@ func TestMultiFuse(t *testing.T) {
 		},
 	)
 
-	reqs := make([][]request, nReqs)
+	reqs := make([]*Rpc, nReqs)
 	for i := 0; i < nReqs; i++ {
+		var inputs []SeriesChunks
 		for j := 0; j < fpPerReq; j++ {
-			r := request{
-				fp:       model.Fingerprint(i*(maxFp-minFp)/nBlocks + j),
-				response: make(chan output, nBlocks),
-			}
-			reqs[i] = append(reqs[i], r)
+			inputs = append(inputs, SeriesChunks{
+				fp: model.Fingerprint(i*(maxFp-minFp)/nBlocks + j),
+			})
 		}
+
+		reqs[i] = newRpc(context.Background(), inputs, nil)
 	}
 
-	fused := fuseBlocks(reqs, qs)
-	for _, f := range fused {
-		require.Nil(t, f.Run())
-	}
+	require.Nil(t, runRPCs(reqs, qs))
 }
 
 func TestPartitionFingerprintRange(t *testing.T) {
-	queries := []request{
+	queries := []SeriesChunks{
 		{
 			fp: 0,
 		},
@@ -169,18 +167,35 @@ func TestPartitionFingerprintRange(t *testing.T) {
 		{5, 7},
 	}
 
-	partitions := partitionFingerprintRange(queries, consumers)
-	expected := [][]request{
+	partitions := partitionFingerprintRange(newRpc(context.Background(), queries, nil), consumers)
+	expected := [][]model.Fingerprint{
 		{
-			{fp: 0}, {fp: 1}, {fp: 2},
+			0, 1, 2,
 		},
 		{
-			{fp: 1}, {fp: 2}, {fp: 3},
+			1, 2, 3,
 		},
 		nil,
 	}
 
-	require.Equal(t, expected, partitions)
+	var got [][]model.Fingerprint
+	for _, p := range partitions {
+		if p == nil {
+			got = append(got, nil)
+			continue
+		}
+
+		got = append(got, Collect[model.Fingerprint](
+			NewMapIter[request, model.Fingerprint](
+				p,
+				func(x request) model.Fingerprint {
+					return x.fp
+				},
+			),
+		))
+	}
+
+	require.Equal(t, expected, got)
 
 }
 

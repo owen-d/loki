@@ -280,3 +280,49 @@ func Map[A, B any](xs []A, f func(A) B) []B {
 	}
 	return res
 }
+
+func NewFlatIter[T any](itr Iterator[Iterator[T]]) *FlattenIter[T] {
+	return &FlattenIter[T]{itr: itr}
+}
+
+// maps Iterator[Iterator[T]] -> Iterator[T]
+type FlattenIter[T any] struct {
+	itr Iterator[Iterator[T]]
+	cur Iterator[T]
+}
+
+func (fi *FlattenIter[T]) Next() bool {
+	for {
+		if fi.cur == nil {
+			if !fi.itr.Next() {
+				return false
+			}
+			fi.cur = fi.itr.At()
+		}
+
+		if !fi.cur.Next() {
+			fi.cur = nil
+			continue
+		}
+
+		return true
+	}
+}
+
+func (fi *FlattenIter[T]) Err() error {
+	if fi.cur != nil {
+		return fi.cur.Err()
+	}
+	return nil
+}
+
+func (fi *FlattenIter[T]) At() T {
+	return fi.cur.At()
+}
+
+func Collect[T any](itr Iterator[T]) (res []T) {
+	for itr.Next() {
+		res = append(res, itr.At())
+	}
+	return
+}
