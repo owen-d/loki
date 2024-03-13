@@ -16,6 +16,7 @@ import (
 	"github.com/grafana/loki/pkg/storage/config"
 	"github.com/grafana/loki/pkg/storage/stores/shipper/bloomshipper"
 	"github.com/grafana/loki/pkg/storage/stores/shipper/indexshipper/tsdb"
+	"github.com/grafana/loki/pkg/util"
 )
 
 type SimpleBloomController struct {
@@ -376,6 +377,7 @@ func (s *SimpleBloomController) buildGaps(
 			// to try and accelerate bloom creation
 			level.Debug(logger).Log("msg", "loading series and blocks for gap", "blocks", len(gap.blocks))
 			seriesItr, blocksIter, err := s.loadWorkForGap(ctx, table, tenant, plan.tsdb, gap)
+			defer util.LogError("closing TSDB iterator", seriesItr.Close)
 
 			// TODO(owen-d): more elegant error handling than sync.OnceFunc
 			closeBlocksIter := sync.OnceFunc(func() {

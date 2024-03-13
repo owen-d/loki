@@ -391,7 +391,7 @@ func (c *Compactor) runWorkers(
 		}
 	}()
 
-	err := concurrency.ForEachJob(ctx, c.cfg.WorkerParallelism, c.cfg.WorkerParallelism, func(ctx context.Context, idx int) error {
+	err := concurrency.ForEachJob(ctx, c.cfg.WorkerParallelism, c.cfg.WorkerParallelism, func(ctx context.Context, _ int) error {
 
 		for {
 			select {

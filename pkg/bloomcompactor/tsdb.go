@@ -136,6 +136,7 @@ type TSDBSeriesIter struct {
 	bounds v1.FingerprintBounds
 	ctx    context.Context
 
+	wg          sync.WaitGroup // for background goroutine
 	ch          chan *v1.Series
 	initialized bool
 	next        *v1.Series
@@ -182,12 +183,14 @@ func (t *TSDBSeriesIter) Err() error {
 }
 
 func (t *TSDBSeriesIter) Close() error {
+	t.wg.Wait() // close goroutine
 	return t.f.Close()
 }
 
 // background iterates over the tsdb file, populating the next
 // value via a channel to handle backpressure
 func (t *TSDBSeriesIter) background() {
+	t.wg.Add(1)
 	go func() {
 		err := t.f.ForSeries(
 			t.ctx,
@@ -219,6 +222,7 @@ func (t *TSDBSeriesIter) background() {
 		t.err = err
 		t.mtx.Unlock()
 		close(t.ch)
+		t.wg.Done()
 	}()
 }
 
