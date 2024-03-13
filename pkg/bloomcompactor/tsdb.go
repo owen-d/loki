@@ -135,6 +135,7 @@ type TSDBSeriesIter struct {
 	f      forSeries
 	bounds v1.FingerprintBounds
 	ctx    context.Context
+	cancel context.CancelFunc
 
 	wg          sync.WaitGroup // for background goroutine
 	ch          chan *v1.Series
@@ -144,10 +145,12 @@ type TSDBSeriesIter struct {
 }
 
 func NewTSDBSeriesIter(ctx context.Context, f forSeries, bounds v1.FingerprintBounds) *TSDBSeriesIter {
+	ctx, cancel := context.WithCancel(ctx)
 	return &TSDBSeriesIter{
 		f:      f,
 		bounds: bounds,
 		ctx:    ctx,
+		cancel: cancel,
 		ch:     make(chan *v1.Series),
 	}
 }
@@ -183,8 +186,9 @@ func (t *TSDBSeriesIter) Err() error {
 }
 
 func (t *TSDBSeriesIter) Close() error {
-	t.wg.Wait() // close goroutine
-	return t.f.Close()
+	t.cancel()         // signal goroutine to close
+	t.wg.Wait()        // wait for goroutine to terminate
+	return t.f.Close() // close underlying index
 }
 
 // background iterates over the tsdb file, populating the next
