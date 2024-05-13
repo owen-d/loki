@@ -642,6 +642,9 @@ func (mb *MergeBuilder) processNextSeries(
 		}
 	}
 
+	// metric for series, chks that are added|skipped since
+	// tokenizer doesn't count data once the skip threshold is met
+
 	if !skip {
 		done, err = builder.AddSeries(*cur)
 		if err != nil {

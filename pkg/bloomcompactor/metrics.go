@@ -61,6 +61,7 @@ func NewMetrics(r prometheus.Registerer, bloomMetrics *v1.Metrics) *Metrics {
 			Name:      "running",
 			Help:      "Value will be 1 if compactor is currently running on this instance",
 		}),
+		// TODO(owen-d): broken -- we're only recording single chunks!!
 		chunkSize: promauto.With(r).NewHistogram(prometheus.HistogramOpts{
 			Namespace: metricsNamespace,
 			Subsystem: metricsSubsystem,
