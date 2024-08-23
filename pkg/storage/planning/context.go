@@ -1,19 +1,23 @@
 package planning
 
+// ExecCtx represents a computation that may fail, returning a value of type O or an error.
 type ExecCtx[O any] struct {
 	fn func() (O, error)
 }
 
+// NewExecCtx creates a new ExecCtx with the given function.
 func NewExecCtx[O any](fn func() (O, error)) ExecCtx[O] {
 	return ExecCtx[O]{
 		fn: fn,
 	}
 }
 
+// Run executes the computation and returns the result or error.
 func (e ExecCtx[O]) Run() (O, error) {
 	return e.fn()
 }
 
+// Pure wraps a value in an ExecCtx, always succeeding.
 func Pure[O any](value O) ExecCtx[O] {
 	return NewExecCtx(func() (O, error) {
 		return value, nil

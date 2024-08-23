@@ -1,0 +1,116 @@
+package planning
+
+import (
+	"fmt"
+	"strings"
+)
+
+type LogicalPlan interface {
+	Schema() Schema
+	Children() []LogicalPlan
+}
+
+// Here is an example of a logical plan formatted using this method.
+// Projection: #id, #first_name, #last_name, #state, #salary
+//
+//	Filter: #state = 'CO'
+//	  Scan: employee.csv; projection=None
+
+type LogicalExpr interface {
+	FieldInfo(input LogicalPlan) (FieldInfo, error)
+	Format(indent int) string
+}
+
+// Here are examples of logical exprs
+//
+// Literal Value	"hello", 12.34
+// Column Reference	user_id, first_name, last_name
+// Math Expression	salary * state_tax
+// Comparison Expression	x >= y
+// Boolean Expression	birthday = today() AND age >= 21
+// Aggregate Expression	MIN(salary), MAX(salary), SUM(salary), AVG(salary), COUNT(*)
+// Scalar Function	CONCAT(first_name, " ", last_name)
+
+// ColumnReference Logical Expression
+type ColumnReference struct {
+	Name string
+}
+
+func (c *ColumnReference) FieldInfo(input LogicalPlan) (FieldInfo, error) {
+	return input.Schema().GetFieldByName(c.Name)
+}
+
+func (c *ColumnReference) Format(indent int) string {
+	return fmt.Sprintf("%s#%s", strings.Repeat(" ", indent), c.Name)
+}
+
+// LiteralValue Logical Expression
+type LiteralValue struct {
+	Value any
+	Type  DataTypeSignal
+}
+
+func (l *LiteralValue) FieldInfo(input LogicalPlan) (FieldInfo, error) {
+	return NewFieldInfo(fmt.Sprintf("%v", l.Value), l.Type), nil
+}
+
+func (l *LiteralValue) Format(indent int) string {
+	return fmt.Sprintf("%s%v", strings.Repeat(" ", indent), l.Value)
+}
+
+// BinaryExpr Logical Expression for mathematical and comparison operations
+type BinaryExpr struct {
+	Name  string
+	Op    string
+	Left  LogicalExpr
+	Right LogicalExpr
+}
+
+func (b *BinaryExpr) FieldInfo(input LogicalPlan) (FieldInfo, error) {
+	leftField, err := b.Left.FieldInfo(input)
+	if err != nil {
+		return FieldInfo{}, err
+	}
+	rightField, err := b.Right.FieldInfo(input)
+	if err != nil {
+		return FieldInfo{}, err
+	}
+	// Determine the resulting type based on the operation and operand types
+	resultType, err := determineResultType(b.Op, leftField.DType, rightField.DType)
+	if err != nil {
+		return FieldInfo{}, fmt.Errorf("failed to determine result type: %w", err)
+	}
+
+	return NewFieldInfo(b.Name, resultType), nil
+}
+
+func (b *BinaryExpr) Format(indent int) string {
+	indentation := strings.Repeat(" ", indent)
+	return fmt.Sprintf("%s%s (%s)\n%s\n%s",
+		indentation, b.Name, b.Op,
+		b.Left.Format(indent+2),
+		b.Right.Format(indent+2))
+}
+
+// Helper function to determine the result type of a binary operation
+func determineResultType(op string, left, right DataTypeSignal) (DataTypeSignal, error) {
+	if !left.Valid() || !right.Valid() {
+		return 0, fmt.Errorf("invalid data type")
+	}
+
+	if left != right {
+		return 0, fmt.Errorf("incompatible types: %v and %v", left, right)
+	}
+
+	switch op {
+	case "+", "-", "*", "/":
+		if left == String {
+			return 0, fmt.Errorf("arithmetic operations not supported for string type")
+		}
+		return left, nil
+	case "=", "!=", "<", "<=", ">", ">=":
+		return left, nil
+	default:
+		return 0, fmt.Errorf("unknown operation: %s", op)
+	}
+}
