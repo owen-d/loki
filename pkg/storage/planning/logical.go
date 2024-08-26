@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+// LogicalPlan represents a logical query plan node in a query execution tree.
+// It defines methods to retrieve the schema and children of the plan node.
 type LogicalPlan interface {
 	Schema() Schema
 	Children() []LogicalPlan
@@ -15,7 +17,6 @@ type LogicalPlan interface {
 //
 //	Filter: #state = 'CO'
 //	  Scan: employee.csv; projection=None
-
 type LogicalExpr interface {
 	FieldInfo(input LogicalPlan) (FieldInfo, error)
 	Format(indent int) string
@@ -30,12 +31,13 @@ type LogicalExpr interface {
 // Boolean Expression	birthday = today() AND age >= 21
 // Aggregate Expression	MIN(salary), MAX(salary), SUM(salary), AVG(salary), COUNT(*)
 // Scalar Function	CONCAT(first_name, " ", last_name)
-
 // ColumnReference Logical Expression
 type ColumnReference struct {
 	Name string
 }
 
+// FieldInfo returns the field information for the ColumnReference
+// It retrieves the field from the input LogicalPlan's schema based on the column name
 func (c *ColumnReference) FieldInfo(input LogicalPlan) (FieldInfo, error) {
 	return input.Schema().GetFieldByName(c.Name)
 }
@@ -113,4 +115,125 @@ func determineResultType(op string, left, right DataTypeSignal) (DataTypeSignal,
 	default:
 		return 0, fmt.Errorf("unknown operation: %s", op)
 	}
+}
+
+// Scan logical plan
+type Scan struct {
+	Path       string
+	DataSource DataSource
+	Projection []string
+	schema     Schema
+}
+
+// NewScan creates a new Scan logical plan
+func NewScan(path string, dataSource DataSource, projection []string) *Scan {
+	s := &Scan{
+		Path:       path,
+		DataSource: dataSource,
+		Projection: projection,
+	}
+	s.schema = s.deriveSchema()
+	return s
+}
+
+// Schema returns the schema of the Scan
+func (s *Scan) Schema() Schema {
+	return s.schema
+}
+
+// Children returns nil as Scan has no child plans
+func (s *Scan) Children() []LogicalPlan {
+	return nil
+}
+
+// deriveSchema derives the schema based on the projection
+func (s *Scan) deriveSchema() Schema {
+	schema := s.DataSource.Schema()
+	if len(s.Projection) == 0 {
+		return schema
+	}
+
+	var projectedFields []FieldInfo
+	for _, fieldName := range s.Projection {
+		if field, err := schema.GetFieldByName(fieldName); err == nil {
+			projectedFields = append(projectedFields, field)
+		}
+	}
+	return NewSchema(projectedFields...)
+}
+
+// String returns a string representation of the Scan
+func (s *Scan) String() string {
+	if len(s.Projection) == 0 {
+		return fmt.Sprintf("Scan: %s; projection=None", s.Path)
+	}
+	return fmt.Sprintf("Scan: %s; projection=%v", s.Path, s.Projection)
+}
+
+// Projection logical plan
+type Projection struct {
+	input LogicalPlan
+	expr  []LogicalExpr
+}
+
+// NewProjection creates a new Projection logical plan
+func NewProjection(input LogicalPlan, expr []LogicalExpr) *Projection {
+	return &Projection{
+		input: input,
+		expr:  expr,
+	}
+}
+
+// Schema returns the schema of the Projection
+func (p *Projection) Schema() Schema {
+	fields := make([]FieldInfo, len(p.expr))
+	for i, e := range p.expr {
+		field, _ := e.FieldInfo(p.input)
+		fields[i] = field
+	}
+	return NewSchema(fields...)
+}
+
+// Children returns the child plans of the Projection
+func (p *Projection) Children() []LogicalPlan {
+	return []LogicalPlan{p.input}
+}
+
+// String returns a string representation of the Projection
+func (p *Projection) String() string {
+	exprStrings := make([]string, len(p.expr))
+	for i, e := range p.expr {
+		exprStrings[i] = e.Format(0)
+	}
+	return fmt.Sprintf("Projection: %s", strings.Join(exprStrings, ", "))
+}
+
+// Selection (also known as Filter) logical plan
+type Selection struct {
+	input LogicalPlan
+	expr  LogicalExpr
+}
+
+// NewSelection creates a new Selection logical plan
+func NewSelection(input LogicalPlan, expr LogicalExpr) *Selection {
+	return &Selection{
+		input: input,
+		expr:  expr,
+	}
+}
+
+// Schema returns the schema of the Selection
+func (s *Selection) Schema() Schema {
+	// selection does not change the schema of the input
+	return s.input.Schema()
+}
+
+// Children returns the child plans of the Selection
+func (s *Selection) Children() []LogicalPlan {
+	return []LogicalPlan{s.input}
+}
+
+// String returns a string representation of the Selection
+func (s *Selection) String() string {
+	return fmt.Sprintf("Filter: %s", s.expr.Format(0))
 }
