@@ -5,6 +5,11 @@ import (
 	"strings"
 )
 
+var (
+	_ LogicalPlan = &Selection{}
+	_ LogicalPlan = &Projection{}
+)
+
 // LogicalPlan represents a logical query plan node in a query execution tree.
 // It defines methods to retrieve the schema and children of the plan node.
 type LogicalPlan interface {

@@ -132,3 +132,27 @@ func Bind3[O, O1, O2, O3 any](
 		},
 	}
 }
+
+type DataFrame[T LogicalPlan] struct {
+	inner ExecCtx[T]
+}
+
+func NewDataFrame[T LogicalPlan](ctx ExecCtx[T]) DataFrame[T] {
+	return DataFrame[T]{
+		inner: ctx,
+	}
+}
+
+func (df *DataFrame[T]) Project(exprs []LogicalExpr) DataFrame[*Projection] {
+	inner := Bind(df.inner, func(plan T) (*Projection, error) {
+		return NewProjection(plan, exprs), nil
+	})
+	return NewDataFrame(inner)
+}
+
+func (df *DataFrame[T]) Select(expr LogicalExpr) DataFrame[*Selection] {
+	inner := Bind(df.inner, func(plan T) (*Selection, error) {
+		return NewSelection(plan, expr), nil
+	})
+	return NewDataFrame(inner)
+}
