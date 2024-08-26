@@ -73,6 +73,36 @@ func (s Schema) GetFieldByName(name string) (FieldInfo, error) {
 	return FieldInfo{}, fmt.Errorf("field %s not found", name)
 }
 
+// Select returns a sub-schema if all the fields exist
+func (s Schema) Select(fields []FieldInfo) (Schema, error) {
+	selectedFields := make([]FieldInfo, 0, len(fields))
+	for _, field := range fields {
+		existingField, err := s.GetFieldByName(field.Name)
+		if err != nil {
+			return Schema{}, fmt.Errorf("field '%s' not found in schema", field.Name)
+		}
+		if existingField.DType != field.DType {
+			return Schema{}, fmt.Errorf("field '%s' type mismatch: expected %v, got %v", field.Name, existingField.DType, field.DType)
+		}
+		selectedFields = append(selectedFields, existingField)
+	}
+	return NewSchema(selectedFields...), nil
+}
+
+// SelectNames is like Select but does not enforce datatype.
+// Helpful for initially populating schemas from `Scan`s
+func (s Schema) SelectNames(names []string) (Schema, error) {
+	selectedFields := make([]FieldInfo, 0, len(names))
+	for _, name := range names {
+		field, err := s.GetFieldByName(name)
+		if err != nil {
+			return Schema{}, fmt.Errorf("field '%s' not found in schema", name)
+		}
+		selectedFields = append(selectedFields, field)
+	}
+	return NewSchema(selectedFields...), nil
+}
+
 // Column represents a column of data in a RecordBatch
 type Column interface {
 	// N returns the number of elements in the column

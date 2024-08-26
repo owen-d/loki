@@ -27,6 +27,34 @@ type LogicalExpr interface {
 	Format(indent int) string
 }
 
+// CompatibleSchema checks if the given expressions are compatible with the logical plan's schema
+// and returns a new schema based on the expressions.
+func CompatibleSchema(plan LogicalPlan, exprs ...LogicalExpr) (Schema, error) {
+	// Initialize a slice to store the field information
+	fields := make([]FieldInfo, 0, len(exprs))
+	// Use a map to track unique fields and detect conflicts
+	fieldMap := make(map[FieldInfo]struct{})
+
+	// Iterate through each expression
+	for _, expr := range exprs {
+		// Get the field information for the expression
+		field, err := expr.FieldInfo(plan)
+		if err != nil {
+			return Schema{}, fmt.Errorf("incompatible expression: %v", err)
+		}
+
+		// Check for conflicts
+		if _, exists := fieldMap[field]; !exists {
+			fields = append(fields, field)
+			// Add the field to our tracking structures
+			fieldMap[field] = struct{}{}
+		}
+	}
+
+	// Create and return the new schema
+	return plan.Schema().Select(fields)
+}
+
 // Here are examples of logical exprs
 //
 // Literal Value	"hello", 12.34
@@ -131,14 +159,18 @@ type Scan struct {
 }
 
 // NewScan creates a new Scan logical plan
-func NewScan(path string, dataSource DataSource, projection []string) *Scan {
+func NewScan(path string, dataSource DataSource, projection []string) (*Scan, error) {
 	s := &Scan{
 		Path:       path,
 		DataSource: dataSource,
 		Projection: projection,
 	}
-	s.schema = s.deriveSchema()
-	return s
+	schema, err := s.deriveSchema()
+	if err != nil {
+		return nil, fmt.Errorf("failed to derive schema: %w", err)
+	}
+	s.schema = schema
+	return s, nil
 }
 
 // Schema returns the schema of the Scan
@@ -152,19 +184,13 @@ func (s *Scan) Children() []LogicalPlan {
 }
 
 // deriveSchema derives the schema based on the projection
-func (s *Scan) deriveSchema() Schema {
+func (s *Scan) deriveSchema() (Schema, error) {
 	schema := s.DataSource.Schema()
 	if len(s.Projection) == 0 {
-		return schema
+		return schema, nil
 	}
 
-	var projectedFields []FieldInfo
-	for _, fieldName := range s.Projection {
-		if field, err := schema.GetFieldByName(fieldName); err == nil {
-			projectedFields = append(projectedFields, field)
-		}
-	}
-	return NewSchema(projectedFields...)
+	return schema.SelectNames(s.Projection)
 }
 
 // String returns a string representation of the Scan
@@ -177,16 +203,22 @@ func (s *Scan) String() string {
 
 // Projection logical plan
 type Projection struct {
-	input LogicalPlan
-	expr  []LogicalExpr
+	input  LogicalPlan
+	expr   []LogicalExpr
+	schema Schema
 }
 
 // NewProjection creates a new Projection logical plan
-func NewProjection(input LogicalPlan, expr []LogicalExpr) *Projection {
-	return &Projection{
-		input: input,
-		expr:  expr,
+func NewProjection(input LogicalPlan, expr []LogicalExpr) (*Projection, error) {
+	schema, err := CompatibleSchema(input, expr...)
+	if err != nil {
+		return nil, err
 	}
+	return &Projection{
+		input:  input,
+		expr:   expr,
+		schema: schema,
+	}, nil
 }
 
 // Schema returns the schema of the Projection
@@ -215,16 +247,23 @@ func (p *Projection) String() string {
 
 // Selection (also known as Filter) logical plan
 type Selection struct {
-	input LogicalPlan
-	expr  LogicalExpr
+	input  LogicalPlan
+	expr   LogicalExpr
+	schema Schema
 }
 
 // NewSelection creates a new Selection logical plan
-func NewSelection(input LogicalPlan, expr LogicalExpr) *Selection {
-	return &Selection{
-		input: input,
-		expr:  expr,
+func NewSelection(input LogicalPlan, expr LogicalExpr) (*Selection, error) {
+	schema, err := CompatibleSchema(input, expr)
+	if err != nil {
+		return nil, err
 	}
+
+	return &Selection{
+		input:  input,
+		expr:   expr,
+		schema: schema,
+	}, nil
 }
 
 // Schema returns the schema of the Selection
