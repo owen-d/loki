@@ -6,6 +6,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// compiler checks
+var (
+	_ LogicalPlan = &Scan{}
+	_ LogicalPlan = &Projection{}
+	_ LogicalPlan = &Selection{}
+)
+
 func TestLogicalChain(t *testing.T) {
 
 	scan := func() (*Scan, error) {
@@ -27,7 +34,7 @@ func TestLogicalChain(t *testing.T) {
 		},
 	).Select(
 		// filter by line equality
-		&BinaryExpr{
+		&LogicalBinaryExpr{
 			Name:  "line_comparison",
 			Op:    "=",
 			Left:  ColumnRef("line"),
@@ -44,5 +51,4 @@ Filter: line_comparison (=)
 	require.NoError(t, err)
 
 	require.Equal(t, exp, "\n"+out.String()+"\n")
-
 }

@@ -1,5 +1,7 @@
 package planning
 
+// LogicalPlanner. Ergonomic way to sequence operations.
+// Also known by the name `DataFrame` elsewhere (r, python, etc)
 type LogicalPlanner[T LogicalPlan] struct {
 	inner ExecCtx[T]
 }
@@ -22,31 +24,4 @@ func (p LogicalPlanner[T]) Select(expr LogicalExpr) LogicalPlanner[*Selection] {
 		return NewSelection(plan, expr)
 	})
 	return NewLogicalPlanner(inner)
-}
-
-func example() (LogicalPlan, error) {
-	scan := func() (*Scan, error) {
-		return NewScan("foo", &StreamDataSource{}, []string{"timestamp", "line", "labels"})
-	}
-
-	p := NewLogicalPlanner(
-		// scan
-		NewExecCtx(scan),
-	).Project(
-		// capture 2 fields
-		[]LogicalExpr{
-			ColumnRef("timestamp"),
-			ColumnRef("line"),
-		},
-	).Select(
-		// filter by line equality
-		&BinaryExpr{
-			Name:  "foo",
-			Op:    "=",
-			Left:  ColumnRef("line"),
-			Right: LiteralString("foo"),
-		},
-	)
-
-	return p.inner.Run()
 }

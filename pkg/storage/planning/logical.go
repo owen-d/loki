@@ -5,11 +5,6 @@ import (
 	"strings"
 )
 
-var (
-	_ LogicalPlan = &Selection{}
-	_ LogicalPlan = &Projection{}
-)
-
 // LogicalPlan represents a logical query plan node in a query execution tree.
 // It defines methods to retrieve the schema and children of the plan node.
 type LogicalPlan interface {
@@ -62,59 +57,59 @@ func (c *ColumnReference) Format(indent int) string {
 	return fmt.Sprintf("%s#%s", strings.Repeat(" ", indent), c.Name)
 }
 
-// LiteralValue Logical Expression
-type LiteralValue struct {
+// LogicalLiteralValue Logical Expression
+type LogicalLiteralValue struct {
 	Value any
 	Type  DataTypeSignal
 }
 
 // SchemaName returns a string representation of the LiteralValue's schema
-func (l *LiteralValue) SchemaName() string {
+func (l *LogicalLiteralValue) SchemaName() string {
 	return fmt.Sprintf("%v", l.Value)
 }
 
 // Literal is shorthand for creating a LiteralValue
-func Literal(value any, dtype DataTypeSignal) *LiteralValue {
-	return &LiteralValue{
+func Literal(value any, dtype DataTypeSignal) *LogicalLiteralValue {
+	return &LogicalLiteralValue{
 		Value: value,
 		Type:  dtype,
 	}
 }
 
 // Helper functions for common literal types
-func LiteralString(value string) *LiteralValue {
-	return &LiteralValue{
+func LiteralString(value string) *LogicalLiteralValue {
+	return &LogicalLiteralValue{
 		Value: value,
 		Type:  String,
 	}
 }
 
-func LiteralBytes(value []byte) *LiteralValue {
-	return &LiteralValue{
+func LiteralBytes(value []byte) *LogicalLiteralValue {
+	return &LogicalLiteralValue{
 		Value: value,
 		Type:  Bytes,
 	}
 }
 
-func LiteralInt64(value int64) *LiteralValue {
-	return &LiteralValue{
+func LiteralInt64(value int64) *LogicalLiteralValue {
+	return &LogicalLiteralValue{
 		Value: value,
 		Type:  I64,
 	}
 }
 
-func LiteralFloat64(value float64) *LiteralValue {
-	return &LiteralValue{
+func LiteralFloat64(value float64) *LogicalLiteralValue {
+	return &LogicalLiteralValue{
 		Value: value,
 		Type:  F64,
 	}
 }
 
-func (l *LiteralValue) FieldInfo(input LogicalPlan) (FieldInfo, error) {
+func (l *LogicalLiteralValue) FieldInfo(input LogicalPlan) (FieldInfo, error) {
 	return NewFieldInfo(fmt.Sprintf("%v", l.Value), l.Type), nil
 }
 
-func (l *LiteralValue) Format(indent int) string {
+func (l *LogicalLiteralValue) Format(indent int) string {
 	var formatted string
 	switch l.Type {
 	case Bytes:
@@ -125,15 +120,15 @@ func (l *LiteralValue) Format(indent int) string {
 	return fmt.Sprintf("%s%s", strings.Repeat(" ", indent), formatted)
 }
 
-// BinaryExpr Logical Expression for mathematical and comparison operations
-type BinaryExpr struct {
+// LogicalBinaryExpr Logical Expression for mathematical and comparison operations
+type LogicalBinaryExpr struct {
 	Name  string
 	Op    string
 	Left  LogicalExpr
 	Right LogicalExpr
 }
 
-func (b *BinaryExpr) FieldInfo(input LogicalPlan) (FieldInfo, error) {
+func (b *LogicalBinaryExpr) FieldInfo(input LogicalPlan) (FieldInfo, error) {
 	leftField, err := b.Left.FieldInfo(input)
 	if err != nil {
 		return FieldInfo{}, err
@@ -152,11 +147,11 @@ func (b *BinaryExpr) FieldInfo(input LogicalPlan) (FieldInfo, error) {
 }
 
 // schemaName returns a string representation of the BinaryExpr's schema
-func (b *BinaryExpr) SchemaName() string {
+func (b *LogicalBinaryExpr) SchemaName() string {
 	return fmt.Sprintf("%s(%s, %s)", b.Op, b.Left.SchemaName(), b.Right.SchemaName())
 }
 
-func (b *BinaryExpr) Format(indent int) string {
+func (b *LogicalBinaryExpr) Format(indent int) string {
 	indentation := strings.Repeat(" ", indent)
 	return fmt.Sprintf("%s%s (%s)\n%s\n%s",
 		indentation, b.Name, b.Op,
