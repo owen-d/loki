@@ -24,35 +24,8 @@ type LogicalPlan interface {
 //	  Scan: employee.csv; projection=None
 type LogicalExpr interface {
 	FieldInfo(input LogicalPlan) (FieldInfo, error)
+	SchemaName() string
 	Format(indent int) string
-}
-
-// CompatibleSchema checks if the given expressions are compatible with the logical plan's schema
-// and returns a new schema based on the expressions.
-func CompatibleSchema(plan LogicalPlan, exprs ...LogicalExpr) (Schema, error) {
-	// Initialize a slice to store the field information
-	fields := make([]FieldInfo, 0, len(exprs))
-	// Use a map to track unique fields and detect conflicts
-	fieldMap := make(map[FieldInfo]struct{})
-
-	// Iterate through each expression
-	for _, expr := range exprs {
-		// Get the field information for the expression
-		field, err := expr.FieldInfo(plan)
-		if err != nil {
-			return Schema{}, fmt.Errorf("incompatible expression: %v", err)
-		}
-
-		// Check for conflicts
-		if _, exists := fieldMap[field]; !exists {
-			fields = append(fields, field)
-			// Add the field to our tracking structures
-			fieldMap[field] = struct{}{}
-		}
-	}
-
-	// Create and return the new schema
-	return plan.Schema().Select(fields)
 }
 
 // Here are examples of logical exprs
@@ -74,6 +47,11 @@ func ColumnRef(name string) *ColumnReference {
 	return &ColumnReference{Name: name}
 }
 
+// schemaName
+func (c *ColumnReference) SchemaName() string {
+	return c.Name
+}
+
 // FieldInfo returns the field information for the ColumnReference
 // It retrieves the field from the input LogicalPlan's schema based on the column name
 func (c *ColumnReference) FieldInfo(input LogicalPlan) (FieldInfo, error) {
@@ -90,6 +68,11 @@ type LiteralValue struct {
 	Type  DataTypeSignal
 }
 
+// SchemaName returns a string representation of the LiteralValue's schema
+func (l *LiteralValue) SchemaName() string {
+	return fmt.Sprintf("%v", l.Value)
+}
+
 // Literal is shorthand for creating a LiteralValue
 func Literal(value any, dtype DataTypeSignal) *LiteralValue {
 	return &LiteralValue{
@@ -99,10 +82,17 @@ func Literal(value any, dtype DataTypeSignal) *LiteralValue {
 }
 
 // Helper functions for common literal types
-func LiteralString(value any) *LiteralValue {
+func LiteralString(value string) *LiteralValue {
 	return &LiteralValue{
 		Value: value,
 		Type:  String,
+	}
+}
+
+func LiteralBytes(value []byte) *LiteralValue {
+	return &LiteralValue{
+		Value: value,
+		Type:  Bytes,
 	}
 }
 
@@ -125,7 +115,14 @@ func (l *LiteralValue) FieldInfo(input LogicalPlan) (FieldInfo, error) {
 }
 
 func (l *LiteralValue) Format(indent int) string {
-	return fmt.Sprintf("%s%v", strings.Repeat(" ", indent), l.Value)
+	var formatted string
+	switch l.Type {
+	case Bytes:
+		formatted = fmt.Sprintf("%v", string(l.Value.([]byte)))
+	default:
+		formatted = fmt.Sprintf("%v", l.Value)
+	}
+	return fmt.Sprintf("%s%s", strings.Repeat(" ", indent), formatted)
 }
 
 // BinaryExpr Logical Expression for mathematical and comparison operations
@@ -151,7 +148,12 @@ func (b *BinaryExpr) FieldInfo(input LogicalPlan) (FieldInfo, error) {
 		return FieldInfo{}, fmt.Errorf("failed to determine result type: %w", err)
 	}
 
-	return NewFieldInfo(b.Name, resultType), nil
+	return NewFieldInfo(b.SchemaName(), resultType), nil
+}
+
+// schemaName returns a string representation of the BinaryExpr's schema
+func (b *BinaryExpr) SchemaName() string {
+	return fmt.Sprintf("%s(%s, %s)", b.Op, b.Left.SchemaName(), b.Right.SchemaName())
 }
 
 func (b *BinaryExpr) Format(indent int) string {
@@ -244,26 +246,28 @@ type Projection struct {
 }
 
 // NewProjection creates a new Projection logical plan
-func NewProjection(input LogicalPlan, expr []LogicalExpr) (*Projection, error) {
-	schema, err := CompatibleSchema(input, expr...)
-	if err != nil {
-		return nil, err
+func NewProjection(input LogicalPlan, exprs []LogicalExpr) (*Projection, error) {
+
+	// create fields based on all the referenced fields in exprs
+	fields := make([]FieldInfo, len(exprs))
+	for i, expr := range exprs {
+		fieldInfo, err := expr.FieldInfo(input)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get field info for expression %d: %w", i, err)
+		}
+		fields[i] = fieldInfo
 	}
+
 	return &Projection{
 		input:  input,
-		expr:   expr,
-		schema: schema,
+		expr:   exprs,
+		schema: NewSchema(fields...),
 	}, nil
 }
 
 // Schema returns the schema of the Projection
 func (p *Projection) Schema() Schema {
-	fields := make([]FieldInfo, len(p.expr))
-	for i, e := range p.expr {
-		field, _ := e.FieldInfo(p.input)
-		fields[i] = field
-	}
-	return NewSchema(fields...)
+	return p.schema
 }
 
 // Children returns the child plans of the Projection
@@ -289,15 +293,18 @@ type Selection struct {
 
 // NewSelection creates a new Selection logical plan
 func NewSelection(input LogicalPlan, expr LogicalExpr) (*Selection, error) {
-	schema, err := CompatibleSchema(input, expr)
+	field, err := expr.FieldInfo(input)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Selection{
-		input:  input,
-		expr:   expr,
-		schema: schema,
+		input: input,
+		expr:  expr,
+		// TODO(owen-d): selection currently only supports filtering, but it
+		// could support things like `foo > bar as baz`
+		// in the future so we plumb a field addition through anyway.
+		schema: input.Schema().Builder().AddField(field).Build(),
 	}, nil
 }
 

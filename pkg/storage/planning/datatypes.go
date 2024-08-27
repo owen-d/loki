@@ -50,9 +50,7 @@ type Schema struct {
 
 // NewSchema creates a new Schema from a list of FieldInfo
 func NewSchema(fields ...FieldInfo) Schema {
-	return Schema{
-		Fields: fields,
-	}
+	return Schema{Fields: fields}
 }
 
 // GetFieldIndex retrieves the FieldInfo for a given index
@@ -75,32 +73,77 @@ func (s Schema) GetFieldByName(name string) (FieldInfo, error) {
 
 // Select returns a sub-schema if all the fields exist
 func (s Schema) Select(fields []FieldInfo) (Schema, error) {
-	selectedFields := make([]FieldInfo, 0, len(fields))
+	sb := s.Builder()
 	for _, field := range fields {
-		existingField, err := s.GetFieldByName(field.Name)
-		if err != nil {
+		existingField, ok := sb.fields[field.Name]
+		if !ok {
 			return Schema{}, fmt.Errorf("field '%s' not found in schema", field.Name)
 		}
 		if existingField.DType != field.DType {
 			return Schema{}, fmt.Errorf("field '%s' type mismatch: expected %v, got %v", field.Name, existingField.DType, field.DType)
 		}
-		selectedFields = append(selectedFields, existingField)
+		sb.AddField(field)
 	}
-	return NewSchema(selectedFields...), nil
+	return sb.Build(), nil
 }
 
 // SelectNames is like Select but does not enforce datatype.
 // Helpful for initially populating schemas from `Scan`s
 func (s Schema) SelectNames(names []string) (Schema, error) {
-	selectedFields := make([]FieldInfo, 0, len(names))
+	sb := s.Builder()
 	for _, name := range names {
-		field, err := s.GetFieldByName(name)
-		if err != nil {
+		field, ok := sb.fields[name]
+		if !ok {
 			return Schema{}, fmt.Errorf("field '%s' not found in schema", name)
 		}
-		selectedFields = append(selectedFields, field)
+		sb.AddField(field)
 	}
-	return NewSchema(selectedFields...), nil
+	return sb.Build(), nil
+}
+
+// create a builder seeded from this schema
+func (s Schema) Builder() *SchemaBuilder {
+	return NewSchemaBuilder(&s)
+}
+
+// SchemaBuilder allows building a schema incrementally
+type SchemaBuilder struct {
+	fields map[string]FieldInfo
+}
+
+// NewSchemaBuilder creates a new SchemaBuilder
+// NewSchemaBuilder creates a new SchemaBuilder
+func NewSchemaBuilder(src *Schema) *SchemaBuilder {
+	sb := &SchemaBuilder{
+		fields: make(map[string]FieldInfo),
+	}
+	if src != nil {
+		for _, field := range src.Fields {
+			sb.fields[field.Name] = field
+		}
+	}
+	return sb
+}
+
+// AddField adds a new field to the SchemaBuilder
+func (sb *SchemaBuilder) AddField(field FieldInfo) *SchemaBuilder {
+	sb.fields[field.Name] = field
+	return sb
+}
+
+// RemoveField removes a field from the SchemaBuilder
+func (sb *SchemaBuilder) RemoveField(name string) *SchemaBuilder {
+	delete(sb.fields, name)
+	return sb
+}
+
+// Build finalizes the Schema
+func (sb *SchemaBuilder) Build() Schema {
+	fields := make([]FieldInfo, 0, len(sb.fields))
+	for _, field := range sb.fields {
+		fields = append(fields, field)
+	}
+	return Schema{Fields: fields}
 }
 
 // Column represents a column of data in a RecordBatch
