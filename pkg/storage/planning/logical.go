@@ -69,6 +69,11 @@ type ColumnReference struct {
 	Name string
 }
 
+// shorthand to create a column reference
+func ColumnRef(name string) *ColumnReference {
+	return &ColumnReference{Name: name}
+}
+
 // FieldInfo returns the field information for the ColumnReference
 // It retrieves the field from the input LogicalPlan's schema based on the column name
 func (c *ColumnReference) FieldInfo(input LogicalPlan) (FieldInfo, error) {
@@ -83,6 +88,36 @@ func (c *ColumnReference) Format(indent int) string {
 type LiteralValue struct {
 	Value any
 	Type  DataTypeSignal
+}
+
+// Literal is shorthand for creating a LiteralValue
+func Literal(value any, dtype DataTypeSignal) *LiteralValue {
+	return &LiteralValue{
+		Value: value,
+		Type:  dtype,
+	}
+}
+
+// Helper functions for common literal types
+func LiteralString(value any) *LiteralValue {
+	return &LiteralValue{
+		Value: value,
+		Type:  String,
+	}
+}
+
+func LiteralInt64(value int64) *LiteralValue {
+	return &LiteralValue{
+		Value: value,
+		Type:  I64,
+	}
+}
+
+func LiteralFloat64(value float64) *LiteralValue {
+	return &LiteralValue{
+		Value: value,
+		Type:  F64,
+	}
 }
 
 func (l *LiteralValue) FieldInfo(input LogicalPlan) (FieldInfo, error) {

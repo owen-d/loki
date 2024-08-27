@@ -35,19 +35,16 @@ func example() (LogicalPlan, error) {
 	).Project(
 		// capture 2 fields
 		[]LogicalExpr{
-			&ColumnReference{"timestamp"},
-			&ColumnReference{"line"},
+			ColumnRef("timestamp"),
+			ColumnRef("line"),
 		},
 	).Select(
 		// filter by line equality
 		&BinaryExpr{
-			Name: "foo",
-			Op:   "=",
-			Left: &ColumnReference{"line"},
-			Right: &LiteralValue{
-				Value: "foo",
-				Type:  String,
-			},
+			Name:  "foo",
+			Op:    "=",
+			Left:  ColumnRef("line"),
+			Right: LiteralString("foo"),
 		},
 	)
 
